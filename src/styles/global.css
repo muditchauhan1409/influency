@@ -1,0 +1,254 @@
+/* PASTE PATH: src/styles/global.css */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", -apple-system, sans-serif;
+  background: #fff;
+}
+
+.onboarding-page {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.onboarding-left {
+  flex: 1.1;
+  background: linear-gradient(135deg, #f5e7df 0%, #f0e3da 100%);
+  padding:  24px 40px 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.onboarding-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow:hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 60px;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: #7a1f33;
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.brand-name {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  color: #4a2128;
+  font-weight: 600;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #a14a55;
+  margin-bottom: 18px;
+}
+
+.hero-title {
+  font-family: Georgia, serif;
+  font-size: 48px;
+  line-height: 1.15;
+  color: #2a1a1f;
+  margin: 0 0 20px;
+}
+
+.hero-title-accent {
+  font-style: italic;
+  color: #7a1f33;
+}
+
+.hero-sub {
+  font-size: 17px;
+  color: #4a3438;
+  margin: 0 0 6px;
+}
+
+.hero-sub-light {
+  font-size: 15px;
+  color: #8a7a7e;
+  margin: 0 0 30px;
+}
+
+.hero-sub-dark {
+  font-size: 16px;
+  color: #4a3438;
+  line-height: 1.6;
+  margin: 0 0 30px;
+  max-width: 420px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.progress-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.progress-step {
+  flex: 1;
+  height: 4px;
+  border-radius: 4px;
+  background: #ece2e3;
+}
+
+.progress-step.active {
+  background: linear-gradient(90deg, #7a1f33, #c87a4a);
+}
+
+.card-title {
+  font-family: "playfair display", serif;
+  font-size: 26px;
+  font-weight :400;
+  color: #2a1a1f;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.card-sub {
+  font-size: 8px;
+  color: #8a7a7e;
+  text-align: center;
+  margin: 0 0 16px;
+}
+
+.back-link {
+  font-size: 13px;
+  color: #8a7a7e;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 18px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fdf0ea;
+  color: #6a4a3e;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.btn-primary {
+  width: 100%;
+  background: #7a1f33;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  background: #631828;
+}
+
+.card-footer {
+  text-align: center;
+  font-size: 13px;
+  color: #8a7a7e;
+  margin-top: 20px;
+}
+
+.card-footer a {
+  color: #7a1f33;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.helper-text {
+  font-size: 12px;
+  color: #9a8a8e;
+  margin: 14px 0;
+}
+
+.helper-text.center {
+  text-align: center;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a3438;
+  margin: 18px 0 8px;
+}
+
+.field-input,
+.field-textarea {
+  width: 100%;
+  background: #fdf6f3;
+  border: 1px solid #ece2e3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #2a1a1f;
+  font-family: inherit;
+}
+
+.field-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.onboarding-nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  display: flex;
+  gap: 18px;
+}
+
+.onboarding-nav-link {
+  font-size: 13px;
+  color: #6a5a5e;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.onboarding-nav-link:hover {
+  color: #7a1f33;
+}

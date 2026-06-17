@@ -1,0 +1,114 @@
+/* PASTE PATH: src/styles/login.css */
+
+@keyframes loginFadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-left .hero-title,
+.login-left .hero-sub-dark,
+.login-left .eyebrow {
+  animation: loginFadeUp 0.6s ease both;
+}
+
+.login-stat-strip {
+  display: flex;
+  gap: 36px;
+  margin-top: 36px;
+  animation: loginFadeUp 0.6s ease 0.2s both;
+}
+
+.login-stat-value {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #7a1f33;
+  margin: 0 0 2px;
+}
+
+.login-stat-label {
+  font-size: 12px;
+  color: #8a7a7e;
+  margin: 0;
+}
+
+.login-card {
+  animation: loginFadeUp 0.5s ease both;
+}
+
+.login-card .card-title,
+.login-card .card-sub {
+  text-align: left;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+  color: #9a8a8e;
+  margin: 18px 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ece2e3;
+}
+
+.login-divider span {
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.login-password-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-password-label-row .field-label {
+  margin: 14px 0 6px;
+}
+
+.login-forgot-link {
+  font-size: 12px;
+  color: #7a1f33;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.login-password-wrap {
+  position: relative;
+}
+
+.login-password-wrap .field-input {
+  padding-right: 42px;
+}
+
+.login-eye-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.login-submit {
+  margin-top: 18px;
+}
