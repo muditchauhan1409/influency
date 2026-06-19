@@ -122,3 +122,27 @@
   color: #8a7a7a;
   font-size: 14px;
 }
+
+.field-error {
+  color: #d9534f;
+  font-size: 13px;
+  margin: -6px 0 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.shake {
+  animation: shakeBtn 0.35s ease;
+}
+
+@keyframes shakeBtn {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}

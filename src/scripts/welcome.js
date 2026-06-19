@@ -12,7 +12,7 @@ export function useWelcome() {
   const navigate = useNavigate();
 
   const handleGoToDashboard = () => {
-    navigate("/role-select");
+    navigate("/dashboard");
   };
 
   return { dashboardCards: DASHBOARD_CARDS, handleGoToDashboard };

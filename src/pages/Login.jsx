@@ -1,10 +1,12 @@
 // PASTE PATH: src/pages/Login.jsx
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../scripts/login";
 import "../styles/login.css";
 
 export default function Login() {
+  const navigate = useNavigate();
   const {
+    
     email,
     setEmail,
     password,
@@ -103,7 +105,7 @@ export default function Login() {
 
           {error && <p className="fp-error-text">{error}</p>}
 
-          <button className="btn-primary login-submit" onClick={handleLogin}>
+          <button className="btn-primary login-submit" onClick={() => navigate("/signup")}>
             Sign In
           </button>
 

@@ -4,7 +4,7 @@ import { useSignUp } from "../scripts/signUp";
 import "../styles/signUp.css";
 
 export default function SignUp() {
-  const { role, agreed, setAgreed, handleCreateAccount } = useSignUp();
+  const { role, agreed, setAgreed, handleCreateAccount, error, shake } = useSignUp();
 
   return (
     <div className="onboarding-page">
@@ -50,11 +50,10 @@ export default function SignUp() {
             <Link to="/role-select" className="back-link">
               Back
             </Link>
-          
 
-          <span className="tag tag-role">
-            {role === "brand" ? "🏢 Brand Account" : "🎥 Creator Account"}
-          </span>
+            <span className="tag tag-role">
+              {role === "brand" ? "🏢 Brand Account" : "🎥 Creator Account"}
+            </span>
           </div>
 
           <h2 className="card-title">Create your account</h2>
@@ -87,7 +86,12 @@ export default function SignUp() {
             </span>
           </label>
 
-          <button className="btn-primary" onClick={handleCreateAccount}>
+          {error && <p className="field-error">{error}</p>}
+
+          <button
+            className={`btn-primary ${shake ? "shake" : ""}`}
+            onClick={handleCreateAccount}
+          >
             Create Account
           </button>
 
