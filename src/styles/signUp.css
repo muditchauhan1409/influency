@@ -146,3 +146,26 @@
   60% { transform: translateX(-4px); }
   80% { transform: translateX(4px); }
 }
+
+.oauth-row {
+  display: flex;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.oauth-btn {
+  flex: 1;
+  height: 88px;
+  background: #fff;
+  border: 1px solid #e7dfe3;
+  border-radius: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}

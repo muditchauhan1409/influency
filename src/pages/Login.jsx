@@ -1,5 +1,8 @@
 // PASTE PATH: src/pages/Login.jsx
+import { FcGoogle } from "react-icons/fc";
+import { FaInstagram } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+
 import { useLogin } from "../scripts/login";
 import "../styles/login.css";
 
@@ -58,15 +61,16 @@ export default function Login() {
           <p className="card-sub">Glad to see you again. Let's get back to building trust.</p>
 
           <div className="oauth-row">
-            <button className="oauth-btn">
-              <span className="oauth-icon">G</span>
-               Google
-            </button>
-            <button className="oauth-btn">
-              <span className="oauth-icon">📷</span>
-               Instagram
-            </button>
-          </div>
+  <button className="oauth-btn">
+    <FcGoogle size={24} />
+    <span>Continue with Google</span>
+  </button>
+
+  <button className="oauth-btn">
+    <FaInstagram size={24} color="#ff4d6d" />
+    <span>Continue with Instagram</span>
+  </button>
+</div>
 
           <div className="login-divider">
             <span>or sign in with email</span>

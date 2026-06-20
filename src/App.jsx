@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/UserProfile";
 import Settings from "./pages/Settings";
+import NotificationsPanel from "./components/NotificationsPanel";
+import { useNotificationsPanel } from "./scripts/notifications";
 
 function ComingSoon({ title }) {
   return (
@@ -21,25 +23,36 @@ function ComingSoon({ title }) {
 }
 
 function App() {
+  const notif = useNotificationsPanel();
+
   return (
-    <Routes>
-      <Route path="/" element={<RoleSelect />} />
-      <Route path="/role-select" element={<RoleSelect />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/profile-setup" element={<ProfileSetup />} />
-      <Route path="/verify-connect" element={<VerifyConnect />} />
-      <Route path="/welcome" element={<Welcome />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/discover" element={<ComingSoon title="Discover" />} />
-      <Route path="/collaborations" element={<ComingSoon title="Collaborations" />} />
-      <Route path="/messages" element={<ComingSoon title="Messages" />} />
-      <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/analytics" element={<ComingSoon title="Analytics" />} />
-      <Route path="/settings" element={<Settings />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<RoleSelect />} />
+        <Route path="/role-select" element={<RoleSelect />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/profile-setup" element={<ProfileSetup />} />
+        <Route path="/verify-connect" element={<VerifyConnect />} />
+        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard onOpenNotifications={notif.open} />} />
+        <Route path="/discover" element={<ComingSoon title="Discover" />} />
+        <Route path="/collaborations" element={<ComingSoon title="Collaborations" />} />
+        <Route path="/messages" element={<ComingSoon title="Messages" />} />
+        <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
+        <Route path="/profile" element={<Profile onOpenNotifications={notif.open} />} />
+        <Route path="/analytics" element={<ComingSoon title="Analytics" />} />
+        <Route path="/settings" element={<Settings onOpenNotifications={notif.open} />} />
+      </Routes>
+
+      <NotificationsPanel
+        isOpen={notif.isOpen}
+        onClose={notif.close}
+        activeTab={notif.activeTab}
+        setActiveTab={notif.setActiveTab}
+      />
+    </>
   );
 }
 

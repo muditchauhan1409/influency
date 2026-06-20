@@ -101,7 +101,7 @@ export default function Settings({  darkMode, setDarkMode }) {
               <div className="settings-avatar-name">Nikita Roy</div>
               <div className="settings-avatar-handle">@nikitaroy · Mumbai, IN</div>
             </div>
-            <button className="settings-edit-btn">Edit Profile</button>
+            
           </div>
           <div className="settings-row">
             <div className="settings-row-icon">📛</div>

@@ -1,4 +1,6 @@
 // PASTE PATH: src/pages/SignUp.jsx
+import { FcGoogle } from "react-icons/fc";
+import { FaInstagram } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useSignUp } from "../scripts/signUp";
 import "../styles/signUp.css";
@@ -59,16 +61,17 @@ export default function SignUp() {
           <h2 className="card-title">Create your account</h2>
           <p className="card-sub">Quick sign up — takes less than a minute.</p>
 
-          <div className="oauth-row">
-            <button className="oauth-btn">
-              <span className="oauth-icon">G</span>
-              Continue with Google
-            </button>
-            <button className="oauth-btn">
-              <span className="oauth-icon">📷</span>
-              Continue with Instagram
-            </button>
-          </div>
+         <div className="oauth-row">
+  <button className="oauth-btn">
+    <FcGoogle size={24} />
+    <span>Continue with Google</span>
+  </button>
+
+  <button className="oauth-btn">
+    <FaInstagram size={24} color="#ff4d6d" />
+    <span>Continue with Instagram</span>
+  </button>
+</div>
 
           <p className="helper-text">
             No passwords. Your account is created instantly and securely.

@@ -499,6 +499,8 @@ width: 100%;
   margin-bottom: 12px;
 }
 
+
+
 .score-ring-svg-wrap {
   position: relative;
   width: 120px;
@@ -751,3 +753,9 @@ body.dark .divider { background: rgba(255,255,255,0.06); }
 body.dark .score-factors .factor-label { color: #b09098; }
 
 body.dark .trust-card { background: #1a1014; border-color: rgba(255,255,255,0.08); }
+
+.brand-logo-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}

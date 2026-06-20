@@ -1,5 +1,9 @@
 // PASTE PATH: src/scripts/dashboard.js
 // Update sirf NAV_ITEMS array — baaki sab same rahega
+import nikeLogo from "../assets/logos/nike.svg";
+import nykaaLogo from "../assets/logos/nykaa.svg";
+import boatLogo from "../assets/logos/boat.svg";
+import starbucksLogo from "../assets/logos/starbucks.svg";
 
 export const NAV_ITEMS = [
   { icon: "🏠", label: "Home", path: "/dashboard" },
@@ -13,16 +17,16 @@ export const NAV_ITEMS = [
 ];
 
 export const CAMPAIGNS = [
-  { id: "NK", name: "Nike India", cat: "Sports & Fashion", budget: "₹2,00,000", tag: "Fashion", closes: "4d", logoStyle: { background: "rgba(0,0,0,0.5)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" } },
-  { id: "NY", name: "Nykaa", cat: "Beauty & Wellness", budget: "₹80,000", tag: "Beauty", closes: "7d", logoStyle: { background: "rgba(236,72,153,0.15)", color: "#F472B6", border: "1px solid rgba(236,72,153,0.2)" } },
-  { id: "BT", name: "boAt Lifestyle", cat: "Tech & Lifestyle", budget: "₹1,20,000", tag: "Tech", closes: "2d", logoStyle: { background: "rgba(99,102,241,0.15)", color: "#818CF8", border: "1px solid rgba(99,102,241,0.2)" } },
+  { id: "NK", logo: nikeLogo, name: "Nike India", cat: "Sports & Fashion", budget: "₹2,00,000", tag: "Fashion", closes: "4d", logoStyle: { background: "#000" } },
+  { id: "NY", logo: nykaaLogo, name: "Nykaa", cat: "Beauty & Wellness", budget: "₹80,000", tag: "Beauty", closes: "7d", logoStyle: { background: "rgba(236,72,153,0.15)" } },
+  { id: "BT", logo: boatLogo, name: "boAt Lifestyle", cat: "Tech & Lifestyle", budget: "₹1,20,000", tag: "Tech", closes: "2d", logoStyle: { background: "rgba(99,102,241,0.15)" } },
 ];
 
 export const BRAND_MATCHES = [
-  { id: "NK", name: "Nike", cat: "Sports", pct: 98, cls: "pct-98", logoStyle: { background: "rgba(0,0,0,0.5)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)" } },
-  { id: "NY", name: "Nykaa", cat: "Beauty", pct: 96, cls: "pct-96", logoStyle: { background: "rgba(236,72,153,0.12)", color: "#F472B6", border: "1px solid rgba(236,72,153,0.2)" } },
-  { id: "BT", name: "boAt", cat: "Tech", pct: 94, cls: "pct-94", logoStyle: { background: "rgba(99,102,241,0.12)", color: "#818CF8", border: "1px solid rgba(99,102,241,0.2)" } },
-  { id: "SB", name: "Starbucks", cat: "Lifestyle", pct: 91, cls: "pct-91", logoStyle: { background: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.2)" } },
+  { id: "NK", logo: nikeLogo, name: "Nike", cat: "Sports", pct: 98, cls: "pct-98", logoStyle: { background: "#000" } },
+  { id: "NY", logo: nykaaLogo, name: "Nykaa", cat: "Beauty", pct: 96, cls: "pct-96", logoStyle: { background: "rgba(236,72,153,0.12)" } },
+  { id: "BT", logo: boatLogo, name: "boAt", cat: "Tech", pct: 94, cls: "pct-94", logoStyle: { background: "rgba(99,102,241,0.12)" } },
+  { id: "SB", logo: starbucksLogo, name: "Starbucks", cat: "Lifestyle", pct: 91, cls: "pct-91", logoStyle: { background: "rgba(245,158,11,0.12)" } },
 ];
 
 export const CREATORS = [
