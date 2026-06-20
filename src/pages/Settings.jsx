@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { NAV_ITEMS } from "../scripts/dashboard";
 import "../styles/dashboard.css";
 import "../styles/settings.css";
 
-export default function Settings({ onNavigate, darkMode, setDarkMode }) {
+export default function Settings({  darkMode, setDarkMode }) {
+  const navigate = useNavigate();
 
   const handleDarkToggle = (e) => {
     const val = e.target.checked;
@@ -33,7 +35,7 @@ export default function Settings({ onNavigate, darkMode, setDarkMode }) {
           <div
             key={item.label}
             className={`nav-item ${item.label === "Settings" ? "active" : ""}`}
-            onClick={() => onNavigate(item.label === "Settings" ? "settings" : "dashboard")}
+            onClick={() => navigate(item.label === "Settings" ? "/settings" : "/dashboard")}
           >
             <span className="nav-emoji">{item.icon}</span>
             {item.label}

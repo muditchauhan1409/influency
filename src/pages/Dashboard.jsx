@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom"; 
+import { Link ,useNavigate, useLocation } from "react-router-dom"; 
 import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../scripts/dashboard";
 import "../styles/dashboard.css";
 
 export default function Dashboard({ darkMode, setDarkMode })  {
   const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div className="inf-wrap">
 
@@ -20,8 +21,8 @@ export default function Dashboard({ darkMode, setDarkMode })  {
         {NAV_ITEMS.map((item) => (
   <div
     key={item.label}
-    className={`nav-item ${item.active ? "active" : ""}`}
-    onClick={() => item.label === "Settings" && navigate("/settings")}
+    className={`nav-item ${location.pathname === item.path ?  "active" : ""}`}
+    onClick={() => item.path && navigate(item.path)}
   >
     <span className="nav-emoji">{item.icon}</span>
     {item.label}

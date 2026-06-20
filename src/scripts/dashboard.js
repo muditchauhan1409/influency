@@ -1,14 +1,15 @@
 // PASTE PATH: src/scripts/dashboard.js
+// Update sirf NAV_ITEMS array — baaki sab same rahega
 
 export const NAV_ITEMS = [
-  { icon: "🏠", label: "Home", active: true },
-  { icon: "🧭", label: "Discover" },
-  { icon: "💼", label: "Collaborations", badge: 3 },
-  { icon: "💬", label: "Messages", badge: 7 },
-  { icon: "🔔", label: "Notifications" },
-  { icon: "👤", label: "Profile" },
-  { icon: "📊", label: "Analytics" },
-  { icon: "⚙️", label: "Settings" },
+  { icon: "🏠", label: "Home", path: "/dashboard" },
+  { icon: "🧭", label: "Discover", path: "/discover" },
+  { icon: "💼", label: "Collaborations", path: "/collaborations", badge: 3 },
+  { icon: "💬", label: "Messages", path: "/messages", badge: 7 },
+  { icon: "🔔", label: "Notifications", path: "/notifications" },
+  { icon: "👤", label: "Profile", path: "/profile" },
+  { icon: "📊", label: "Analytics", path: "/analytics" },
+  { icon: "⚙️", label: "Settings", path: "/settings" },
 ];
 
 export const CAMPAIGNS = [

@@ -1,0 +1,240 @@
+/* PASTE PATH: src/styles/userProfile.css */
+
+.profile-main {
+  --pad: 24px;   /* settings-main ka horizontal padding — agar match na ho toh sirf yeh value badlo */
+}
+
+.profile-hero-card {
+  background: #fff;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 0 0 18px 18px;
+  overflow: hidden;
+  margin: 0 calc(-1 * var(--pad)) 16px;
+  width: calc(100% + var(--pad) * 2);
+}
+
+.profile-hero-cover {
+  height: 56px;   /* pink section pehle se chhota */
+  background: linear-gradient(135deg, #f5e7df, #e8c9c0, #f0ddd8);
+  position: relative;
+  display: flex; align-items: flex-start; justify-content: flex-end;
+  padding: 10px var(--pad);
+}
+
+.profile-hero-cover .cover-badge {
+  font-size: 11px;
+  padding: 3px 9px;
+}
+
+.profile-hero-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  padding: 14px var(--pad) 10px;
+}
+
+.profile-hero-avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7a1f33, #c87a4a);
+  border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  position: relative;
+  flex-shrink: 0;
+  transform: translateY(-28px);
+  margin-bottom: -28px;
+}
+
+.profile-hero-info {
+  flex: 1;
+  padding-bottom: 4px;
+}
+
+.profile-name-input {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 19px; font-weight: 600;
+  color: #2a1a1f;
+  border: none; background: transparent;
+  padding: 2px 0; width: 100%;
+  outline: none;
+}
+
+.profile-name-input:focus {
+  border-bottom: 1px solid rgba(122,31,51,0.3);
+}
+
+.profile-handle-input {
+  display: block;
+  font-size: 13px; color: #8a7a7e;
+  border: none; background: transparent;
+  padding: 0; width: 100%;
+  outline: none;
+}
+
+.profile-bio-input {
+  width: 100%;
+  border: none;
+  resize: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #4a3438;
+  line-height: 1.6;
+  padding: 6px var(--pad) 18px;
+  outline: none;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* 2-column split below hero */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.profile-grid-full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chips — more breathing room */
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.12);
+  color: #4a3438;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip:hover {
+  border-color: rgba(122,31,51,0.3);
+  background: rgba(122,31,51,0.04);
+}
+
+.chip-active {
+  background: rgba(122,31,51,0.1);
+  border-color: #7a1f33;
+  color: #7a1f33;
+  font-weight: 600;
+}
+
+.radius-hint {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: #8a7a7e;
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.radius-hint strong { color: #7a1f33; }
+
+/* Rate range */
+.rate-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rate-input-group {
+  position: relative;
+  flex: 1;
+}
+
+.rate-prefix {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px; color: #8a7a7e;
+}
+
+.rate-input-group .settings-input {
+  padding-left: 26px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rate-sep { font-size: 13px; color: #8a7a7e; }
+
+/* Save bar */
+.profile-save-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 0 24px;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #7a1f33, #a0364a);
+  color: #fff;
+  border: none;
+  padding: 11px 24px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.save-btn:hover { opacity: 0.88; }
+
+/* DARK MODE */
+body.dark .profile-hero-card {
+  background: #1a1014;
+  border-color: rgba(255,255,255,0.08);
+}
+
+body.dark .profile-hero-cover {
+  background: linear-gradient(135deg, #1a1014, #251820, #1e1418);
+}
+
+body.dark .profile-name-input,
+body.dark .profile-bio-input {
+  color: #f0e8ea;
+}
+
+body.dark .profile-handle-input {
+  color: #7a6870;
+}
+
+body.dark .chip {
+  background: #1e1418;
+  border-color: rgba(255,255,255,0.08);
+  color: #b09098;
+}
+
+body.dark .chip:hover {
+  background: rgba(122,31,51,0.15);
+  border-color: rgba(122,31,51,0.4);
+}
+
+body.dark .chip-active {
+  background: rgba(122,31,51,0.25);
+  border-color: #e8a0b0;
+  color: #e8a0b0;
+}
+
+body.dark .radius-hint {
+  background: #1e1418;
+  border-color: rgba(255,255,255,0.06);
+  color: #7a6870;
+}
+
+body.dark .radius-hint strong { color: #e8a0b0; }
+
+body.dark .rate-prefix { color: #7a6870; }
