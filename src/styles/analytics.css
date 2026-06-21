@@ -1,0 +1,159 @@
+/* PASTE PATH: src/styles/analytics.css */
+
+.analytics-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.analytics-stat-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.analytics-stat-icon {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.analytics-stat-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.analytics-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+
+.analytics-stat-change {
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.analytics-stat-change.positive { color: #2f8f53; }
+.analytics-stat-change.negative { color: #c0392b; }
+
+.analytics-charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.analytics-chart-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.analytics-chart-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+.line-chart-svg {
+  width: 100%;
+  height: auto;
+}
+
+.chart-axis-label {
+  font-size: 9px;
+  fill: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+
+.analytics-bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+}
+
+.audience-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donut-wrap {
+  margin: 6px 0 16px;
+}
+
+.audience-legend {
+  width: 100%;
+}
+
+.audience-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12.5px;
+  color: var(--text-primary);
+}
+
+.audience-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.audience-legend-label {
+  flex: 1;
+}
+
+.audience-legend-pct {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.campaign-perf-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-perf-row {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.campaign-perf-row:last-child {
+  border-bottom: none;
+}
+
+.campaign-perf-brand {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.campaign-perf-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.campaign-perf-trust {
+  color: #2f8f53;
+  font-weight: 600;
+}

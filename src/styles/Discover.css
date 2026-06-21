@@ -1,0 +1,221 @@
+/* PASTE PATH: src/styles/discover.css */
+
+.discover-wrap {
+  grid-template-columns: 220px 1fr;
+}
+
+.discover-main {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 28px 32px;
+  border: 1px solid var(--border-color);
+}
+
+.discover-header {
+  margin-bottom: 20px;
+}
+
+.discover-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.discover-sub {
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.discover-toggle {
+  display: inline-flex;
+  background: var(--bg-page);
+  border-radius: 100px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+
+.discover-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 22px;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.discover-toggle-btn.active {
+  background: #7a1f33;
+  color: #fff;
+}
+
+.discover-search-row {
+  margin-bottom: 16px;
+}
+
+.discover-search {
+  width: 100%;
+  max-width: 480px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.discover-search:focus {
+  outline: none;
+  border-color: #7a1f33;
+  box-shadow: 0 0 0 3px rgba(122,31,51,0.1);
+}
+
+.discover-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.discover-filter-pill {
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.discover-filter-pill:hover {
+  border-color: #c87a4a;
+}
+
+.discover-filter-pill.active {
+  background: rgba(122,31,51,0.12);
+  border-color: #7a1f33;
+  color: #7a1f33;
+  font-weight: 600;
+}
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.discover-card {
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.discover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(122,31,51,0.12);
+}
+
+.discover-card-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.discover-brand-logo {
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.discover-card-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--text-primary);
+}
+
+.discover-card-handle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 2px 0 10px;
+}
+
+.discover-card-niche {
+  background: rgba(122,31,51,0.1);
+  color: #7a1f33;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 12px;
+}
+
+.discover-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.discover-stat-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--border-color);
+}
+
+.discover-stat-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.discover-trust-val { color: #2f8f53; }
+
+.discover-stat-lbl {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.discover-connect-btn {
+  width: 100%;
+  background: transparent;
+  color: #7a1f33;
+  border: 1px solid rgba(122,31,51,0.3);
+  padding: 8px 0;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.discover-connect-btn:hover {
+  background: rgba(122,31,51,0.1);
+}
+
+.discover-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  padding: 40px 0;
+}

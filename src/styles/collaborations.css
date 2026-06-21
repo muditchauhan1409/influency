@@ -1,0 +1,202 @@
+/* PASTE PATH: src/styles/collaborations.css */
+
+.collab-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.collab-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 10px 6px 12px;
+  margin-right: 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.collab-tab.active {
+  color: #7a1f33;
+}
+
+.collab-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #7a1f33;
+}
+
+.collab-tab-count {
+  background: var(--bg-page);
+  color: #7a1f33;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 100px;
+}
+
+.collab-tab.active .collab-tab-count {
+  background: #7a1f33;
+  color: #fff;
+}
+
+.collab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.collab-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px 20px;
+  transition: box-shadow 0.25s ease;
+}
+
+.collab-card:hover {
+  box-shadow: 0 10px 26px rgba(122,31,51,0.1);
+}
+
+.collab-card-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.collab-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.collab-card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.collab-card-brand {
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--text-primary);
+}
+
+.collab-status-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 100px;
+}
+
+.collab-status-tag.active {
+  background: rgba(47,143,83,0.1);
+  color: #2f8f53;
+  border: 1px solid rgba(47,143,83,0.2);
+}
+
+.collab-status-tag.pending {
+  background: rgba(200,122,74,0.1);
+  color: #c87a4a;
+  border: 1px solid rgba(200,122,74,0.2);
+}
+
+.collab-status-tag.completed {
+  background: rgba(99,102,241,0.1);
+  color: #6366f1;
+  border: 1px solid rgba(99,102,241,0.2);
+}
+
+.collab-card-campaign {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.collab-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.collab-dot { color: var(--border-color); }
+
+.collab-trust-earned {
+  color: #2f8f53;
+  font-weight: 600;
+}
+
+.collab-progress-bar {
+  height: 5px;
+  background: var(--border-color);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 10px;
+  max-width: 280px;
+}
+
+.collab-progress-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #7a1f33, #c87a4a);
+}
+
+.collab-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.collab-action-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.collab-action-btn.primary {
+  background: #7a1f33;
+  color: #fff;
+  border: none;
+}
+
+.collab-action-btn.primary:hover {
+  opacity: 0.88;
+}
+
+.collab-action-btn.outline {
+  background: transparent;
+  color: #7a1f33;
+  border: 1px solid rgba(122,31,51,0.3);
+}
+
+.collab-action-btn.outline:hover {
+  background: rgba(122,31,51,0.1);
+}

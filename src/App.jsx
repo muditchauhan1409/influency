@@ -14,6 +14,9 @@ import Settings from "./pages/Settings";
 import Messages from "./pages/Messages";
 import NotificationsPanel from "./components/NotificationsPanel";
 import { useNotificationsPanel } from "./scripts/notifications";
+import Discover from "./pages/Discover";
+import Collaborations from "./pages/Collaborations";
+import Analytics from "./pages/Analytics";
 
 function ComingSoon({ title }) {
   return (
@@ -59,8 +62,8 @@ function App() {
             />
           }
         />
-        <Route path="/discover" element={<ComingSoon title="Discover" />} />
-        <Route path="/collaborations" element={<ComingSoon title="Collaborations" />} />
+        <Route path="/discover" element={<Discover onOpenNotifications={notif.open} />} />
+        <Route path="/collaborations" element={<Collaborations onOpenNotifications={notif.open} />} />
         <Route
           path="/messages"
           element={
@@ -82,7 +85,7 @@ function App() {
             />
           }
         />
-        <Route path="/analytics" element={<ComingSoon title="Analytics" />} />
+        <Route path="/analytics" element={<Analytics onOpenNotifications={notif.open} />} />
         <Route
           path="/settings"
           element={
