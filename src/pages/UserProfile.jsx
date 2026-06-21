@@ -19,7 +19,7 @@ import "../styles/dashboard.css";
 import "../styles/settings.css";
 import "../styles/userProfile.css";
 
-export default function UserProfile({ darkMode, setDarkMode }) {
+export default function UserProfile({ darkMode, setDarkMode , onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -55,17 +55,27 @@ export default function UserProfile({ darkMode, setDarkMode }) {
           </div>
         </div>
 
-        {NAV_ITEMS.map((item) => (
-          <div
-            key={item.label}
-            className={`nav-item ${location.pathname === item.path ? "active" : ""}`}
-            onClick={() => item.path && navigate(item.path)}
-          >
-            <span className="nav-emoji">{item.icon}</span>
-            {item.label}
-            {item.badge && <span className="nav-badge">{item.badge}</span>}
-          </div>
-        ))}
+       {NAV_ITEMS.map((item) => {
+  const isNotif = item.label === "Notifications";
+  const badgeValue = isNotif
+    ? (notifUnreadCount > 0 ? notifUnreadCount : null)
+    : item.badge;
+  return (
+    <div
+      key={item.label}
+      className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+      onClick={() =>
+        isNotif
+          ? onOpenNotifications && onOpenNotifications()
+          : item.path && navigate(item.path)
+      }
+    >
+      <span className="nav-emoji">{item.icon}</span>
+      <span className="nav-label">{item.label}</span>
+      {badgeValue && <span className="nav-badge">{badgeValue}</span>}
+    </div>
+  );
+})}
 
         <div className="spacer" />
 
@@ -103,246 +113,258 @@ export default function UserProfile({ darkMode, setDarkMode }) {
       <div className="feed">
 
         {editMode ? (
-          /* ============ EDIT MODE ============ */
-          <>
-            <div className="card edit-topbar">
-              <button className="btn-outline-sm" onClick={() => setEditMode(false)}>← Back to Profile</button>
-              <div className="edit-topbar-title">Edit Your Profile</div>
-              <button className="btn-primary-sm" onClick={handleSave}>
-                {saved ? "✓ Saved!" : "💾 Save Changes"}
+  /* ============ EDIT MODE ============ */
+  <>
+    <div className="card edit-topbar">
+      <button className="btn-outline-sm" onClick={() => setEditMode(false)}>← Back to Profile</button>
+      <div className="edit-topbar-title">Edit Your Profile</div>
+      <button className="btn-primary-sm" onClick={handleSave}>
+        {saved ? "✓ Saved!" : "💾 Save Changes"}
+      </button>
+    </div>
+
+    <div className="settings-section">
+      <div className="settings-section-header">
+        <div className="settings-section-icon">👤</div>
+        <div>
+          <div className="settings-section-title">Basic Info</div>
+          <div className="settings-section-desc">How you appear to brands</div>
+        </div>
+      </div>
+      <div className="settings-row">
+        <div className="settings-row-icon">📛</div>
+        <div className="settings-row-info">
+          <div className="settings-row-label">Display Name</div>
+        </div>
+        <div className="settings-row-right">
+          <input className="settings-input" value={profile.name} onChange={(e) => updateField("name", e.target.value)} />
+        </div>
+      </div>
+      <div className="settings-row">
+        <div className="settings-row-icon">🔗</div>
+        <div className="settings-row-info">
+          <div className="settings-row-label">Username</div>
+        </div>
+        <div className="settings-row-right">
+          <input className="settings-input" value={profile.handle} onChange={(e) => updateField("handle", e.target.value)} />
+        </div>
+      </div>
+      <div className="settings-row">
+        <div className="settings-row-icon">📝</div>
+        <div className="settings-row-info">
+          <div className="settings-row-label">Bio</div>
+        </div>
+        <div className="settings-row-right" style={{ flex: 1 }}>
+          <textarea
+            className="settings-input"
+            style={{ width: "100%", minHeight: 60, resize: "vertical", boxSizing: "border-box" }}
+            value={profile.bio}
+            onChange={(e) => updateField("bio", e.target.value)}
+          />
+        </div>
+      </div>
+    </div>
+
+    <div className="profile-grid">
+
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">🟢</div>
+          <div>
+            <div className="settings-section-title">Availability Status</div>
+            <div className="settings-section-desc">Let brands know if you're open for work</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {AVAILABILITY_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                className={`chip ${profile.availability === opt.value ? "chip-active" : ""}`}
+                style={profile.availability === opt.value ? { borderColor: opt.color, color: opt.color } : {}}
+                onClick={() => updateField("availability", opt.value)}
+              >
+                {opt.icon} {opt.label}
               </button>
+            ))}
+          </div>
+        </div>
+        {profile.availability === "booked" && (
+          <div className="settings-row">
+            <div className="settings-row-icon">📅</div>
+            <div className="settings-row-info">
+              <div className="settings-row-label">Booked Until</div>
             </div>
-
-            <div className="card">
-              <div className="settings-section-header" style={{ padding: "16px 16px 0" }}>
-                <div className="settings-section-icon">👤</div>
-                <div>
-                  <div className="settings-section-title">Basic Info</div>
-                  <div className="settings-section-desc">How you appear to brands</div>
-                </div>
-              </div>
-              <div style={{ padding: 16 }}>
-                <div className="settings-row">
-                  <div className="settings-row-icon">📛</div>
-                  <div className="settings-row-info">
-                    <div className="settings-row-label">Display Name</div>
-                  </div>
-                  <div className="settings-row-right">
-                    <input className="settings-input" value={profile.name} onChange={(e) => updateField("name", e.target.value)} />
-                  </div>
-                </div>
-                <div className="settings-row">
-                  <div className="settings-row-icon">🔗</div>
-                  <div className="settings-row-info">
-                    <div className="settings-row-label">Username</div>
-                  </div>
-                  <div className="settings-row-right">
-                    <input className="settings-input" value={profile.handle} onChange={(e) => updateField("handle", e.target.value)} />
-                  </div>
-                </div>
-                <div className="settings-row">
-                  <div className="settings-row-icon">📝</div>
-                  <div className="settings-row-info">
-                    <div className="settings-row-label">Bio</div>
-                  </div>
-                  <div className="settings-row-right" style={{ flex: 1 }}>
-                    <textarea
-                      className="settings-input"
-                      style={{ width: "100%", minHeight: 60, resize: "vertical", boxSizing: "border-box" }}
-                      value={profile.bio}
-                      onChange={(e) => updateField("bio", e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="settings-row-right">
+              <input type="date" className="settings-input" value={profile.bookedUntil} onChange={(e) => updateField("bookedUntil", e.target.value)} />
             </div>
+          </div>
+        )}
+      </div>
 
-            <div className="profile-grid">
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">🏷️</div>
+          <div>
+            <div className="settings-section-title">Preferred Niches</div>
+            <div className="settings-section-desc">Brands match you based on these</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {NICHE_OPTIONS.map((n) => (
+              <button key={n} className={`chip ${profile.niches.includes(n) ? "chip-active" : ""}`} onClick={() => toggleInArray("niches", n)}>
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">🟢</div>
-                  <div>
-                    <div className="settings-section-title">Availability Status</div>
-                    <div className="settings-section-desc">Let brands know if you're open for work</div>
-                  </div>
-                </div>
-                <div className="chip-grid">
-                  {AVAILABILITY_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={`chip ${profile.availability === opt.value ? "chip-active" : ""}`}
-                      style={profile.availability === opt.value ? { borderColor: opt.color, color: opt.color } : {}}
-                      onClick={() => updateField("availability", opt.value)}
-                    >
-                      {opt.icon} {opt.label}
-                    </button>
-                  ))}
-                </div>
-                {profile.availability === "booked" && (
-                  <div className="settings-row" style={{ marginTop: 12 }}>
-                    <div className="settings-row-icon">📅</div>
-                    <div className="settings-row-info">
-                      <div className="settings-row-label">Booked Until</div>
-                    </div>
-                    <div className="settings-row-right">
-                      <input type="date" className="settings-input" value={profile.bookedUntil} onChange={(e) => updateField("bookedUntil", e.target.value)} />
-                    </div>
-                  </div>
-                )}
-              </div>
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">📍</div>
+          <div>
+            <div className="settings-section-title">Location & Service Radius</div>
+            <div className="settings-section-desc">How far you're willing to work</div>
+          </div>
+        </div>
+        <div className="settings-row">
+          <div className="settings-row-icon">🏙️</div>
+          <div className="settings-row-info">
+            <div className="settings-row-label">Current Location</div>
+          </div>
+          <div className="settings-row-right">
+            <select className="settings-select" value={profile.location} onChange={(e) => updateField("location", e.target.value)}>
+              <option>Mumbai, IN</option>
+              <option>Delhi, IN</option>
+              <option>Bangalore, IN</option>
+              <option>Pune, IN</option>
+              <option>Hyderabad, IN</option>
+            </select>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {RADIUS_OPTIONS.map((r) => (
+              <button key={r.value} className={`chip ${profile.radius === r.value ? "chip-active" : ""}`} onClick={() => updateField("radius", r.value)}>
+                {r.label}
+              </button>
+            ))}
+          </div>
+          <div className="radius-hint">
+            📌 You'll be matched to campaigns within{" "}
+            <strong>
+              {["remote", "national", "global"].includes(profile.radius)
+                ? RADIUS_OPTIONS.find((r) => r.value === profile.radius)?.label
+                : `${profile.radius} km of ${profile.location}`}
+            </strong>
+          </div>
+        </div>
+      </div>
 
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">🏷️</div>
-                  <div>
-                    <div className="settings-section-title">Preferred Niches</div>
-                    <div className="settings-section-desc">Brands match you based on these</div>
-                  </div>
-                </div>
-                <div className="chip-grid">
-                  {NICHE_OPTIONS.map((n) => (
-                    <button key={n} className={`chip ${profile.niches.includes(n) ? "chip-active" : ""}`} onClick={() => toggleInArray("niches", n)}>
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">📍</div>
-                  <div>
-                    <div className="settings-section-title">Location & Service Radius</div>
-                    <div className="settings-section-desc">How far you're willing to work</div>
-                  </div>
-                </div>
-                <div className="settings-row">
-                  <div className="settings-row-icon">🏙️</div>
-                  <div className="settings-row-info">
-                    <div className="settings-row-label">Current Location</div>
-                  </div>
-                  <div className="settings-row-right">
-                    <select className="settings-select" value={profile.location} onChange={(e) => updateField("location", e.target.value)}>
-                      <option>Mumbai, IN</option>
-                      <option>Delhi, IN</option>
-                      <option>Bangalore, IN</option>
-                      <option>Pune, IN</option>
-                      <option>Hyderabad, IN</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="chip-grid" style={{ marginTop: 10 }}>
-                  {RADIUS_OPTIONS.map((r) => (
-                    <button key={r.value} className={`chip ${profile.radius === r.value ? "chip-active" : ""}`} onClick={() => updateField("radius", r.value)}>
-                      {r.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="radius-hint">
-                  📌 You'll be matched to campaigns within{" "}
-                  <strong>
-                    {["remote", "national", "global"].includes(profile.radius)
-                      ? RADIUS_OPTIONS.find((r) => r.value === profile.radius)?.label
-                      : `${profile.radius} km of ${profile.location}`}
-                  </strong>
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">🔗</div>
-                  <div>
-                    <div className="settings-section-title">Social Media Handles</div>
-                    <div className="settings-section-desc">Verified handles boost Trust Score</div>
-                  </div>
-                </div>
-                {profile.socials.map((s) => (
-                  <div className="settings-row" key={s.platform}>
-                    <div className="settings-row-icon">{s.icon}</div>
-                    <div className="settings-row-info">
-                      <div className="settings-row-label">{s.platform}</div>
-                      <div className="settings-row-sub">{s.followers ? `${s.followers} followers` : "Not connected"}</div>
-                    </div>
-                    <div className="settings-row-right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                      <input className="settings-input" placeholder="@handle" value={s.handle} onChange={(e) => updateSocial(s.platform, "handle", e.target.value)} />
-                      <span className={`settings-tag ${s.connected ? "green" : ""}`}>{s.connected ? "✓ Connected" : "Connect"}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">🗣️</div>
-                  <div>
-                    <div className="settings-section-title">Languages Spoken</div>
-                  </div>
-                </div>
-                <div className="chip-grid">
-                  {LANGUAGE_OPTIONS.map((l) => (
-                    <button key={l} className={`chip ${profile.languages.includes(l) ? "chip-active" : ""}`} onClick={() => toggleInArray("languages", l)}>
-                      {l}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">🎬</div>
-                  <div>
-                    <div className="settings-section-title">Content Categories</div>
-                  </div>
-                </div>
-                <div className="chip-grid">
-                  {CONTENT_CATEGORY_OPTIONS.map((c) => (
-                    <button key={c} className={`chip ${profile.contentCategories.includes(c) ? "chip-active" : ""}`} onClick={() => toggleInArray("contentCategories", c)}>
-                      {c}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">⏱️</div>
-                  <div>
-                    <div className="settings-section-title">Typical Response Time</div>
-                  </div>
-                </div>
-                <div className="chip-grid">
-                  {RESPONSE_TIME_OPTIONS.map((r) => (
-                    <button key={r} className={`chip ${profile.responseTime === r ? "chip-active" : ""}`} onClick={() => updateField("responseTime", r)}>
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="settings-section profile-grid-full">
-                <div className="settings-section-header">
-                  <div className="settings-section-icon">💰</div>
-                  <div>
-                    <div className="settings-section-title">Rate Range</div>
-                  </div>
-                </div>
-                <div className="rate-range-row">
-                  <div className="rate-input-group">
-                    <span className="rate-prefix">₹</span>
-                    <input type="number" className="settings-input" value={profile.rateMin} onChange={(e) => updateField("rateMin", Number(e.target.value))} />
-                  </div>
-                  <span className="rate-sep">to</span>
-                  <div className="rate-input-group">
-                    <span className="rate-prefix">₹</span>
-                    <input type="number" className="settings-input" value={profile.rateMax} onChange={(e) => updateField("rateMax", Number(e.target.value))} />
-                  </div>
-                </div>
-              </div>
-
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">🔗</div>
+          <div>
+            <div className="settings-section-title">Social Media Handles</div>
+            <div className="settings-section-desc">Verified handles boost Trust Score</div>
+          </div>
+        </div>
+        {profile.socials.map((s) => (
+          <div className="settings-row" key={s.platform}>
+            <div className="settings-row-icon">{s.icon}</div>
+            <div className="settings-row-info">
+              <div className="settings-row-label">{s.platform}</div>
+              <div className="settings-row-sub">{s.followers ? `${s.followers} followers` : "Not connected"}</div>
             </div>
-          </>
-        ) : (
+            <div className="settings-row-right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input className="settings-input" placeholder="@handle" value={s.handle} onChange={(e) => updateSocial(s.platform, "handle", e.target.value)} />
+              <span className={`settings-tag ${s.connected ? "green" : ""}`}>{s.connected ? "✓ Connected" : "Connect"}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">🗣️</div>
+          <div>
+            <div className="settings-section-title">Languages Spoken</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {LANGUAGE_OPTIONS.map((l) => (
+              <button key={l} className={`chip ${profile.languages.includes(l) ? "chip-active" : ""}`} onClick={() => toggleInArray("languages", l)}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">🎬</div>
+          <div>
+            <div className="settings-section-title">Content Categories</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {CONTENT_CATEGORY_OPTIONS.map((c) => (
+              <button key={c} className={`chip ${profile.contentCategories.includes(c) ? "chip-active" : ""}`} onClick={() => toggleInArray("contentCategories", c)}>
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">⏱️</div>
+          <div>
+            <div className="settings-section-title">Typical Response Time</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="chip-grid">
+            {RESPONSE_TIME_OPTIONS.map((r) => (
+              <button key={r} className={`chip ${profile.responseTime === r ? "chip-active" : ""}`} onClick={() => updateField("responseTime", r)}>
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-section profile-grid-full">
+        <div className="settings-section-header">
+          <div className="settings-section-icon">💰</div>
+          <div>
+            <div className="settings-section-title">Rate Range</div>
+          </div>
+        </div>
+        <div className="settings-section-body">
+          <div className="rate-range-row">
+            <div className="rate-input-group">
+              <span className="rate-prefix">₹</span>
+              <input type="number" className="settings-input" value={profile.rateMin} onChange={(e) => updateField("rateMin", Number(e.target.value))} />
+            </div>
+            <span className="rate-sep">to</span>
+            <div className="rate-input-group">
+              <span className="rate-prefix">₹</span>
+              <input type="number" className="settings-input" value={profile.rateMax} onChange={(e) => updateField("rateMax", Number(e.target.value))} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </>
+) : (
           /* ============ VIEW MODE ============ */
           <>
             {/* Hero / Profile Card */}

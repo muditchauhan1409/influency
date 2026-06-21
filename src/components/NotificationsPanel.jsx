@@ -1,74 +1,76 @@
 // PASTE PATH: src/components/NotificationsPanel.jsx
-import { NOTIFICATION_GROUPS } from "../scripts/notifications";
+import { NOTIF_TABS } from "../scripts/notifications";
 import "../styles/notifications.css";
 
-export default function NotificationsPanel({ isOpen, onClose, activeTab, setActiveTab }) {
+export default function NotificationsPanel({
+  isOpen,
+  onClose,
+  activeTab,
+  setActiveTab,
+  notifications,
+  unreadCount,
+  markAllRead,
+  markRead,
+}) {
   if (!isOpen) return null;
-
-  const TABS = ["All", "People you follow", "Comments", "Follows"];
 
   return (
     <>
-      <div className="notif-overlay" onClick={onClose} />
+      <div className="notif-backdrop" onClick={onClose} />
       <div className="notif-panel">
-        <div className="notif-header">
-          <h2 className="notif-title">Notifications</h2>
-          <button className="notif-close" onClick={onClose}>✕</button>
+        <div className="notif-panel-header">
+          <div>
+            <div className="notif-panel-title">Notifications</div>
+            {unreadCount > 0 && <div className="notif-panel-sub">{unreadCount} unread</div>}
+          </div>
+          <div className="notif-header-actions">
+            {unreadCount > 0 && (
+              <button className="notif-markread-btn" onClick={markAllRead}>
+                Mark all read
+              </button>
+            )}
+            <button className="notif-close-btn" onClick={onClose}>✕</button>
+          </div>
         </div>
 
         <div className="notif-tabs">
-          {TABS.map((tab) => (
+          {NOTIF_TABS.map((t) => (
             <button
-              key={tab}
-              className={`notif-tab ${activeTab === tab.toLowerCase() ? "active" : ""}`}
-              onClick={() => setActiveTab(tab.toLowerCase())}
+              key={t.value}
+              className={`notif-tab ${activeTab === t.value ? "notif-tab-active" : ""}`}
+              onClick={() => setActiveTab(t.value)}
             >
-              {tab}
+              {t.label}
             </button>
           ))}
         </div>
 
-        <div className="notif-request-row">
-          <div className="notif-avatar-stack">
-            <span className="notif-avatar">🧑‍🦱</span>
-            <span className="notif-avatar overlap">👤</span>
-          </div>
-          <div className="notif-request-text">
-            <p className="notif-name">Follow requests</p>
-            <p className="notif-sub">bakchodhai_hum_1109 + 7 others</p>
-          </div>
-          <span className="notif-dot" />
-          <span className="notif-chevron">›</span>
-        </div>
-
-        {NOTIFICATION_GROUPS.map((group) => (
-          <div className="notif-group" key={group.section}>
-            <p className="notif-section-label">{group.section}</p>
-            {group.items.map((item) => (
-              <div className="notif-row" key={item.id}>
-                <span className="notif-avatar">{item.avatar}</span>
-                <div className="notif-row-text">
-                  <p className="notif-name">
-                    {item.name} {item.verified && <span className="notif-verified">✓</span>}{" "}
-                    <span className="notif-msg">{item.text}</span>
-                  </p>
-                  <p className="notif-time">{item.time}</p>
+        <div className="notif-list">
+          {notifications.length === 0 ? (
+            <div className="notif-empty">No notifications here yet</div>
+          ) : (
+            notifications.map((n) => (
+              <div
+                key={n.id}
+                className={`notif-item ${!n.read ? "notif-item-unread" : ""}`}
+                onClick={() => markRead(n.id)}
+              >
+                <div
+                  className="notif-icon"
+                  style={{ background: `${n.accent}1a`, color: n.accent, border: `1px solid ${n.accent}33` }}
+                >
+                  {n.icon}
                 </div>
-
-                {item.type === "follow" && (
-                  <button className="notif-action-btn following">{item.actionLabel}</button>
-                )}
-
-                {item.type === "follow_request" && (
-                  <div className="notif-request-actions">
-                    <button className="notif-action-btn confirm">Confirm</button>
-                    <button className="notif-action-btn delete">Delete</button>
-                  </div>
-                )}
+                <div className="notif-item-body">
+                  <div className="notif-item-title">{n.title}</div>
+                  <div className="notif-item-desc">{n.desc}</div>
+                  <div className="notif-item-time">{n.time}</div>
+                </div>
+                {!n.read && <span className="notif-unread-dot" />}
               </div>
-            ))}
-          </div>
-        ))}
+            ))
+          )}
+        </div>
       </div>
     </>
   );

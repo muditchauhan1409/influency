@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../scripts/dashboard";
 import "../styles/dashboard.css";
 
-export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications })  {
+export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications , notifUnreadCount })  {
   const navigate = useNavigate();
   const location = useLocation();
   return (
@@ -18,23 +18,27 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications }
           </div>
         </div>
 
-       {NAV_ITEMS.map((item) => (
-  <div
-    key={item.label}
-    className={`nav-item ${location.pathname === item.path ? "active" : ""}`}
-    onClick={() => {
-      if (item.label === "Notifications") {
-        onOpenNotifications();
-      } else if (item.path) {
-        navigate(item.path);
+       {NAV_ITEMS.map((item) => {
+  const isNotif = item.label === "Notifications";
+  const badgeValue = isNotif
+    ? (notifUnreadCount > 0 ? notifUnreadCount : null)
+    : item.badge;
+  return (
+    <div
+      key={item.label}
+      className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+      onClick={() =>
+        isNotif
+          ? onOpenNotifications && onOpenNotifications()
+          : item.path && navigate(item.path)
       }
-    }}
-  >
-    <span className="nav-emoji">{item.icon}</span>
-    {item.label}
-    {item.badge && <span className="nav-badge">{item.badge}</span>}
-  </div>
-))}
+    >
+      <span className="nav-emoji">{item.icon}</span>
+      <span className="nav-label">{item.label}</span>
+      {badgeValue && <span className="nav-badge">{badgeValue}</span>}
+    </div>
+  );
+})}
 
         <div className="spacer" />
 

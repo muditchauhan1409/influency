@@ -3,7 +3,7 @@ import { NAV_ITEMS } from "../scripts/dashboard";
 import "../styles/dashboard.css";
 import "../styles/settings.css";
 
-export default function Settings({  darkMode, setDarkMode }) {
+export default function Settings({  darkMode, setDarkMode , onOpenNotifications, notifUnreadCount}) {
   const navigate = useNavigate();
 
   const handleDarkToggle = (e) => {
@@ -31,17 +31,27 @@ export default function Settings({  darkMode, setDarkMode }) {
           </div>
         </div>
 
-        {NAV_ITEMS.map((item) => (
-          <div
-            key={item.label}
-            className={`nav-item ${item.label === "Settings" ? "active" : ""}`}
-            onClick={() => navigate(item.label === "Settings" ? "/settings" : "/dashboard")}
-          >
-            <span className="nav-emoji">{item.icon}</span>
-            {item.label}
-            {item.badge && <span className="nav-badge">{item.badge}</span>}
-          </div>
-        ))}
+        {NAV_ITEMS.map((item) => {
+  const isNotif = item.label === "Notifications";
+  const badgeValue = isNotif
+    ? (notifUnreadCount > 0 ? notifUnreadCount : null)
+    : item.badge;
+  return (
+    <div
+      key={item.label}
+      className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+      onClick={() =>
+        isNotif
+          ? onOpenNotifications && onOpenNotifications()
+          : item.path && navigate(item.path)
+      }
+    >
+      <span className="nav-emoji">{item.icon}</span>
+      <span className="nav-label">{item.label}</span>
+      {badgeValue && <span className="nav-badge">{badgeValue}</span>}
+    </div>
+  );
+})}
 
         <div className="spacer" />
 
@@ -287,7 +297,7 @@ export default function Settings({  darkMode, setDarkMode }) {
           <div className="settings-section-header">
             <div className="settings-section-icon">⚠️</div>
             <div>
-              <div className="settings-section-title">Danger Zone</div>
+              <div className="settings-section-title">Account Actions</div>
               <div className="settings-section-desc">Irreversible account actions</div>
             </div>
           </div>
@@ -302,13 +312,15 @@ export default function Settings({  darkMode, setDarkMode }) {
             </div>
           </div>
           <div className="settings-row">
-            <div className="settings-row-icon">🗑️</div>
+            <div className="settings-row-icon">⏻</div>
             <div className="settings-row-info">
-              <div className="settings-row-label">Delete Account</div>
-              <div className="settings-row-sub">Permanently remove your account</div>
+              <div className="settings-row-label">Logout</div>
+              <div className="settings-row-sub">Sign out of your account</div>
             </div>
             <div className="settings-row-right">
-              <button className="settings-danger-btn">Delete</button>
+              <button className="settings-danger-btn" onClick={() => navigate("/login")}>
+  Logout
+</button>
             </div>
           </div>
         </div>

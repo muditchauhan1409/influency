@@ -2,7 +2,7 @@
 
 .inf-wrap {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) 260px;
+  grid-template-columns:  76px 1fr 260px;
   gap: 16px;
   background: #f5ede8;
   min-height: 100vh;
@@ -15,13 +15,38 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  width: 76px;
+  position: relative;
+  z-index: 40;
+  overflow: hidden;
+  border-radius: 18px;
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), background 0.22s ease, transform 0.25s ease, opacity 0.2s ease;
+}
+
+.left-sb:hover {
+  width: 230px;
+  background: #f5ede8;
+  box-shadow: 10px 0 30px rgba(42,26,31,0.14);
+}
+
+body.dark .left-sb:hover {
+  background: #0f0a0c;
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 }
 
 .logo-block {
   display: flex;
   align-items: center;
+  gap: 0;
+  padding: 14px 0 16px;
+  justify-content: center;
+  transition: gap 0.2s ease, padding 0.2s ease;
+}
+
+.left-sb:hover .logo-block {
   gap: 9px;
   padding: 14px 16px 16px;
+  justify-content: flex-start;
 }
 
 .logo-icon {
@@ -34,21 +59,43 @@
 
 .logo-text {
   font-family: 'Playfair Display', serif;
-  font-size: 19px; font-weight: 700;
+  font-size: 19px;
+  font-weight: 700;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, max-width 0.22s ease;
+}
+
+.left-sb:hover .logo-text {
+  opacity: 1;
+  max-width: 160px;
 }
 
 .logo-gold { color: #7a1f33; }
 .logo-white { color: #2a1a1f; }
 
 .nav-item {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 16px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 11px 0;
+  justify-content: center;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
   color: #8a7a7e;
-  font-size: 14px; font-weight: 400;
+  font-size: 14px;
+  font-weight: 400;
   border: 1px solid transparent;
+  position: relative;
+}
+
+.left-sb:hover .nav-item {
+  gap: 11px;
+  padding: 11px 16px;
+  justify-content: flex-start;
 }
 
 .nav-item:hover {
@@ -64,15 +111,40 @@
   font-weight: 500;
 }
 
-.nav-emoji { font-size: 16px; width: 20px; }
+.nav-label {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: opacity 0.15s ease, max-width 0.22s ease;
+}
+
+.left-sb:hover .nav-label {
+  opacity: 1;
+  max-width: 160px;
+}
 
 .nav-badge {
   margin-left: auto;
   background: #7a1f33;
   color: #fff;
-  font-size: 10px; font-weight: 600;
+  font-size: 10px;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: 100px;
+  transition: all 0.2s ease;
+}
+
+.left-sb:not(:hover) .nav-badge {
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  min-width: 0;
+  padding: 0;
+  font-size: 0;
+  border-radius: 50%;
 }
 
 .spacer { flex: 1; }
@@ -83,6 +155,11 @@
   border-radius: 16px;
   padding: 18px;
   margin-top: 8px;
+  display: none;
+}
+
+.left-sb:hover .trust-card{
+  display: block;
 }
 
 .trust-ring-wrap {
@@ -758,4 +835,12 @@ body.dark .trust-card { background: #1a1014; border-color: rgba(255,255,255,0.08
   width: 22px;
   height: 22px;
   object-fit: contain;
+}
+
+body.dark .trust-card { background: #1a1014; border-color: rgba(255,255,255,0.08); }
+
+body.notif-panel-open .left-sb {
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
 }

@@ -425,3 +425,6 @@ body.dark .edit-topbar-title { color: #f0e8ea; }
 .trust-analysis-header {
   align-items: center;
 }
+.settings-section-body {
+  padding: 16px 20px 18px;
+}
