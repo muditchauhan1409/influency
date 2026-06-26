@@ -122,10 +122,10 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications ,
               <div className="post-input">What collaboration are you working on today?</div>
             </div>
             <div className="post-actions">
-              <button className="post-action-btn col1">📷 Portfolio</button>
-              <button className="post-action-btn col2">💼 Collaboration</button>
-              <button className="post-action-btn col3">🏆 Achievement</button>
-              <button className="post-action-btn col4">📤 Campaign</button>
+              <button className="post-action-btn col1">Portfolio</button>
+              <button className="post-action-btn col2">Collaboration</button>
+              <button className="post-action-btn col3">Achievement</button>
+              <button className="post-action-btn col4">Campaign</button>
             </div>
           </div>
         </div>
