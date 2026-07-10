@@ -1,10 +1,12 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../scripts/dashboard";
 import "../styles/dashboard.css";
+import { useDashboard } from "../scripts/dashboard";
 
-export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications , notifUnreadCount })  {
+export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, loading, uploadAvatar, avatarUploading, avatarError } = useDashboard();
   return (
     <div className="inf-wrap">
 
@@ -82,36 +84,71 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications ,
           </div>
           <div className="profile-card-body">
             <div className="profile-top-row">
-              <div className="profile-avatar">
-                👩‍🎨
-                <div className="verify-dot">✓</div>
-              </div>
+              <div className="profile-avatar" style={{ position: "relative", cursor: "pointer" }}
+  onClick={() => document.getElementById("avatar-upload").click()}>
+  {user?.avatarUrl ? (
+    <img src={user.avatarUrl} alt="avatar"
+      style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+  ) : (
+    <span style={{ fontSize: 26 }}>{user?.avatar || "👤"}</span>
+  )}
+  <div className="verify-dot">✓</div>
+  <div style={{
+    position: "absolute", inset: 0, borderRadius: "50%",
+    background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center",
+    justifyContent: "center", opacity: 0, transition: "opacity 0.2s",
+    fontSize: 18, color: "#fff",
+  }}
+    onMouseEnter={(e) => e.currentTarget.style.opacity = 1}
+    onMouseLeave={(e) => e.currentTarget.style.opacity = 0}
+  >
+    {avatarUploading ? "..." : "✎"}
+  </div>
+  <input
+    id="avatar-upload"
+    type="file"
+    accept="image/*"
+    style={{ display: "none" }}
+    onChange={(e) => uploadAvatar(e.target.files[0])}
+  />
+</div>
               <div className="badge-row">
                 <span className="badge badge-elite">⭐ Elite</span>
                 <span className="badge badge-new">Lvl 7</span>
               </div>
             </div>
-            <div className="profile-name-block">
-              <div className="profile-name">Nikita Roy</div>
-              <div className="profile-sub">Fashion & Lifestyle Creator · Mumbai, IN</div>
-            </div>
-            <div className="profile-stats">
-              {[["120K","Followers"],["48","Campaigns"],["4.9★","Rating"],["92","Trust"]].map(([num, lbl], i) => (
-                <div key={lbl} style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                  {i > 0 && <div className="stat-divider" />}
-                  <div className="profile-stat">
-                    <div className="stat-num" style={lbl === "Trust" ? { color: "#22C55E" } : {}}>{num}</div>
-                    <div className="stat-lbl">{lbl}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="btn-row">
-              <button className="btn-primary-sm">👤 Connect</button>
-              <button className="btn-primary-sm">✨ Collaborate</button>
-              <button className="btn-outline-sm">💬 Message</button>
-            </div>
-          </div>
+           <div className="profile-name-block">
+  <div className="profile-name">{user?.name || "Creator"}</div>
+  <div className="profile-sub">
+    {user?.niches?.[0] || "Creator"} · {user?.location || "India"}
+  </div>
+</div>
+
+<div className="profile-stats">
+  {[
+    [user?.followers ? `${(user.followers / 1000).toFixed(0)}K` : "0", "Followers"],
+    [user?.campaignsCompleted || "0", "Campaigns"],
+    [user?.rating ? `${user.rating}★` : "N/A", "Rating"],
+    [user?.trustScore || "0", "Trust"],
+  ].map(([num, lbl], i) => (
+    <div key={lbl} style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+      {i > 0 && <div className="stat-divider" />}
+      <div className="profile-stat">
+        <div className="stat-num" style={lbl === "Trust" ? { color: "#22C55E" } : {}}>
+          {num}
+        </div>
+        <div className="stat-lbl">{lbl}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<div className="btn-row">
+  <button className="btn-primary-sm">👤 Connect</button>
+  <button className="btn-primary-sm">✨ Collaborate</button>
+  <button className="btn-outline-sm">💬 Message</button>
+</div>
+      </div>
         </div>
 
         {/* Post Box */}

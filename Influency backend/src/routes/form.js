@@ -10,6 +10,8 @@ const {
   getFormToFill,
   submitForm,
   getSubmissions,
+  deleteForm,
+  dismissForm,
 } = require("../controllers/formController");
 
 router.post("/create", protect, createForm);
@@ -19,5 +21,7 @@ router.get("/received", protect, getReceivedForms);
 router.get("/:formId/fill", protect, getFormToFill);
 router.post("/:formId/submit", protect, submitForm);
 router.get("/:formId/submissions", protect, getSubmissions);
+router.delete("/:formId", protect, deleteForm);
+router.post("/:formId/dismiss", protect, dismissForm);
 
 module.exports = router;

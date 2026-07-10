@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       minlength: [6, "Password must be at least 6 characters"],
-      select: false, // password kabhi bhi query result mein nahi aayega
+      select: false,
     },
     role: {
       type: String,
@@ -31,12 +31,16 @@ const UserSchema = new mongoose.Schema(
     handle: {
       type: String,
       unique: true,
-      sparse: true, // null/undefined values pe unique enforce nahi hoga
+      sparse: true,
       trim: true,
     },
     avatar: {
       type: String,
       default: "👩‍🎨",
+    },
+    avatarUrl: {
+      type: String,
+      default: null,
     },
     bio: {
       type: String,
@@ -55,18 +59,35 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // OAuth ke liye (Google/Instagram — baad mein add karenge)
+    followers: {
+      type: Number,
+      default: 0,
+    },
+    following: {
+      type: Number,
+      default: 0,
+    },
+    campaignsCompleted: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    niches: {
+      type: [String],
+      default: [],
+    },
     googleId: { type: String, sparse: true },
     instagramId: { type: String, sparse: true },
-
-    // Onboarding step tracker
     onboardingStep: {
       type: Number,
-      default: 1, // 1=signup, 2=profile, 3=verify
+      default: 1,
     },
   },
   {
-    timestamps: true, // createdAt, updatedAt automatically
+    timestamps: true,
   }
 );
 
@@ -77,7 +98,6 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Password compare method
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };

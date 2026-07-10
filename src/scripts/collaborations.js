@@ -122,6 +122,22 @@ export function useCollaborations() {
     setFormAnswers({});
     setSubmitSuccess(false);
   };
+  const dismissForm = async (formId) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    await fetch(`${API_URL}/forms/${formId}/dismiss`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    fetchForms(); // refresh
+  } catch (err) {
+    console.error("Dismiss error:", err);
+  }
+};
 
   const filtered = useMemo(
     () => COLLABORATIONS.filter((c) => c.status === activeTab),
@@ -144,5 +160,6 @@ export function useCollaborations() {
     activeForm, formAnswers,
     updateAnswer, openForm, submitForm, closeForm,
     submitting, submitSuccess,
+    dismissForm,
   };
 }

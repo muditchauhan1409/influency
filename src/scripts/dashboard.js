@@ -42,3 +42,80 @@ export const SCORE_FACTORS = [
   { label: "48 Campaigns Done", val: "+20", color: "#22C55E" },
   { label: "Response Rate 88%", val: "+4", color: "#F59E0B" },
 ];
+// ===== REAL API HOOK =====
+import { useState, useEffect } from "react";
+
+const API_URL = "http://localhost:5000/api";
+
+export function useDashboard() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch(`${API_URL}/users/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setUser(data.dashboard);
+        // localStorage bhi update karo
+        localStorage.setItem("user", JSON.stringify(data.dashboard));
+      }
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadAvatar = async (file) => {
+    if (!file) return;
+    setAvatarUploading(true);
+    setAvatarError("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      const res = await fetch(`${API_URL}/users/avatar`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setAvatarError(data.message || "Upload failed");
+        return;
+      }
+
+      // Update local user state
+      setUser((prev) => ({ ...prev, avatarUrl: data.avatarUrl }));
+      localStorage.setItem("user", JSON.stringify({ ...user, avatarUrl: data.avatarUrl }));
+    } catch (err) {
+      setAvatarError("Cannot connect to server");
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  return {
+    user,
+    loading,
+    uploadAvatar,
+    avatarUploading,
+    avatarError,
+    refetch: fetchDashboard,
+  };
+}

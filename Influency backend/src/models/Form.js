@@ -42,7 +42,7 @@ const FormSchema = new mongoose.Schema(
         sentAt: { type: Date, default: Date.now },
         status: {
           type: String,
-          enum: ["pending", "submitted"],
+          enum: ["pending", "submitted","dismissed"],
           default: "pending",
         },
       },

@@ -116,10 +116,10 @@ const getReceivedForms = async (req, res) => {
         description: form.description,
         brand: form.brandId,
         sentAt: sentInfo?.sentAt,
-        status: submission ? "submitted" : "pending",
+        status: submission ? "submitted" : sentInfo?.status || "pending", 
         submittedAt: submission?.submittedAt,
       };
-    });
+    }).filter((f) => f.status !== "dismissed");
 
     res.json({ success: true, forms: formsWithStatus });
   } catch (err) {
@@ -230,13 +230,52 @@ const getSubmissions = async (req, res) => {
   }
 };
 
+// @route   DELETE /api/forms/:formId
+// @desc    Brand apna form delete kare
+// @access  Private (Brand only)
+const deleteForm = async (req, res) => {
+  try {
+    const form = await Form.findById(req.params.formId);
+    if (!form) return res.status(404).json({ success: false, message: "Form not found" });
+    if (form.brandId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+    await form.deleteOne();
+    res.json({ success: true, message: "Form deleted" });
+  } catch (err) {
+    console.error("Delete form error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// @route   POST /api/forms/:formId/dismiss
+// @desc    Creator form dismiss kare (inbox se hata de)
+// @access  Private (Creator only)
+const dismissForm = async (req, res) => {
+  try {
+    const form = await Form.findById(req.params.formId);
+    if (!form) return res.status(404).json({ success: false, message: "Form not found" });
+
+    const sentEntry = form.sentTo.find(
+      (s) => s.creatorId.toString() === req.user._id.toString()
+    );
+    if (!sentEntry) {
+      return res.status(404).json({ success: false, message: "Form not found in your inbox" });
+    }
+
+    sentEntry.status = "dismissed";
+    await form.save();
+
+    res.json({ success: true, message: "Form dismissed" });
+  } catch (err) {
+    console.error("Dismiss form error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
-  createForm,
-  sendForm,
-  getMyForms,
-  getReceivedForms,
-  getFormToFill,
-  submitForm,
-  getSubmissions,
+  createForm, sendForm, getMyForms, getReceivedForms,
+  getFormToFill, submitForm, getSubmissions,
+  deleteForm, dismissForm,
   FIXED_TEMPLATE_QUESTIONS,
 };

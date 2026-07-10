@@ -188,3 +188,12 @@
     width: 100%;
   }
 }
+.brand-form-active {
+  border-color: rgba(122,31,51,0.3) !important;
+  background: rgba(122,31,51,0.04);
+}
+
+body.dark .brand-form-active {
+  border-color: rgba(232,160,176,0.3) !important;
+  background: rgba(122,31,51,0.15);
+}

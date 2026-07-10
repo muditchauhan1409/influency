@@ -14,6 +14,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
     forms, formsLoading,
     activeForm, formAnswers,
     updateAnswer, openForm, submitForm, closeForm,
+    dismissForm,
     submitting, submitSuccess,
   } = useCollaborations();
 
@@ -225,19 +226,27 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                         </div>
                       </div>
                       <div className="collab-card-actions">
-                        {form.status === "pending" ? (
-                          <button
-                            className="collab-action-btn primary"
-                            onClick={() => openForm(form._id)}
-                          >
-                            Fill Form
-                          </button>
-                        ) : (
-                          <button className="collab-action-btn outline" disabled>
-                            Submitted
-                          </button>
-                        )}
-                      </div>
+  {form.status === "pending" ? (
+    <>
+      <button
+        className="collab-action-btn primary"
+        onClick={() => openForm(form._id)}
+      >
+        Fill Form
+      </button>
+      <button
+        className="collab-action-btn outline"
+        onClick={() => dismissForm(form._id)}
+      >
+        Dismiss
+      </button>
+    </>
+  ) : (
+    <button className="collab-action-btn outline" disabled>
+      Submitted
+    </button>
+  )}
+</div>
                     </div>
                   ))}
                 </div>

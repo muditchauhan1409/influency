@@ -19,7 +19,8 @@ import Collaborations from "./pages/Collaborations";
 import Analytics from "./pages/Analytics";
 import BrandDashboard from "./pages/BrandDashboard";
 import BrandFormCreate from "./pages/BrandFormCreate";
-import BrandFormResponses from "./pages/BrandFormResponses"; // ← NEW
+import BrandFormResponses from "./pages/BrandFormResponses"; 
+import BrandForms from "./pages/BrandForms";// ← NEW
 
 function ComingSoon({ title }) {
   return (
@@ -82,7 +83,7 @@ function App() {
         {/* Brand Routes */}
         <Route path="/brand-dashboard" element={<BrandDashboard />} />
         <Route path="/brand-forms/create" element={<BrandFormCreate />} />
-        <Route path="/brand-forms" element={<ComingSoon title="Brand Forms" />} />
+        <Route path="/brand-forms" element={<BrandForms />} />
         <Route path="/brand-discover" element={<ComingSoon title="Find Creators" />} />
         <Route path="/brand-analytics" element={<ComingSoon title="Brand Analytics" />} />
         <Route path="/brand-form-responses/:formId" element={<BrandFormResponses />} /> {/* ← NEW */}

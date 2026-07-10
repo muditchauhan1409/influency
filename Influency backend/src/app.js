@@ -17,9 +17,11 @@ app.get("/api/health", (req, res) => {
 
 const authRoutes = require("./routes/auth");
 const formRoutes = require("./routes/form");
+const userRoutes = require("./routes/users");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/forms", formRoutes);
+app.use("/api/users", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
