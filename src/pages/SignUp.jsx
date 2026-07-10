@@ -1,12 +1,14 @@
 // PASTE PATH: src/pages/SignUp.jsx
 import { FcGoogle } from "react-icons/fc";
-import { FaInstagram } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useSignUp } from "../scripts/signUp";
 import "../styles/signUp.css";
 
 export default function SignUp() {
-  const { role, agreed, setAgreed, handleCreateAccount, error, shake } = useSignUp();
+  const {
+    role, agreed, setAgreed, handleCreateAccount, error, shake,
+    name, setName, email, setEmail, password, setPassword, loading
+  } = useSignUp();
 
   return (
     <div className="onboarding-page">
@@ -49,10 +51,7 @@ export default function SignUp() {
           </div>
 
           <div className="top-action">
-            <Link to="/role-select" className="back-link">
-              Back
-            </Link>
-
+            <Link to="/role-select" className="back-link">Back</Link>
             <span className="tag tag-role">
               {role === "brand" ? "🏢 Brand Account" : "🎥 Creator Account"}
             </span>
@@ -61,21 +60,36 @@ export default function SignUp() {
           <h2 className="card-title">Create your account</h2>
           <p className="card-sub">Quick sign up — takes less than a minute.</p>
 
-         <div className="oauth-row">
-  <button className="oauth-btn">
-    <FcGoogle size={24} />
-    <span>Continue with Google</span>
-  </button>
+          <div className="oauth-row">
+            <button className="oauth-btn" style={{ width: "100%" }}>
+              <FcGoogle size={24} />
+              <span>Continue with Google</span>
+            </button>
+          </div>
 
-  <button className="oauth-btn">
-    <FaInstagram size={24} color="#ff4d6d" />
-    <span>Continue with Instagram</span>
-  </button>
-</div>
-
-          <p className="helper-text">
-            No passwords. Your account is created instantly and securely.
-          </p>
+          <div className="signup-fields">
+            <input
+              className="signup-input"
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              className="signup-input"
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="signup-input"
+              type="password"
+              placeholder="Password (min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
           <label className="checkbox-row">
             <input
@@ -94,8 +108,9 @@ export default function SignUp() {
           <button
             className={`btn-primary ${shake ? "shake" : ""}`}
             onClick={handleCreateAccount}
+            disabled={loading}
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
           <p className="card-footer">

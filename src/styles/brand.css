@@ -1,0 +1,966 @@
+/* ============================================
+   INFLUENCY — BRAND DASHBOARD STYLES
+   Matches dashboard.css exactly
+============================================ */
+
+/* BRAND WELCOME CARD */
+.brand-welcome-card {
+  background: linear-gradient(135deg, #4A102A 0%, #651B36 60%, #7a2040 100%);
+  border-radius: 18px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: 60px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(212,163,115,0.07);
+  pointer-events: none;
+}
+
+.brand-welcome-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -20px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  pointer-events: none;
+}
+
+.bw-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.bw-logo {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(212,163,115,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #D4A373;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+
+.bw-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.bw-sub {
+  font-size: 12px;
+  color: rgba(212,163,115,0.8);
+  margin-bottom: 8px;
+}
+
+.bw-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bw-badge-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.25);
+  color: #86efac;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 100px;
+}
+
+.bw-badge-elite {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(212,163,115,0.15);
+  border: 1px solid rgba(212,163,115,0.3);
+  color: #D4A373;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 100px;
+}
+
+.bw-right {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.bw-btn-outline {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bw-btn-outline:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.bw-btn-gold {
+  background: #D4A373;
+  border: none;
+  color: #4A102A;
+  padding: 9px 18px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(212,163,115,0.35);
+}
+
+.bw-btn-gold:hover {
+  background: #e0b485;
+  transform: translateY(-1px);
+}
+
+/* QUICK ACTION CARDS */
+.brand-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.brand-qa-card {
+  background: #fff;
+  border: 1px solid rgba(74,16,42,0.08);
+  border-radius: 14px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 1px 8px rgba(74,16,42,0.04);
+}
+
+.brand-qa-card:hover {
+  border-color: rgba(212,163,115,0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74,16,42,0.08);
+}
+
+.brand-qa-icon {
+  width: 40px; height: 40px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: linear-gradient(135deg, rgba(74,16,42,0.08), rgba(101,27,54,0.05));
+  border: 1px solid rgba(212,163,115,0.2);
+}
+
+.brand-qa-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.brand-qa-sub {
+  font-size: 11px;
+  color: #8B7355;
+}
+
+/* STAT CARDS ROW */
+.brand-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.brand-stat-card {
+  background: #fff;
+  border: 1px solid rgba(74,16,42,0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 8px rgba(74,16,42,0.04);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s;
+}
+
+.brand-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74,16,42,0.08);
+}
+
+.brand-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #651B36, #D4A373);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.brand-stat-card:hover::before {
+  opacity: 1;
+}
+
+.brand-stat-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, rgba(74,16,42,0.08), rgba(101,27,54,0.05));
+}
+
+.brand-stat-label {
+  font-size: 11px;
+  color: #8B7355;
+  margin-bottom: 4px;
+  font-weight: 400;
+}
+
+.brand-stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #4A102A;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.brand-stat-delta {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.delta-up   { color: #15803d; }
+.delta-warn { color: #92400e; }
+
+/* CAMPAIGN CARDS in feed */
+.brand-campaign-card {
+  background: #fff;
+  border: 1px solid rgba(74,16,42,0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  transition: all 0.25s;
+  box-shadow: 0 1px 8px rgba(74,16,42,0.04);
+}
+
+.brand-campaign-card:hover {
+  border-color: rgba(212,163,115,0.3);
+  transform: translateY(-1px);
+}
+
+.brand-camp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.brand-camp-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid rgba(74,16,42,0.08);
+}
+
+.brand-camp-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.brand-camp-meta {
+  font-size: 12px;
+  color: #8B7355;
+  margin-top: 1px;
+}
+
+.brand-camp-amount {
+  margin-left: auto;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4A102A;
+}
+
+.brand-camp-status {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+.s-active  { background: rgba(21,128,61,0.1);  color: #166534; border: 1px solid rgba(21,128,61,0.15);  }
+.s-review  { background: rgba(146,64,14,0.08); color: #92400e; border: 1px solid rgba(146,64,14,0.12); }
+.s-pending { background: rgba(74,16,42,0.08);  color: #651B36; border: 1px solid rgba(74,16,42,0.12);  }
+
+/* Progress bar */
+.brand-prog-wrap {
+  margin-top: 8px;
+}
+
+.brand-prog-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.brand-prog-lbl {
+  font-size: 10px;
+  color: #8B7355;
+}
+
+.brand-prog-pct {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4A102A;
+}
+
+.brand-prog-track {
+  height: 4px;
+  background: rgba(74,16,42,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.brand-prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #651B36, #D4A373);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+
+/* SECTION HEADER in feed */
+.brand-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.brand-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2C1810;
+}
+
+.brand-section-link {
+  font-size: 12px;
+  color: #651B36;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+}
+
+.brand-section-link:hover {
+  text-decoration: underline;
+}
+
+/* CREATOR SUGGESTION ROW */
+.brand-creator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-creator-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.brand-creator-ava {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(212,163,115,0.2);
+}
+
+.brand-creator-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2C1810;
+}
+
+.brand-creator-cat {
+  font-size: 11px;
+  color: #8B7355;
+  margin-top: 1px;
+}
+
+.brand-creator-score {
+  margin-left: auto;
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4A102A;
+  min-width: 28px;
+  text-align: center;
+}
+
+.brand-invite-btn {
+  background: linear-gradient(135deg, #4A102A, #651B36);
+  color: #D4A373;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.brand-invite-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* AI MATCH NOTICE */
+.brand-ai-notice {
+  background: rgba(74,16,42,0.05);
+  border: 1px solid rgba(212,163,115,0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #651B36;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ACTIVITY ITEMS */
+.brand-act-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-act-item:last-child {
+  border-bottom: none;
+}
+
+.brand-act-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.brand-act-text {
+  font-size: 12px;
+  color: #8B7355;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.brand-act-text strong {
+  color: #2C1810;
+  font-weight: 500;
+}
+
+.brand-act-time {
+  font-size: 11px;
+  color: rgba(139,115,85,0.6);
+  flex-shrink: 0;
+}
+
+/* DEADLINE ITEMS */
+.brand-dl-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-dl-item:last-child {
+  border-bottom: none;
+}
+
+.brand-dl-cal {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(74,16,42,0.08), rgba(101,27,54,0.05));
+  border: 1px solid rgba(212,163,115,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-dl-day {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4A102A;
+  line-height: 1;
+}
+
+.brand-dl-mon {
+  font-size: 8px;
+  color: #8B7355;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.brand-dl-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2C1810;
+}
+
+.brand-dl-sub {
+  font-size: 11px;
+  color: #8B7355;
+  margin-top: 1px;
+}
+
+/* TREND PILLS */
+.brand-trend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.brand-trend-pill {
+  background: rgba(74,16,42,0.04);
+  border: 1px solid rgba(212,163,115,0.15);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+}
+
+.brand-trend-pill:hover {
+  border-color: rgba(212,163,115,0.3);
+  background: rgba(74,16,42,0.07);
+}
+
+.brand-trend-name {
+  font-size: 11px;
+  color: #2C1810;
+  font-weight: 400;
+}
+
+.brand-trend-val {
+  font-size: 11px;
+  font-weight: 600;
+  color: #166534;
+}
+
+/* MESSAGE ITEMS */
+.brand-msg-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-msg-item:last-child {
+  border-bottom: none;
+}
+
+.brand-msg-unread {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #651B36;
+  flex-shrink: 0;
+}
+
+.brand-msg-read {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(74,16,42,0.2);
+  flex-shrink: 0;
+}
+
+.brand-msg-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2C1810;
+}
+
+.brand-msg-preview {
+  font-size: 11px;
+  color: #8B7355;
+}
+
+.brand-msg-time {
+  font-size: 10px;
+  color: rgba(139,115,85,0.6);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* RIGHT PANEL — Brand specific */
+.brand-trust-score-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #4A102A;
+}
+
+.brand-right-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.brand-right-bar {
+  height: 4px;
+  background: rgba(74,16,42,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.brand-right-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #651B36, #D4A373);
+  border-radius: 2px;
+}
+
+/* CHART BARS */
+.brand-chart-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 80px;
+  padding-top: 12px;
+  margin-bottom: 6px;
+}
+
+.brand-chart-bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: rgba(74,16,42,0.08);
+  transition: all 0.3s;
+}
+
+.brand-chart-bar:hover {
+  background: rgba(74,16,42,0.18);
+}
+
+.brand-chart-bar.bhi {
+  background: linear-gradient(180deg, #651B36, #4A102A);
+}
+
+.brand-chart-labels {
+  display: flex;
+  gap: 5px;
+}
+
+.brand-chart-labels span {
+  flex: 1;
+  text-align: center;
+  font-size: 8px;
+  color: #8B7355;
+}
+
+/* RESPONSE STATS */
+.brand-resp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.brand-resp-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.brand-resp-lbl {
+  font-size: 10px;
+  color: #8B7355;
+  margin-top: 3px;
+}
+
+/* CREATOR SUGGESTION in right panel */
+.brand-sugg-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-sugg-row:last-child {
+  border-bottom: none;
+}
+
+.brand-sugg-ava {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(212,163,115,0.2);
+}
+
+.brand-sugg-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #2C1810;
+}
+
+.brand-sugg-sub {
+  font-size: 10px;
+  color: #8B7355;
+}
+
+.brand-sugg-trust {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4A102A;
+  font-family: 'Playfair Display', serif;
+}
+
+.brand-sugg-btn {
+  background: none;
+  border: 1px solid rgba(74,16,42,0.2);
+  color: #4A102A;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.brand-sugg-btn:hover {
+  background: rgba(74,16,42,0.06);
+  border-color: rgba(74,16,42,0.35);
+}
+
+/* ROI card in right panel */
+.brand-roi-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0 10px;
+}
+
+.brand-roi-split {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid rgba(74,16,42,0.06);
+}
+
+.brand-roi-half {
+  text-align: center;
+  flex: 1;
+}
+
+.brand-roi-val {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.brand-roi-lbl {
+  font-size: 10px;
+  color: #8B7355;
+  margin-top: 2px;
+}
+
+.brand-divider-v {
+  width: 1px;
+  height: 28px;
+  background: rgba(74,16,42,0.08);
+}
+
+/* AI CTA card for brand */
+.brand-ai-cta {
+  background: linear-gradient(135deg, rgba(74,16,42,0.06), rgba(101,27,54,0.03));
+  border: 1px solid rgba(212,163,115,0.2);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  margin-top: 4px;
+}
+
+.brand-ai-cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C1810;
+  margin: 8px 0 6px;
+}
+
+.brand-ai-cta-sub {
+  font-size: 11px;
+  color: #8B7355;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.brand-ai-cta-btn {
+  background: linear-gradient(135deg, #4A102A, #651B36);
+  color: #D4A373;
+  border: none;
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.brand-ai-cta-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* FEED CARD wrapper — reuses .card from dashboard.css */
+.brand-feed-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(74,16,42,0.07);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 8px rgba(74,16,42,0.04);
+}
+
+/* TOP NAV inside feed */
+.brand-topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(74,16,42,0.07);
+}
+
+.brand-topnav-left h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #2C1810;
+  margin-bottom: 2px;
+}
+
+.brand-topnav-left p {
+  font-size: 12px;
+  color: #8B7355;
+}
+
+.brand-topnav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-new-campaign-btn {
+  background: linear-gradient(135deg, #4A102A, #651B36);
+  color: #D4A373;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-new-campaign-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.brand-icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: rgba(74,16,42,0.05);
+  border: 1px solid rgba(74,16,42,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.brand-icon-btn:hover {
+  background: rgba(74,16,42,0.1);
+}

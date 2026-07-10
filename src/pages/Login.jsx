@@ -1,22 +1,15 @@
 // PASTE PATH: src/pages/Login.jsx
 import { FcGoogle } from "react-icons/fc";
-import { FaInstagram } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import { useLogin } from "../scripts/login";
 import "../styles/login.css";
 
 export default function Login() {
-  const navigate = useNavigate();
   const {
-    
-    email,
-    setEmail,
-    password,
-    setPassword,
-    showPassword,
-    setShowPassword,
-    error,
+    email, setEmail,
+    password, setPassword,
+    showPassword, setShowPassword,
+    error, loading,
     handleLogin,
   } = useLogin();
 
@@ -61,16 +54,11 @@ export default function Login() {
           <p className="card-sub">Glad to see you again. Let's get back to building trust.</p>
 
           <div className="oauth-row">
-  <button className="oauth-btn">
-    <FcGoogle size={24} />
-    <span>Continue with Google</span>
-  </button>
-
-  <button className="oauth-btn">
-    <FaInstagram size={24} color="#ff4d6d" />
-    <span>Continue with Instagram</span>
-  </button>
-</div>
+            <button className="oauth-btn" style={{ width: "100%" }}>
+              <FcGoogle size={24} />
+              <span>Continue with Google</span>
+            </button>
+          </div>
 
           <div className="login-divider">
             <span>or sign in with email</span>
@@ -78,7 +66,7 @@ export default function Login() {
 
           <label className="field-label">Email address</label>
           <input
-            className={`field-input ${error.includes("email") ? "field-error" : ""}`}
+            className="field-input"
             placeholder="hello@influency.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -92,7 +80,7 @@ export default function Login() {
           </div>
           <div className="login-password-wrap">
             <input
-              className={`field-input ${error.includes("password") ? "field-error" : ""}`}
+              className="field-input"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••"
               value={password}
@@ -109,8 +97,12 @@ export default function Login() {
 
           {error && <p className="fp-error-text">{error}</p>}
 
-          <button className="btn-primary login-submit" onClick={() => navigate("/signup")}>
-            Sign In
+          <button
+            className="btn-primary login-submit"
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Signing in..." : "Sign In"}
           </button>
 
           <p className="card-footer">

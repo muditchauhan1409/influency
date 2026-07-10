@@ -1,4 +1,4 @@
-// src/App.jsx
+// PASTE PATH: src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
 import RoleSelect from "./pages/RoleSelect";
@@ -17,6 +17,9 @@ import { useNotificationsPanel } from "./scripts/notifications";
 import Discover from "./pages/Discover";
 import Collaborations from "./pages/Collaborations";
 import Analytics from "./pages/Analytics";
+import BrandDashboard from "./pages/BrandDashboard";
+import BrandFormCreate from "./pages/BrandFormCreate";
+import BrandFormResponses from "./pages/BrandFormResponses"; // ← NEW
 
 function ComingSoon({ title }) {
   return (
@@ -29,7 +32,6 @@ function ComingSoon({ title }) {
 
 function App() {
   const notif = useNotificationsPanel();
-
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -51,52 +53,40 @@ function App() {
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={
-            <Dashboard
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              onOpenNotifications={notif.open}
-              notifUnreadCount={notif.unreadCount}
-            />
+
+        {/* Creator Routes */}
+        <Route path="/dashboard" element={
+            <Dashboard darkMode={darkMode} setDarkMode={setDarkMode}
+              onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
           }
         />
         <Route path="/discover" element={<Discover onOpenNotifications={notif.open} />} />
         <Route path="/collaborations" element={<Collaborations onOpenNotifications={notif.open} />} />
-        <Route
-          path="/messages"
-          element={
-            <Messages
-              onOpenNotifications={notif.open}
-              notifUnreadCount={notif.unreadCount}
-            />
+        <Route path="/messages" element={
+            <Messages onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
           }
         />
         <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
-        <Route
-          path="/profile"
-          element={
-            <Profile
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              onOpenNotifications={notif.open}
-              notifUnreadCount={notif.unreadCount}
-            />
+        <Route path="/profile" element={
+            <Profile darkMode={darkMode} setDarkMode={setDarkMode}
+              onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
           }
         />
         <Route path="/analytics" element={<Analytics onOpenNotifications={notif.open} />} />
-        <Route
-          path="/settings"
-          element={
-            <Settings
-              darkMode={darkMode}
-              setDarkMode={setDarkMode}
-              onOpenNotifications={notif.open}
-              notifUnreadCount={notif.unreadCount}
-            />
+        <Route path="/settings" element={
+            <Settings darkMode={darkMode} setDarkMode={setDarkMode}
+              onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
           }
         />
+
+        {/* Brand Routes */}
+        <Route path="/brand-dashboard" element={<BrandDashboard />} />
+        <Route path="/brand-forms/create" element={<BrandFormCreate />} />
+        <Route path="/brand-forms" element={<ComingSoon title="Brand Forms" />} />
+        <Route path="/brand-discover" element={<ComingSoon title="Find Creators" />} />
+        <Route path="/brand-analytics" element={<ComingSoon title="Brand Analytics" />} />
+        <Route path="/brand-form-responses/:formId" element={<BrandFormResponses />} /> {/* ← NEW */}
+
       </Routes>
       <NotificationsPanel
         isOpen={notif.isOpen}
