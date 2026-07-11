@@ -1,10 +1,10 @@
 // PASTE PATH: src/pages/Collaborations.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS } from "../scripts/dashboard";
-import { COLLAB_TABS, useCollaborations } from "../scripts/collaborations";
-import "../styles/dashboard.css";
-import "../styles/collaborations.css";
-import "../styles/formInbox.css";
+import { NAV_ITEMS } from "../../scripts/dashboard";
+import { COLLAB_TABS, useCollaborations } from "../../scripts/collaborations";
+import "../../styles/dashboard.css";
+import "../../styles/collaborations.css";
+import "../../styles/formInbox.css";
 
 export default function Collaborations({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

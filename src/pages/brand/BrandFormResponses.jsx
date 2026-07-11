@@ -1,9 +1,9 @@
 // PASTE PATH: src/pages/BrandFormResponses.jsx
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "../styles/dashboard.css";
-import "../styles/brandDashboard.css";
-import "../styles/brandFormResponses.css";
+import "../../styles/dashboard.css";
+import "../../styles/brandDashboard.css";
+import "../../styles/brandFormResponses.css";
 
 const BRAND_NAV_ITEMS = [
   { icon: "🏠", label: "Home", path: "/brand-dashboard" },

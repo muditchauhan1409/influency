@@ -1,9 +1,9 @@
 // PASTE PATH: src/pages/BrandForms.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/dashboard.css";
-import "../styles/brandDashboard.css";
-import "../styles/settings.css";
+import "../../styles/dashboard.css";
+import "../../styles/brandDashboard.css";
+import "../../styles/settings.css";
 
 const API_URL = "http://localhost:5000/api";
 

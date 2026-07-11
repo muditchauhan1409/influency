@@ -1,9 +1,9 @@
 // PASTE PATH: src/pages/Discover.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS } from "../scripts/dashboard";
-import { NICHE_FILTERS, useDiscover } from "../scripts/discover";
-import "../styles/dashboard.css";
-import "../styles/discover.css";
+import { NAV_ITEMS } from "../../scripts/dashboard";
+import { NICHE_FILTERS, useDiscover } from "../../scripts/discover";
+import "../../styles/dashboard.css";
+import "../../styles/discover.css";
 
 export default function Discover({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

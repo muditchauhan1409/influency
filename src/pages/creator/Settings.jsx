@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { NAV_ITEMS } from "../scripts/dashboard";
-import "../styles/dashboard.css";
-import "../styles/settings.css";
+import { NAV_ITEMS } from "../../scripts/dashboard";
+import "../../styles/dashboard.css";
+import "../../styles/settings.css";
 
 export default function Settings({  darkMode, setDarkMode , onOpenNotifications, notifUnreadCount}) {
   const navigate = useNavigate();

@@ -1,15 +1,15 @@
 // PASTE PATH: src/pages/Analytics.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS } from "../scripts/dashboard";
+import { NAV_ITEMS } from "../../scripts/dashboard";
 import {
   STAT_CARDS,
   TRUST_HISTORY,
   FOLLOWER_GROWTH,
   CAMPAIGN_PERFORMANCE,
   AUDIENCE_BREAKDOWN,
-} from "../scripts/analytics";
-import "../styles/dashboard.css";
-import "../styles/analytics.css";
+} from "../../scripts/analytics";
+import "../../styles/dashboard.css";
+import "../../styles/analytics.css";
 
 function LineChart({ data, color = "#7a1f33" }) {
   const max = Math.max(...data.map((d) => d.value));

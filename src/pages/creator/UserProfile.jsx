@@ -1,6 +1,6 @@
 // PASTE PATH: src/pages/UserProfile.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS, BRAND_MATCHES } from "../scripts/dashboard";
+import { NAV_ITEMS, BRAND_MATCHES } from "../../scripts/dashboard";
 import {
   useUserProfile,
   NICHE_OPTIONS,
@@ -14,10 +14,10 @@ import {
   CAMPAIGN_HISTORY,
   REVIEWS,
   ANALYTICS_SNAPSHOT,
-} from "../scripts/userProfile";
-import "../styles/dashboard.css";
-import "../styles/settings.css";
-import "../styles/userProfile.css";
+} from "../../scripts/userProfile";
+import "../../styles/dashboard.css";
+import "../../styles/settings.css";
+import "../../styles/userProfile.css";
 
 export default function UserProfile({ darkMode, setDarkMode , onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

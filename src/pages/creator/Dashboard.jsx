@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../scripts/dashboard";
-import "../styles/dashboard.css";
-import { useDashboard } from "../scripts/dashboard";
+import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../../scripts/dashboard";
+import "../../styles/dashboard.css";
+import { useDashboard } from "../../scripts/dashboard";
 
 export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

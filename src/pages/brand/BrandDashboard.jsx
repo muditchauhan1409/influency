@@ -1,27 +1,11 @@
-// PASTE PATH: src/pages/BrandDashboard.jsx
+// PASTE PATH: src/pages/brand/BrandDashboard.jsx
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-
-import { useBrandDashboard } from "../scripts/brandDashboard";
-import "../styles/dashboard.css";
-import "../styles/brandDashboard.css";
-
-const BRAND_NAV_ITEMS = [
-  { icon: "🏠", label: "Home", path: "/brand-dashboard" },
-  { icon: "📋", label: "Forms", path: "/brand-forms" },
-  { icon: "🔍", label: "Discover", path: "/brand-discover" },
-  { icon: "💬", label: "Messages", path: "/messages" },
-  { icon: "🔔", label: "Notifications", path: "/notifications" },
-  { icon: "📊", label: "Analytics", path: "/brand-analytics" },
-  { icon: "⚙️", label: "Settings", path: "/settings" },
-];
-
-const BRAND_STATS = [
-  { label: "Active Campaigns", val: "3" },
-  { label: "Creators Reached", val: "48" },
-  { label: "Avg Response Rate", val: "91%" },
-  { label: "Verified Collabs", val: "12" },
-];
+import { useNavigate } from "react-router-dom";
+import { useBrandDashboard } from "../../scripts/brandDashboard";
+import BrandSidebar from "../../components/brand/BrandSidebar";
+import "../../styles/dashboard.css";
+import "../../styles/brandDashboard.css";
+import "../../styles/settings.css";
 
 const TOP_CREATORS = [
   { initials: "AR", name: "Aria Chen", sub: "Fashion · 2.4M · Trust 94", bg: "linear-gradient(135deg,#3d1424,#1a0810)" },
@@ -29,10 +13,10 @@ const TOP_CREATORS = [
   { initials: "KN", name: "Kai Nakamura", sub: "Fitness · 620K · Trust 88", bg: "linear-gradient(135deg,#0a1a08,#1a3014)" },
 ];
 
-export default function BrandDashboard() {
+export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms } = useBrandDashboard();
+
   const [showSendModal, setShowSendModal] = useState(false);
   const [selectedFormId, setSelectedFormId] = useState("");
   const [creatorEmail, setCreatorEmail] = useState("");
@@ -65,9 +49,7 @@ export default function BrandDashboard() {
         setSendMsg(data.message);
         setCreatorEmail("");
         setSelectedFormId("");
-        if (typeof fetchForms === "function") {
-          fetchForms(); // refresh
-        }
+        fetchForms();
       }
     } catch (err) {
       setSendError("Cannot connect to server.");
@@ -82,47 +64,10 @@ export default function BrandDashboard() {
   return (
     <div className="inf-wrap">
 
-      {/* LEFT SIDEBAR — exact same as creator */}
-      <div className="left-sb">
-        <div className="logo-block">
-          <div className="logo-icon">✦</div>
-          <div className="logo-text">
-            <span className="logo-gold">Influ</span>
-            <span className="logo-white">ency</span>
-          </div>
-        </div>
-
-        {BRAND_NAV_ITEMS.map((item) => (
-          <div
-            key={item.label}
-            className={`nav-item ${location.pathname === item.path ? "active" : ""}`}
-            onClick={() => navigate(item.path)}
-          >
-            <span className="nav-emoji">{item.icon}</span>
-            <span className="nav-label">{item.label}</span>
-          </div>
-        ))}
-
-        <div className="spacer" />
-
-        <div className="trust-card">
-          <div className="trust-ring-wrap">
-            <div className="brand-trust-icon">✦</div>
-            <div className="trust-meta">
-              <div className="trust-score-big">{forms.length}</div>
-              <div className="trust-label">Active Forms</div>
-            </div>
-          </div>
-          <div className="badge-row">
-            <span className="badge badge-elite">Verified Brand</span>
-            <span className="badge badge-level">Pro</span>
-          </div>
-          <div className="trust-user">
-            {user?.name || "Brand"} <br />
-            <span className="trust-handle">{user?.email}</span>
-          </div>
-        </div>
-      </div>
+      <BrandSidebar
+        onOpenNotifications={onOpenNotifications}
+        notifUnreadCount={notifUnreadCount}
+      />
 
       {/* FEED */}
       <div className="feed">
@@ -164,12 +109,8 @@ export default function BrandDashboard() {
               ))}
             </div>
             <div className="btn-row">
-              <button className="btn-primary-sm" onClick={handleCreateForm}>
-                + Create Form
-              </button>
-              <button className="btn-outline-sm" onClick={() => navigate("/brand-discover")}>
-                Find Creators
-              </button>
+              <button className="btn-primary-sm" onClick={handleCreateForm}>+ Create Form</button>
+              <button className="btn-outline-sm" onClick={() => navigate("/brand-discover")}>Find Creators</button>
             </div>
           </div>
         </div>
@@ -178,16 +119,14 @@ export default function BrandDashboard() {
         <div className="card trending-card">
           <div className="trend-section-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>Your Forms</span>
-            <button className="apply-btn" onClick={handleCreateForm}>
-              + New Form
-            </button>
+            <button className="apply-btn" onClick={handleCreateForm}>+ New Form</button>
           </div>
 
           {loading ? (
             <div className="brand-empty">Loading forms...</div>
           ) : forms.length === 0 ? (
             <div className="brand-empty">
-              <p>No forms yet — create your first form to start collecting creator info!</p>
+              <p>No forms yet — create your first form!</p>
               <button className="btn-primary-sm" style={{ marginTop: 16 }} onClick={handleCreateForm}>
                 + Create Form
               </button>
@@ -195,18 +134,15 @@ export default function BrandDashboard() {
           ) : (
             <div className="campaigns-list">
               {forms.map((form) => (
-                <div className="campaign-card" key={form._id} onClick={() => handleViewForm(form._id)}
-                  style={{ cursor: "pointer" }}>
+                <div className="campaign-card" key={form._id}
+                  onClick={() => handleViewForm(form._id)} style={{ cursor: "pointer" }}>
                   <div className="campaign-head">
-                    <div className="brand-logo" style={{ background: "rgba(122,31,51,0.1)", color: "#7a1f33", fontSize: 18 }}>
-                      F
-                    </div>
+                    <div className="brand-logo" style={{ background: "rgba(122,31,51,0.1)", color: "#7a1f33", fontSize: 18 }}>F</div>
                     <div>
                       <div className="brand-name">{form.title}</div>
                       <div className="brand-cat">{form.description || "No description"}</div>
                     </div>
-                    <span className={`pill ${form.status === "active" ? "pill-budget" : "pill-dead"}`}
-                      style={{ marginLeft: "auto" }}>
+                    <span className={`pill ${form.status === "active" ? "pill-budget" : "pill-dead"}`} style={{ marginLeft: "auto" }}>
                       {form.status}
                     </span>
                   </div>
@@ -215,24 +151,19 @@ export default function BrandDashboard() {
                     <span className="pill pill-budget">Responses: {form.submissions?.length || 0}</span>
                     <span className="pill pill-dead">{new Date(form.createdAt).toLocaleDateString("en-IN")}</span>
                   </div>
-                  <button
-                    className="apply-btn"
-                    style={{ marginTop: 10, width: "100%" }}
+                  <button className="apply-btn" style={{ marginTop: 10, width: "100%" }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedFormId(form._id);
                       setSendMsg("");
                       setSendError("");
                       setShowSendModal(true);
-                    }}
-                  >
+                    }}>
                     Send to Creator →
                   </button>
-
                 </div>
               ))}
             </div>
-
           )}
         </div>
 
@@ -249,7 +180,11 @@ export default function BrandDashboard() {
                   <div className="sugg-name">{c.name}</div>
                   <div className="sugg-sub">{c.sub}</div>
                 </div>
-                <button className="sugg-connect" onClick={handleCreateForm}>
+                <button className="sugg-connect" onClick={() => {
+                  setSendMsg("");
+                  setSendError("");
+                  setShowSendModal(true);
+                }}>
                   Send Form
                 </button>
               </div>
@@ -260,11 +195,8 @@ export default function BrandDashboard() {
       </div>
 
       {/* RIGHT SIDEBAR */}
-
       <div className="right-sb">
 
-
-        {/* Brand Stats */}
         <div className="right-card">
           <div className="right-title">Campaign Overview</div>
           <div className="score-ring-big">
@@ -302,7 +234,6 @@ export default function BrandDashboard() {
           </div>
         </div>
 
-        {/* Top Creators */}
         <div className="right-card">
           <div className="right-title">Top Matches</div>
           {TOP_CREATORS.map((c) => (
@@ -319,13 +250,10 @@ export default function BrandDashboard() {
           ))}
         </div>
 
-        {/* Quick Actions */}
         <div className="ai-cta-card">
           <div className="ai-cta-title">Creator Outreach</div>
           <div className="ai-cta-sub">Create a form and send it to matched creators — their profile data auto-fills your questions.</div>
-          <button className="ai-cta-btn" onClick={handleCreateForm}>
-            + Create Form
-          </button>
+          <button className="ai-cta-btn" onClick={handleCreateForm}>+ Create Form</button>
         </div>
 
       </div>
@@ -338,59 +266,26 @@ export default function BrandDashboard() {
               <div className="modal-title">Send Form to Creator</div>
               <button className="notif-close-btn" onClick={() => setShowSendModal(false)}>✕</button>
             </div>
-
             <div className="modal-body">
-              <div className="settings-row" style={{ border: "none", padding: "0 0 14px" }}>
-                <div className="settings-row-info">
-                  <div className="settings-row-label">Select Form</div>
-                  <div className="settings-row-sub">Which form do you want to send?</div>
-                </div>
-              </div>
-              <select
-                className="settings-select"
-                style={{ width: "100%", marginBottom: 16 }}
-                value={selectedFormId}
-                onChange={(e) => setSelectedFormId(e.target.value)}
-              >
+              <p className="settings-row-label" style={{ marginBottom: 6 }}>Select Form</p>
+              <select className="settings-select" style={{ width: "100%", marginBottom: 16 }}
+                value={selectedFormId} onChange={(e) => setSelectedFormId(e.target.value)}>
                 <option value="">-- Select a form --</option>
                 {forms.map((f) => (
                   <option key={f._id} value={f._id}>{f.title}</option>
                 ))}
               </select>
-
-              <div className="settings-row" style={{ border: "none", padding: "0 0 8px" }}>
-                <div className="settings-row-info">
-                  <div className="settings-row-label">Creator Email</div>
-                  <div className="settings-row-sub">Enter the creator's registered email</div>
-                </div>
-              </div>
-              <input
-                className="settings-input"
-                style={{ width: "100%", boxSizing: "border-box", marginBottom: 16 }}
-                type="email"
-                placeholder="e.g. creator@gmail.com"
-                value={creatorEmail}
-                onChange={(e) => setCreatorEmail(e.target.value)}
-              />
-
+              <p className="settings-row-label" style={{ marginBottom: 6 }}>Creator Email</p>
+              <input className="settings-input" style={{ width: "100%", boxSizing: "border-box", marginBottom: 16 }}
+                type="email" placeholder="e.g. creator@gmail.com"
+                value={creatorEmail} onChange={(e) => setCreatorEmail(e.target.value)} />
               {sendError && <p className="field-error">{sendError}</p>}
-              {sendMsg && (
-                <p style={{ color: "#2f8f53", fontSize: 13, marginBottom: 8 }}>
-                  ✓ {sendMsg}
-                </p>
-              )}
+              {sendMsg && <p style={{ color: "#2f8f53", fontSize: 13 }}>✓ {sendMsg}</p>}
             </div>
-
             <div className="modal-footer">
-              <button className="btn-outline-sm" onClick={() => setShowSendModal(false)}>
-                Cancel
-              </button>
-              <button
-                className="btn-primary-sm"
-                onClick={handleSendForm}
-                disabled={sending}
-                style={{ padding: "10px 24px" }}
-              >
+              <button className="btn-outline-sm" onClick={() => setShowSendModal(false)}>Cancel</button>
+              <button className="btn-primary-sm" onClick={handleSendForm} disabled={sending}
+                style={{ padding: "10px 24px" }}>
                 {sending ? "Sending..." : "Send Form"}
               </button>
             </div>

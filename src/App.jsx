@@ -1,6 +1,8 @@
-// PASTE PATH: src/App.jsx
+// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
+
+// Onboarding pages (root mein rehte hain)
 import RoleSelect from "./pages/RoleSelect";
 import SignUp from "./pages/SignUp";
 import ProfileSetup from "./pages/ProfileSetup";
@@ -8,19 +10,26 @@ import VerifyConnect from "./pages/VerifyConnect";
 import Welcome from "./pages/Welcome";
 import ForgotPassword from "./pages/ForgotPassword";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/UserProfile";
-import Settings from "./pages/Settings";
-import Messages from "./pages/Messages";
+
+// Creator pages
+import Dashboard from "./pages/creator/Dashboard";
+import Profile from "./pages/creator/UserProfile";
+import Settings from "./pages/creator/Settings";
+import Messages from "./pages/creator/Messages";
+import Discover from "./pages/creator/Discover";
+import Collaborations from "./pages/creator/Collaborations";
+import Analytics from "./pages/creator/Analytics";
+
+// Brand pages
+import BrandDashboard from "./pages/brand/BrandDashboard";
+import BrandFormCreate from "./pages/brand/BrandFormCreate";
+import BrandFormResponses from "./pages/brand/BrandFormResponses";
+import BrandForms from "./pages/brand/BrandForms";
+
+// Components
 import NotificationsPanel from "./components/NotificationsPanel";
 import { useNotificationsPanel } from "./scripts/notifications";
-import Discover from "./pages/Discover";
-import Collaborations from "./pages/Collaborations";
-import Analytics from "./pages/Analytics";
-import BrandDashboard from "./pages/BrandDashboard";
-import BrandFormCreate from "./pages/BrandFormCreate";
-import BrandFormResponses from "./pages/BrandFormResponses"; 
-import BrandForms from "./pages/BrandForms";// ← NEW
+import { CreatorRoute, BrandRoute } from "./components/ProtectedRoute";
 
 function ComingSoon({ title }) {
   return (
@@ -46,6 +55,7 @@ function App() {
   return (
     <>
       <Routes>
+        {/* Onboarding */}
         <Route path="/" element={<RoleSelect />} />
         <Route path="/role-select" element={<RoleSelect />} />
         <Route path="/signup" element={<SignUp />} />
@@ -57,38 +67,71 @@ function App() {
 
         {/* Creator Routes */}
         <Route path="/dashboard" element={
+          <CreatorRoute>
             <Dashboard darkMode={darkMode} setDarkMode={setDarkMode}
               onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
-          }
-        />
-        <Route path="/discover" element={<Discover onOpenNotifications={notif.open} />} />
-        <Route path="/collaborations" element={<Collaborations onOpenNotifications={notif.open} />} />
+          </CreatorRoute>
+        } />
+        <Route path="/discover" element={
+          <CreatorRoute>
+            <Discover onOpenNotifications={notif.open} />
+          </CreatorRoute>
+        } />
+        <Route path="/collaborations" element={
+          <CreatorRoute>
+            <Collaborations onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
+          </CreatorRoute>
+        } />
         <Route path="/messages" element={
+          <CreatorRoute>
             <Messages onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
-          }
-        />
+          </CreatorRoute>
+        } />
         <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
         <Route path="/profile" element={
+          <CreatorRoute>
             <Profile darkMode={darkMode} setDarkMode={setDarkMode}
               onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
-          }
-        />
-        <Route path="/analytics" element={<Analytics onOpenNotifications={notif.open} />} />
+          </CreatorRoute>
+        } />
+        <Route path="/analytics" element={
+          <CreatorRoute>
+            <Analytics onOpenNotifications={notif.open} />
+          </CreatorRoute>
+        } />
         <Route path="/settings" element={
+          <CreatorRoute>
             <Settings darkMode={darkMode} setDarkMode={setDarkMode}
               onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
-          }
-        />
+          </CreatorRoute>
+        } />
 
         {/* Brand Routes */}
-        <Route path="/brand-dashboard" element={<BrandDashboard />} />
-        <Route path="/brand-forms/create" element={<BrandFormCreate />} />
-        <Route path="/brand-forms" element={<BrandForms />} />
+        <Route path="/brand-dashboard" element={
+          <BrandRoute>
+            <BrandDashboard />
+          </BrandRoute>
+        } />
+        <Route path="/brand-forms/create" element={
+          <BrandRoute>
+            <BrandFormCreate />
+          </BrandRoute>
+        } />
+        <Route path="/brand-forms" element={
+          <BrandRoute>
+            <BrandForms />
+          </BrandRoute>
+        } />
+        <Route path="/brand-form-responses/:formId" element={
+          <BrandRoute>
+            <BrandFormResponses />
+          </BrandRoute>
+        } />
         <Route path="/brand-discover" element={<ComingSoon title="Find Creators" />} />
         <Route path="/brand-analytics" element={<ComingSoon title="Brand Analytics" />} />
-        <Route path="/brand-form-responses/:formId" element={<BrandFormResponses />} /> {/* ← NEW */}
 
       </Routes>
+
       <NotificationsPanel
         isOpen={notif.isOpen}
         onClose={notif.close}

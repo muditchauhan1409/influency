@@ -1,10 +1,10 @@
 // PASTE PATH: src/pages/Messages.jsx
 import { useNavigate, useLocation } from "react-router-dom";
-import { NAV_ITEMS } from "../scripts/dashboard";
-import { useMessages } from "../scripts/messages";
-import "../styles/dashboard.css";
-import "../styles/settings.css";
-import "../styles/messages.css";
+import { NAV_ITEMS } from "../../scripts/dashboard";
+import { useMessages } from "../../scripts/messages";
+import "../../styles/dashboard.css";
+import "../../styles/settings.css";
+import "../../styles/messages.css";
 
 export default function Messages({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

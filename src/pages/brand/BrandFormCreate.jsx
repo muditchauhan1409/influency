@@ -1,9 +1,10 @@
 // PASTE PATH: src/pages/BrandFormCreate.jsx
 import { useNavigate } from "react-router-dom";
-import { useCreateForm } from "../scripts/brandDashboard";
-import "../styles/dashboard.css";
-import "../styles/settings.css";
-import "../styles/brandDashboard.css";
+import { useCreateForm } from "../../scripts/brandDashboard";
+import "../../styles/dashboard.css";
+import "../../styles/settings.css";
+import "../../styles/brandDashboard.css";
+import BrandSidebar from "../../components/brand/BrandSidebar";
 
 const FIXED_QUESTIONS = [
   { label: "Full Name", profileField: "name" },
