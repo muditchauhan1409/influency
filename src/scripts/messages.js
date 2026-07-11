@@ -1,117 +1,199 @@
 // PASTE PATH: src/scripts/messages.js
-import { useState } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { socket, connectSocket } from "./socket";
+import { getCurrentUser } from "./auth";
 
-export const CONVERSATIONS = [
-  {
-    id: "nike",
-    name: "Nike India",
-    type: "Brand",
-    initials: "NK",
-    avatarStyle: { background: "rgba(0,0,0,0.6)", color: "#fff" },
-    online: true,
-    messages: [
-      { from: "them", text: "Hey Nikita! Loved how the Air Max reel turned out 🔥", time: "10:02 AM" },
-      { from: "me", text: "Thank you! Glad the team liked it 😊", time: "10:05 AM" },
-      { from: "them", text: "Let's lock the next deliverable date — can you do Friday?", time: "10:06 AM" },
-    ],
-  },
-  {
-    id: "ariachen",
-    name: "Aria Chen",
-    type: "Creator",
-    initials: "AC",
-    avatarStyle: { background: "linear-gradient(135deg,#3d1424,#1a0810)", color: "#fff" },
-    online: true,
-    messages: [
-      { from: "them", text: "Hey! Saw your Nykaa collab, the edits were stunning ✨", time: "Yesterday" },
-      { from: "me", text: "Thank you Aria! Yours too, loved the travel reel", time: "Yesterday" },
-      { from: "them", text: "We should do a joint collab sometime, I'll DM the brand", time: "9:14 AM" },
-    ],
-  },
-  {
-    id: "nykaa",
-    name: "Nykaa",
-    type: "Brand",
-    initials: "NY",
-    avatarStyle: { background: "rgba(236,72,153,0.18)", color: "#F472B6" },
-    online: false,
-    messages: [
-      { from: "them", text: "Hi Nikita, sending over the brief for the new Nude Palette launch.", time: "Mon" },
-      { from: "them", text: "Budget is ₹80,000 for 2 reels + 4 stories. Let us know!", time: "Mon" },
-    ],
-  },
-  {
-    id: "boat",
-    name: "boAt Lifestyle",
-    type: "Brand",
-    initials: "BT",
-    avatarStyle: { background: "rgba(99,102,241,0.18)", color: "#818CF8" },
-    online: false,
-    messages: [
-      { from: "me", text: "Sharing the final Nirvana 521 unboxing video, ready for review!", time: "2d" },
-      { from: "them", text: "This looks amazing, approved! Releasing payment today.", time: "2d" },
-    ],
-  },
-  {
-    id: "zoe",
-    name: "Zoe Williams",
-    type: "Creator",
-    initials: "ZW",
-    avatarStyle: { background: "linear-gradient(135deg,#0a1020,#1e2840)", color: "#fff" },
-    online: false,
-    messages: [
-      { from: "them", text: "Hey, are you free for a quick call about the travel campaign?", time: "3d" },
-    ],
-  },
-  {
-    id: "starbucks",
-    name: "Starbucks India",
-    type: "Brand",
-    initials: "SB",
-    avatarStyle: { background: "rgba(245,158,11,0.18)", color: "#F59E0B" },
-    online: false,
-    messages: [
-      { from: "them", text: "Your holiday collection reel drove our best seasonal engagement!", time: "1w" },
-      { from: "me", text: "So glad to hear that! Excited for the next one 🎉", time: "1w" },
-    ],
-  },
+const API = "http://localhost:5000/api";
+
+const AVATAR_STYLES = [
+  { background: "rgba(0,0,0,0.6)", color: "#fff" },
+  { background: "linear-gradient(135deg,#3d1424,#1a0810)", color: "#fff" },
+  { background: "rgba(236,72,153,0.18)", color: "#F472B6" },
+  { background: "rgba(99,102,241,0.18)", color: "#818CF8" },
+  { background: "linear-gradient(135deg,#0a1020,#1e2840)", color: "#fff" },
+  { background: "rgba(245,158,11,0.18)", color: "#F59E0B" },
 ];
 
+function styleFor(id) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_STYLES[Math.abs(hash) % AVATAR_STYLES.length];
+}
+
+function initialsFor(name = "") {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function timeFor(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays}d`;
+  return d.toLocaleDateString([], { day: "2-digit", month: "short" });
+}
+
 export function useMessages() {
-  const [conversations, setConversations] = useState(
-    CONVERSATIONS.map((c) => ({
-      ...c,
-      unread: c.id === "nike" ? 2 : c.id === "ariachen" ? 1 : 0,
-    }))
-  );
-  const [activeId, setActiveId] = useState(CONVERSATIONS[0].id);
+  const currentUser = getCurrentUser();
+  const userId = currentUser?.id;
+
+  const [connections, setConnections] = useState([]);
+  const [convos, setConvos] = useState([]); // raw conversation docs from backend
+  const [messagesByConvo, setMessagesByConvo] = useState({}); // convoId -> [messages]
+  const [activeId, setActiveId] = useState(null);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
 
-  const active = conversations.find((c) => c.id === activeId);
+  // Load connections (accepted follows) + existing conversations
+  useEffect(() => {
+    if (!userId) return;
+    connectSocket(userId);
+
+    fetch(`${API}/follow/connections/${userId}`)
+      .then((r) => r.json())
+      .then((res) => setConnections(res.data || []));
+
+    fetch(`${API}/messages/conversations/${userId}`)
+      .then((r) => r.json())
+      .then((res) => setConvos(res.data || []));
+  }, [userId]);
+
+  // Build unified conversation list: real convos + connections without a convo yet
+  const conversations = useMemo(() => {
+    const list = [];
+    const seenUserIds = new Set();
+
+    convos.forEach((c) => {
+      const other = c.participants?.find((p) => p._id !== userId);
+      if (!other) return;
+      seenUserIds.add(other._id);
+
+      const msgs = messagesByConvo[c._id] || [];
+      const mapped = msgs.map((m) => ({
+        from: m.sender === userId ? "me" : "them",
+        text: m.text,
+        time: timeFor(m.createdAt),
+      }));
+
+      list.push({
+        id: c._id,
+        userId: other._id,
+        name: other.name,
+        type: other.role === "brand" ? "Brand" : "Creator",
+        initials: initialsFor(other.name),
+        avatarStyle: styleFor(other._id),
+        online: false,
+        unread: 0,
+        messages: mapped.length
+          ? mapped
+          : c.lastMessage
+          ? [{ from: "them", text: c.lastMessage, time: timeFor(c.lastMessageAt) }]
+          : [],
+      });
+    });
+
+    connections.forEach((u) => {
+      if (seenUserIds.has(u._id)) return;
+      list.push({
+        id: `pending:${u._id}`,
+        userId: u._id,
+        name: u.name,
+        type: u.role === "brand" ? "Brand" : "Creator",
+        initials: initialsFor(u.name),
+        avatarStyle: styleFor(u._id),
+        online: false,
+        unread: 0,
+        messages: [],
+      });
+    });
+
+    return list;
+  }, [convos, connections, messagesByConvo, userId]);
 
   const filtered = conversations.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openConversation = (id) => {
-    setActiveId(id);
-    setConversations((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, unread: 0 } : c))
-    );
-  };
+  const active = conversations.find((c) => c.id === activeId);
 
-  const sendMessage = () => {
-    if (!draft.trim()) return;
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === activeId
-          ? { ...c, messages: [...c.messages, { from: "me", text: draft, time: "Now" }] }
-          : c
-      )
-    );
+  // Default to first conversation once loaded
+  useEffect(() => {
+    if (!activeId && conversations.length > 0) {
+      setActiveId(conversations[0].id);
+    }
+  }, [conversations, activeId]);
+
+  // Fetch messages + join room when active conversation is a real (non-pending) convo
+  useEffect(() => {
+    if (!activeId || activeId.startsWith("pending:")) return;
+
+    fetch(`${API}/messages/${activeId}`)
+      .then((r) => r.json())
+      .then((res) => {
+        setMessagesByConvo((prev) => ({ ...prev, [activeId]: res.data || [] }));
+      });
+
+    socket.emit("joinConversation", activeId);
+  }, [activeId]);
+
+  // Listen for incoming real-time messages
+  useEffect(() => {
+    function handleNewMessage(msg) {
+      setMessagesByConvo((prev) => {
+        const existing = prev[msg.conversationId] || [];
+        if (existing.some((m) => m._id === msg._id)) return prev;
+        return { ...prev, [msg.conversationId]: [...existing, msg] };
+      });
+    }
+    socket.on("newMessage", handleNewMessage);
+    return () => socket.off("newMessage", handleNewMessage);
+  }, []);
+
+  const openConversation = useCallback((id) => {
+    setActiveId(id);
+  }, []);
+
+  const sendMessage = useCallback(async () => {
+    if (!draft.trim() || !active) return;
+    const text = draft;
     setDraft("");
-  };
+
+    let conversationId = active.id;
+
+    // If this is a pending (no-conversation-yet) connection, create it first
+    if (conversationId.startsWith("pending:")) {
+      const res = await fetch(`${API}/messages/conversation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userA: userId, userB: active.userId }),
+      });
+      const data = await res.json();
+      conversationId = data.data._id;
+      setConvos((prev) => [data.data, ...prev]);
+      setActiveId(conversationId);
+      socket.emit("joinConversation", conversationId);
+    }
+
+    const res = await fetch(`${API}/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversationId, sender: userId, text }),
+    });
+    const data = await res.json();
+
+    setMessagesByConvo((prev) => {
+      const existing = prev[conversationId] || [];
+      return { ...prev, [conversationId]: [...existing, data.data] };
+    });
+  }, [draft, active, userId]);
 
   return {
     conversations: filtered,

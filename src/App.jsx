@@ -31,6 +31,9 @@ import NotificationsPanel from "./components/NotificationsPanel";
 import { useNotificationsPanel } from "./scripts/notifications";
 import { CreatorRoute, BrandRoute } from "./components/ProtectedRoute";
 
+import { useSocket } from "./hooks/useSocket";
+import { getCurrentUser } from "./scripts/auth";
+
 function ComingSoon({ title }) {
   return (
     <div style={{ padding: 60, fontFamily: "sans-serif" }}>
@@ -43,6 +46,9 @@ function ComingSoon({ title }) {
 function App() {
   const notif = useNotificationsPanel();
   const [darkMode, setDarkMode] = useState(false);
+  const currentUser = getCurrentUser(); // { id, role } ya null
+
+  useSocket(currentUser?.id); // top-level — jab bhi user logged in ho, socket connect
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
