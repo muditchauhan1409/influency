@@ -47,10 +47,7 @@ router.post("/", async (req, res) => {
       lastMessageAt: new Date(),
     });
 
-    const io = req.app.get("io");
-    io.to(conversationId.toString()).emit("newMessage", message);
-
-    res.status(201).json({ success: true, data: message });
+    
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

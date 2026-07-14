@@ -1,6 +1,5 @@
 // PASTE PATH: src/scripts/messages.js
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { socket, connectSocket } from "./socket";
 import { getCurrentUser } from "./auth";
 
 const API = "http://localhost:5000/api";
@@ -46,16 +45,14 @@ export function useMessages() {
   const userId = currentUser?.id;
 
   const [connections, setConnections] = useState([]);
-  const [convos, setConvos] = useState([]); // raw conversation docs from backend
-  const [messagesByConvo, setMessagesByConvo] = useState({}); // convoId -> [messages]
+  const [convos, setConvos] = useState([]);
+  const [messagesByConvo, setMessagesByConvo] = useState({});
   const [activeId, setActiveId] = useState(null);
   const [search, setSearch] = useState("");
   const [draft, setDraft] = useState("");
 
-  // Load connections (accepted follows) + existing conversations
   useEffect(() => {
     if (!userId) return;
-    connectSocket(userId);
 
     fetch(`${API}/follow/connections/${userId}`)
       .then((r) => r.json())
@@ -66,7 +63,6 @@ export function useMessages() {
       .then((res) => setConvos(res.data || []));
   }, [userId]);
 
-  // Build unified conversation list: real convos + connections without a convo yet
   const conversations = useMemo(() => {
     const list = [];
     const seenUserIds = new Set();
@@ -124,38 +120,28 @@ export function useMessages() {
 
   const active = conversations.find((c) => c.id === activeId);
 
-  // Default to first conversation once loaded
   useEffect(() => {
     if (!activeId && conversations.length > 0) {
       setActiveId(conversations[0].id);
     }
   }, [conversations, activeId]);
 
-  // Fetch messages + join room when active conversation is a real (non-pending) convo
+  // Fetch messages when active conversation changes (and poll every 4s for new ones)
   useEffect(() => {
     if (!activeId || activeId.startsWith("pending:")) return;
 
-    fetch(`${API}/messages/${activeId}`)
-      .then((r) => r.json())
-      .then((res) => {
-        setMessagesByConvo((prev) => ({ ...prev, [activeId]: res.data || [] }));
-      });
+    const load = () => {
+      fetch(`${API}/messages/${activeId}`)
+        .then((r) => r.json())
+        .then((res) => {
+          setMessagesByConvo((prev) => ({ ...prev, [activeId]: res.data || [] }));
+        });
+    };
 
-    socket.emit("joinConversation", activeId);
+    load();
+    const interval = setInterval(load, 4000);
+    return () => clearInterval(interval);
   }, [activeId]);
-
-  // Listen for incoming real-time messages
-  useEffect(() => {
-    function handleNewMessage(msg) {
-      setMessagesByConvo((prev) => {
-        const existing = prev[msg.conversationId] || [];
-        if (existing.some((m) => m._id === msg._id)) return prev;
-        return { ...prev, [msg.conversationId]: [...existing, msg] };
-      });
-    }
-    socket.on("newMessage", handleNewMessage);
-    return () => socket.off("newMessage", handleNewMessage);
-  }, []);
 
   const openConversation = useCallback((id) => {
     setActiveId(id);
@@ -168,7 +154,6 @@ export function useMessages() {
 
     let conversationId = active.id;
 
-    // If this is a pending (no-conversation-yet) connection, create it first
     if (conversationId.startsWith("pending:")) {
       const res = await fetch(`${API}/messages/conversation`, {
         method: "POST",
@@ -179,7 +164,6 @@ export function useMessages() {
       conversationId = data.data._id;
       setConvos((prev) => [data.data, ...prev]);
       setActiveId(conversationId);
-      socket.emit("joinConversation", conversationId);
     }
 
     const res = await fetch(`${API}/messages`, {

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const FollowRequest = require("../models/FollowRequest");
 const Follow = require("../models/Follow");
-const { onlineUsers } = require("../socket");
+
 
 // Send follow request
 router.post("/request", async (req, res) => {
