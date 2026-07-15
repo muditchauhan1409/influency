@@ -1,19 +1,22 @@
 // PASTE PATH: src/scripts/dashboard.js
-// Update sirf NAV_ITEMS array — baaki sab same rahega
 import nikeLogo from "../assets/logos/nike.svg";
 import nykaaLogo from "../assets/logos/nykaa.svg";
 import boatLogo from "../assets/logos/boat.svg";
 import starbucksLogo from "../assets/logos/starbucks.svg";
+import {
+  Home, Compass, Briefcase, MessageCircle,
+  Bell, User, BarChart2, Settings,
+} from "lucide-react";
 
 export const NAV_ITEMS = [
-  { icon: "🏠", label: "Home", path: "/dashboard" },
-  { icon: "🧭", label: "Discover", path: "/discover" },
-  { icon: "💼", label: "Collaborations", path: "/collaborations", badge: 3 },
-  { icon: "💬", label: "Messages", path: "/messages", badge: 7 },
-  { icon: "🔔", label: "Notifications", path: "/notifications" },
-  { icon: "👤", label: "Profile", path: "/profile" },
-  { icon: "📊", label: "Analytics", path: "/analytics" },
-  { icon: "⚙️", label: "Settings", path: "/settings" },
+  { icon: Home,          label: "Home",           path: "/dashboard" },
+  { icon: Compass,       label: "Discover",        path: "/discover" },
+  { icon: Briefcase,     label: "Collaborations",  path: "/collaborations", badge: 3 },
+  { icon: MessageCircle, label: "Messages",         path: "/messages", badge: 7 },
+  { icon: Bell,          label: "Notifications",   path: "/notifications" },
+  { icon: User,          label: "Profile",          path: "/profile" },
+  { icon: BarChart2,     label: "Analytics",        path: "/analytics" },
+  { icon: Settings,      label: "Settings",         path: "/settings" },
 ];
 
 export const CAMPAIGNS = [
@@ -42,6 +45,7 @@ export const SCORE_FACTORS = [
   { label: "48 Campaigns Done", val: "+20", color: "#22C55E" },
   { label: "Response Rate 88%", val: "+4", color: "#F59E0B" },
 ];
+
 // ===== REAL API HOOK =====
 import { useState, useEffect } from "react";
 
@@ -68,7 +72,6 @@ export function useDashboard() {
       const data = await res.json();
       if (data.success) {
         setUser(data.dashboard);
-        // localStorage bhi update karo
         localStorage.setItem("user", JSON.stringify(data.dashboard));
       }
     } catch (err) {
@@ -82,25 +85,20 @@ export function useDashboard() {
     if (!file) return;
     setAvatarUploading(true);
     setAvatarError("");
-
     try {
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("avatar", file);
-
       const res = await fetch(`${API_URL}/users/avatar`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
       if (!res.ok) {
         setAvatarError(data.message || "Upload failed");
         return;
       }
-
-      // Update local user state
       setUser((prev) => ({ ...prev, avatarUrl: data.avatarUrl }));
       localStorage.setItem("user", JSON.stringify({ ...user, avatarUrl: data.avatarUrl }));
     } catch (err) {
@@ -111,11 +109,8 @@ export function useDashboard() {
   };
 
   return {
-    user,
-    loading,
-    uploadAvatar,
-    avatarUploading,
-    avatarError,
+    user, loading,
+    uploadAvatar, avatarUploading, avatarError,
     refetch: fetchDashboard,
   };
 }

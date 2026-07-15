@@ -118,7 +118,9 @@ export default function Analytics({ onOpenNotifications, notifUnreadCount }) {
                   : item.path && navigate(item.path)
               }
             >
-              <span className="nav-emoji">{item.icon}</span>
+              <span className="nav-icon-wrap">
+  {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
+</span>
               <span className="nav-label">{item.label}</span>
               {badgeValue && <span className="nav-badge">{badgeValue}</span>}
             </div>

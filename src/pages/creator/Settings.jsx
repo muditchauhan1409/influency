@@ -1,10 +1,53 @@
-import { useNavigate } from "react-router-dom";
+// PASTE PATH: src/pages/creator/Settings.jsx
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS } from "../../scripts/dashboard";
 import "../../styles/dashboard.css";
 import "../../styles/settings.css";
 
-export default function Settings({  darkMode, setDarkMode , onOpenNotifications, notifUnreadCount}) {
+const API_URL = "http://localhost:5000/api";
+
+export default function Settings({ darkMode, setDarkMode, onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState("");
+  const [usernameSaving, setUsernameSaving] = useState(false);
+  const [usernameMsg, setUsernameMsg] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+
+  // Load fresh user data from backend
+  useEffect(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      const u = JSON.parse(stored);
+      setUser(u);
+      setUsername(u.username || "");
+    }
+    // Also fetch fresh from backend to get latest username
+    const fetchMe = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          setUser(data.user);
+          setUsername(data.user.username || "");
+          // Update localStorage with fresh data including _id and username
+          const stored = JSON.parse(localStorage.getItem("user") || "{}");
+          const updated = { ...stored, ...data.user, _id: data.user._id };
+          localStorage.setItem("user", JSON.stringify(updated));
+        }
+      } catch (err) {
+        console.error("Fetch me error:", err);
+      }
+    };
+    fetchMe();
+  }, []);
 
   const handleDarkToggle = (e) => {
     const val = e.target.checked;
@@ -18,10 +61,53 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
     }
   };
 
+  const handleSaveUsername = async () => {
+    if (!username.trim()) {
+      setUsernameError("Username cannot be empty");
+      return;
+    }
+    setUsernameSaving(true);
+    setUsernameMsg("");
+    setUsernameError("");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/follow/username`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ username: username.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsernameError(data.message || "Failed to save username");
+      } else {
+        setUsernameMsg("✓ Username saved!");
+        // Update localStorage
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        stored.username = data.user.username;
+        localStorage.setItem("user", JSON.stringify(stored));
+        setUser(stored);
+        setTimeout(() => setUsernameMsg(""), 3000);
+      }
+    } catch (err) {
+      setUsernameError("Cannot connect to server");
+    } finally {
+      setUsernameSaving(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   return (
     <div className="settings-wrap">
 
-      {/* LEFT SIDEBAR — same as dashboard */}
+      {/* LEFT SIDEBAR */}
       <div className="left-sb">
         <div className="logo-block">
           <div className="logo-icon">✦</div>
@@ -32,26 +118,28 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
         </div>
 
         {NAV_ITEMS.map((item) => {
-  const isNotif = item.label === "Notifications";
-  const badgeValue = isNotif
-    ? (notifUnreadCount > 0 ? notifUnreadCount : null)
-    : item.badge;
-  return (
-    <div
-      key={item.label}
-      className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
-      onClick={() =>
-        isNotif
-          ? onOpenNotifications && onOpenNotifications()
-          : item.path && navigate(item.path)
-      }
-    >
-      <span className="nav-emoji">{item.icon}</span>
-      <span className="nav-label">{item.label}</span>
-      {badgeValue && <span className="nav-badge">{badgeValue}</span>}
-    </div>
-  );
-})}
+          const isNotif = item.label === "Notifications";
+          const badgeValue = isNotif
+            ? (notifUnreadCount > 0 ? notifUnreadCount : null)
+            : item.badge;
+          return (
+            <div
+              key={item.label}
+              className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+              onClick={() =>
+                isNotif
+                  ? onOpenNotifications?.()
+                  : item.path && navigate(item.path)
+              }
+            >
+              <span className="nav-icon-wrap">
+  {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
+</span>
+              <span className="nav-label">{item.label}</span>
+              {badgeValue && <span className="nav-badge">{badgeValue}</span>}
+            </div>
+          );
+        })}
 
         <div className="spacer" />
 
@@ -69,7 +157,7 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
               </defs>
             </svg>
             <div className="trust-meta">
-              <div className="trust-score-big">92</div>
+              <div className="trust-score-big">{user?.trustScore || 0}</div>
               <div className="trust-label">Trust Score</div>
             </div>
           </div>
@@ -79,8 +167,12 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
             <span className="badge badge-verified-g">✓ ID'd</span>
           </div>
           <div className="trust-user">
-            Nikita Roy <span className="trust-handle">@nikitaroy</span><br />
-            <span className="trust-pts">↑ +4 pts this week</span>
+            {user?.name || "User"}
+            {user?.username && (
+              <> <span className="trust-handle">@{user.username}</span></>
+            )}
+            <br />
+            <span className="trust-pts">{user?.email}</span>
           </div>
         </div>
       </div>
@@ -93,58 +185,102 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
           <div className="settings-sub">Manage your account, privacy and preferences</div>
         </div>
 
-        {/* Profile */}
+        {/* Profile Section */}
         <div className="settings-section">
           <div className="settings-section-header">
             <div className="settings-section-icon">👤</div>
             <div>
               <div className="settings-section-title">Profile</div>
-              <div className="settings-section-desc">Your public creator identity</div>
+              <div className="settings-section-desc">Your public identity on Influency</div>
             </div>
           </div>
+
+          {/* Avatar row */}
           <div className="settings-avatar-row">
             <div className="settings-avatar">
-              👩‍🎨
+              {user?.avatar || "👩‍🎨"}
               <div className="settings-avatar-edit">✎</div>
             </div>
             <div className="settings-avatar-info">
-              <div className="settings-avatar-name">Nikita Roy</div>
-              <div className="settings-avatar-handle">@nikitaroy · Mumbai, IN</div>
+              <div className="settings-avatar-name">{user?.name || "—"}</div>
+              <div className="settings-avatar-handle">
+                {user?.username ? `@${user.username}` : "No username set"} · {user?.location || "Location not set"}
+              </div>
             </div>
-            
           </div>
+
+          {/* Display Name (read-only for now) */}
           <div className="settings-row">
             <div className="settings-row-icon">📛</div>
             <div className="settings-row-info">
               <div className="settings-row-label">Display Name</div>
-              <div className="settings-row-sub">Shown on your public profile</div>
+              <div className="settings-row-sub">Your registered name</div>
             </div>
             <div className="settings-row-right">
-              <input className="settings-input" defaultValue="Nikita Roy" />
+              <input className="settings-input" value={user?.name || ""} readOnly
+                style={{ opacity: 0.7, cursor: "not-allowed" }} />
             </div>
           </div>
+
+          {/* Email (read-only) */}
           <div className="settings-row">
+            <div className="settings-row-icon">📧</div>
+            <div className="settings-row-info">
+              <div className="settings-row-label">Email</div>
+              <div className="settings-row-sub">Used for login</div>
+            </div>
+            <div className="settings-row-right">
+              <input className="settings-input" value={user?.email || ""} readOnly
+                style={{ opacity: 0.7, cursor: "not-allowed" }} />
+            </div>
+          </div>
+
+          {/* USERNAME — the main new feature */}
+          <div className="settings-row" style={{ flexWrap: "wrap", gap: 10 }}>
             <div className="settings-row-icon">🔗</div>
             <div className="settings-row-info">
               <div className="settings-row-label">Username</div>
-              <div className="settings-row-sub">influency.in/@nikitaroy</div>
+              <div className="settings-row-sub">
+                Used for search & messaging · influency.in/@{username || "you"}
+              </div>
             </div>
-            <div className="settings-row-right">
-              <input className="settings-input" defaultValue="@nikitaroy" />
+            <div className="settings-row-right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                <span style={{ position: "absolute", left: 10, color: "#7a1f33", fontWeight: 600, fontSize: 14 }}>
+                  @
+                </span>
+                <input
+                  className="settings-input"
+                  style={{ paddingLeft: 24, minWidth: 160 }}
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ""));
+                    setUsernameMsg("");
+                    setUsernameError("");
+                  }}
+                  placeholder="choose_username"
+                  maxLength={30}
+                />
+              </div>
+              <button
+                className="settings-edit-btn"
+                onClick={handleSaveUsername}
+                disabled={usernameSaving}
+                style={{ background: "linear-gradient(135deg,#7a1f33,#c87a4a)", color: "#fff",
+                  border: "none", padding: "8px 16px", whiteSpace: "nowrap" }}
+              >
+                {usernameSaving ? "Saving..." : "Save"}
+              </button>
             </div>
-          </div>
-          <div className="settings-row">
-            <div className="settings-row-icon">📍</div>
-            <div className="settings-row-info">
-              <div className="settings-row-label">Location</div>
-              <div className="settings-row-sub">Used for brand matching</div>
-            </div>
-            <div className="settings-row-right">
-              <select className="settings-select">
-                <option>Mumbai, IN</option>
-                <option>Delhi, IN</option>
-                <option>Bangalore, IN</option>
-              </select>
+            {/* Feedback messages — full width below */}
+            {(usernameMsg || usernameError) && (
+              <div style={{ width: "100%", paddingLeft: 44, fontSize: 12,
+                color: usernameError ? "#c0392b" : "#2f8f53" }}>
+                {usernameMsg || usernameError}
+              </div>
+            )}
+            <div style={{ width: "100%", paddingLeft: 44, fontSize: 11, color: "#aaa" }}>
+              3–30 characters · letters, numbers, . and _ only
             </div>
           </div>
         </div>
@@ -292,13 +428,13 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
           </div>
         </div>
 
-        {/* Danger Zone */}
+        {/* Account Actions */}
         <div className="settings-section">
           <div className="settings-section-header">
             <div className="settings-section-icon">⚠️</div>
             <div>
               <div className="settings-section-title">Account Actions</div>
-              <div className="settings-section-desc">Irreversible account actions</div>
+              <div className="settings-section-desc">Manage or exit your account</div>
             </div>
           </div>
           <div className="settings-row">
@@ -318,9 +454,9 @@ export default function Settings({  darkMode, setDarkMode , onOpenNotifications,
               <div className="settings-row-sub">Sign out of your account</div>
             </div>
             <div className="settings-row-right">
-              <button className="settings-danger-btn" onClick={() => navigate("/login")}>
-  Logout
-</button>
+              <button className="settings-danger-btn" onClick={handleLogout}>
+                Logout
+              </button>
             </div>
           </div>
         </div>

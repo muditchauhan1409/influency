@@ -1,193 +1,298 @@
 // PASTE PATH: src/scripts/messages.js
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { getCurrentUser } from "./auth";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-const API = "http://localhost:5000/api";
-
-const AVATAR_STYLES = [
-  { background: "rgba(0,0,0,0.6)", color: "#fff" },
-  { background: "linear-gradient(135deg,#3d1424,#1a0810)", color: "#fff" },
-  { background: "rgba(236,72,153,0.18)", color: "#F472B6" },
-  { background: "rgba(99,102,241,0.18)", color: "#818CF8" },
-  { background: "linear-gradient(135deg,#0a1020,#1e2840)", color: "#fff" },
-  { background: "rgba(245,158,11,0.18)", color: "#F59E0B" },
-];
-
-function styleFor(id) {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = id.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_STYLES[Math.abs(hash) % AVATAR_STYLES.length];
-}
-
-function initialsFor(name = "") {
-  return name
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-function timeFor(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  const now = new Date();
-  const sameDay = d.toDateString() === now.toDateString();
-  if (sameDay) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const diffDays = Math.floor((now - d) / (1000 * 60 * 60 * 24));
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays}d`;
-  return d.toLocaleDateString([], { day: "2-digit", month: "short" });
-}
+const API_URL = "http://localhost:5000/api";
+const WS_URL = "ws://localhost:5000";
 
 export function useMessages() {
-  const currentUser = getCurrentUser();
-  const userId = currentUser?.id;
-
-  const [connections, setConnections] = useState([]);
-  const [convos, setConvos] = useState([]);
-  const [messagesByConvo, setMessagesByConvo] = useState({});
-  const [activeId, setActiveId] = useState(null);
-  const [search, setSearch] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [activeId, setActiveId] = useState(null); // userId of open chat
+  const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [followRequests, setFollowRequests] = useState([]);
+  const [typingFrom, setTypingFrom] = useState(null);
+  const [wsReady, setWsReady] = useState(false);
 
+  const ws = useRef(null);
+  const typingTimer = useRef(null);
+  const messagesEndRef = useRef(null);
+  // meId not needed - backend sends fromMe field directly
+
+  // ── Connect WebSocket ──
   useEffect(() => {
-    if (!userId) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-    fetch(`${API}/follow/connections/${userId}`)
-      .then((r) => r.json())
-      .then((res) => setConnections(res.data || []));
+    // Guard against React Strict Mode double-mount
+    let didUnmount = false;
 
-    fetch(`${API}/messages/conversations/${userId}`)
-      .then((r) => r.json())
-      .then((res) => setConvos(res.data || []));
-  }, [userId]);
+    const socket = new WebSocket(WS_URL);
+    ws.current = socket;
 
-  const conversations = useMemo(() => {
-    const list = [];
-    const seenUserIds = new Set();
-
-    convos.forEach((c) => {
-      const other = c.participants?.find((p) => p._id !== userId);
-      if (!other) return;
-      seenUserIds.add(other._id);
-
-      const msgs = messagesByConvo[c._id] || [];
-      const mapped = msgs.map((m) => ({
-        from: m.sender === userId ? "me" : "them",
-        text: m.text,
-        time: timeFor(m.createdAt),
-      }));
-
-      list.push({
-        id: c._id,
-        userId: other._id,
-        name: other.name,
-        type: other.role === "brand" ? "Brand" : "Creator",
-        initials: initialsFor(other.name),
-        avatarStyle: styleFor(other._id),
-        online: false,
-        unread: 0,
-        messages: mapped.length
-          ? mapped
-          : c.lastMessage
-          ? [{ from: "them", text: c.lastMessage, time: timeFor(c.lastMessageAt) }]
-          : [],
-      });
-    });
-
-    connections.forEach((u) => {
-      if (seenUserIds.has(u._id)) return;
-      list.push({
-        id: `pending:${u._id}`,
-        userId: u._id,
-        name: u.name,
-        type: u.role === "brand" ? "Brand" : "Creator",
-        initials: initialsFor(u.name),
-        avatarStyle: styleFor(u._id),
-        online: false,
-        unread: 0,
-        messages: [],
-      });
-    });
-
-    return list;
-  }, [convos, connections, messagesByConvo, userId]);
-
-  const filtered = conversations.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const active = conversations.find((c) => c.id === activeId);
-
-  useEffect(() => {
-    if (!activeId && conversations.length > 0) {
-      setActiveId(conversations[0].id);
-    }
-  }, [conversations, activeId]);
-
-  // Fetch messages when active conversation changes (and poll every 4s for new ones)
-  useEffect(() => {
-    if (!activeId || activeId.startsWith("pending:")) return;
-
-    const load = () => {
-      fetch(`${API}/messages/${activeId}`)
-        .then((r) => r.json())
-        .then((res) => {
-          setMessagesByConvo((prev) => ({ ...prev, [activeId]: res.data || [] }));
-        });
+    socket.onopen = () => {
+      if (didUnmount) { socket.close(); return; }
+      socket.send(JSON.stringify({ type: "auth", token }));
     };
 
-    load();
-    const interval = setInterval(load, 4000);
-    return () => clearInterval(interval);
-  }, [activeId]);
+    socket.onmessage = (e) => {
+      const data = JSON.parse(e.data);
 
-  const openConversation = useCallback((id) => {
-    setActiveId(id);
+      if (data.type === "auth_ok") {
+        setWsReady(true);
+      }
+
+      if (data.type === "message") {
+        // Incoming message from another user
+        const incomingMsg = {
+          _id: data._id,
+          sender: data.sender,
+          text: data.text,
+          createdAt: data.createdAt,
+          fromMe: false,
+        };
+        // If this conversation is open, append
+        if (data.sender === activeId || data.receiver === activeId) {
+          setMessages((prev) => [...prev, incomingMsg]);
+        }
+        // Update conversation last message
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.userId.toString() === data.sender
+              ? { ...c, lastMessage: { text: data.text, fromMe: false, time: data.createdAt }, unread: c.unread + 1 }
+              : c
+          )
+        );
+      }
+
+      if (data.type === "message_sent") {
+        // Our own message confirmed by server
+        const sentMsg = {
+          _id: data._id,
+          sender: data.sender,
+          text: data.text,
+          createdAt: data.createdAt,
+          fromMe: true,
+        };
+        setMessages((prev) => [...prev, sentMsg]);
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.userId.toString() === data.receiver
+              ? { ...c, lastMessage: { text: data.text, fromMe: true, time: data.createdAt } }
+              : c
+          )
+        );
+      }
+
+      if (data.type === "typing") {
+        setTypingFrom(data.from);
+        clearTimeout(typingTimer.current);
+        typingTimer.current = setTimeout(() => setTypingFrom(null), 2000);
+      }
+    };
+
+    socket.onclose = () => {
+      if (!didUnmount) setWsReady(false);
+    };
+
+    return () => {
+      didUnmount = true;
+      if (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING) {
+        socket.close();
+      }
+      ws.current = null;
+    };
   }, []);
 
-  const sendMessage = useCallback(async () => {
-    if (!draft.trim() || !active) return;
-    const text = draft;
-    setDraft("");
-
-    let conversationId = active.id;
-
-    if (conversationId.startsWith("pending:")) {
-      const res = await fetch(`${API}/messages/conversation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userA: userId, userB: active.userId }),
+  // ── Fetch conversations ──
+  const fetchConversations = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/messages/conversations`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      conversationId = data.data._id;
-      setConvos((prev) => [data.data, ...prev]);
-      setActiveId(conversationId);
+      if (data.success) setConversations(data.conversations);
+    } catch (err) {
+      console.error("Fetch conversations error:", err);
     }
+  }, []);
 
-    const res = await fetch(`${API}/messages`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId, sender: userId, text }),
-    });
-    const data = await res.json();
+  useEffect(() => { fetchConversations(); }, [fetchConversations]);
 
-    setMessagesByConvo((prev) => {
-      const existing = prev[conversationId] || [];
-      return { ...prev, [conversationId]: [...existing, data.data] };
-    });
-  }, [draft, active, userId]);
+  // ── Fetch follow requests ──
+  const fetchFollowRequests = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/follow/requests`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setFollowRequests(data.requests);
+    } catch (err) {
+      console.error("Fetch follow requests error:", err);
+    }
+  }, []);
+
+  useEffect(() => { fetchFollowRequests(); }, [fetchFollowRequests]);
+
+  // ── Open a conversation ──
+  const openConversation = useCallback(async (userId) => {
+    setActiveId(userId);
+    setMessages([]);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/messages/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages(
+          data.messages.map((m) => ({
+            ...m,
+            fromMe: m.fromMe === true, // backend sends this directly
+          }))
+        );
+        // Clear unread
+        setConversations((prev) =>
+          prev.map((c) => (c.userId.toString() === userId ? { ...c, unread: 0 } : c))
+        );
+      }
+    } catch (err) {
+      console.error("Open conversation error:", err);
+    }
+  }, []);
+
+  // Auto-scroll on new message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // ── Send message via WebSocket ──
+  const sendMessage = useCallback(() => {
+    if (!draft.trim() || !activeId || !ws.current) return;
+    ws.current.send(JSON.stringify({ type: "message", receiverId: activeId, text: draft.trim() }));
+    setDraft("");
+  }, [draft, activeId]);
+
+  // ── Typing indicator ──
+  const handleTyping = useCallback(() => {
+    if (!activeId || !ws.current) return;
+    ws.current.send(JSON.stringify({ type: "typing", receiverId: activeId }));
+  }, [activeId]);
+
+  // ── Search users by username ──
+  useEffect(() => {
+    if (search.replace(/^@+/, "").length < 2) { setSearchResults([]); return; }
+    const timer = setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const cleanQuery = search.replace(/^@+/, "");
+        const res = await fetch(`${API_URL}/follow/search?q=${encodeURIComponent(cleanQuery)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.success) setSearchResults(data.users);
+      } catch (err) {
+        console.error("Search error:", err);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // ── Send follow request ──
+  const sendFollowRequest = useCallback(async (targetId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/follow/request/${targetId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSearchResults((prev) =>
+          prev.map((u) => (u._id === targetId ? { ...u, requestSent: true } : u))
+        );
+      }
+      return data;
+    } catch (err) {
+      console.error("Follow request error:", err);
+    }
+  }, []);
+
+  // ── Accept follow request ──
+  const acceptRequest = useCallback(async (requesterId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${API_URL}/follow/accept/${requesterId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFollowRequests((prev) => prev.filter((r) => r._id !== requesterId));
+      fetchConversations(); // they might now be a mutual connection
+    } catch (err) {
+      console.error("Accept request error:", err);
+    }
+  }, [fetchConversations]);
+
+  // ── Reject follow request ──
+  const rejectRequest = useCallback(async (requesterId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await fetch(`${API_URL}/follow/reject/${requesterId}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFollowRequests((prev) => prev.filter((r) => r._id !== requesterId));
+    } catch (err) {
+      console.error("Reject request error:", err);
+    }
+  }, []);
+
+  // ── Delete a message ──
+  const deleteMessage = useCallback(async (messageId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/messages/message/${messageId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setMessages((prev) => prev.filter((m) => m._id?.toString() !== messageId?.toString()));
+      }
+    } catch (err) {
+      console.error("Delete message error:", err);
+    }
+  }, []);
+
+  const active = conversations.find((c) => c.userId.toString() === activeId);
 
   return {
-    conversations: filtered,
+    conversations,
     active,
     activeId,
-    search,
-    setSearch,
-    draft,
-    setDraft,
+    messages,
+    search, setSearch,
+    searchResults,
+    searchLoading,
+    followRequests,
+    draft, setDraft,
     sendMessage,
+    handleTyping,
     openConversation,
+    sendFollowRequest,
+    acceptRequest,
+    rejectRequest,
+    typingFrom,
+    wsReady,
+    messagesEndRef,
+    deleteMessage,
+    fetchConversations,
   };
 }
