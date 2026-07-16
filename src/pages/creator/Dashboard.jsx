@@ -1,12 +1,47 @@
+import { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../../scripts/dashboard";
 import "../../styles/dashboard.css";
 import { useDashboard } from "../../scripts/dashboard";
+import { usePosts } from "../../scripts/posts";
 
 export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, uploadAvatar, avatarUploading, avatarError } = useDashboard();
+  const { posts, loading: postsLoading, posting, postError, createPost } = usePosts();
+
+  const [caption, setCaption] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handlePost = async () => {
+    const ok = await createPost({ caption, imageFile });
+    if (ok) {
+      setCaption("");
+      setImageFile(null);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const timeAgo = (dateStr) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    return `${Math.floor(hrs / 24)}d ago`;
+  };
+
   return (
     <div className="inf-wrap">
 
@@ -153,92 +188,87 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
       </div>
         </div>
 
-        {/* Post Box */}
+        {/* Create Post Box */}
         <div className="card">
           <div className="post-box">
             <div className="post-box-inner">
-              <div className="mini-avatar">👩‍🎨</div>
-              <div className="post-input">What collaboration are you working on today?</div>
+              <div className="mini-avatar">
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                ) : (user?.avatar || "👤")}
+              </div>
+              <input
+                className="post-input"
+                style={{ border: "none", outline: "none", background: "transparent", width: "100%", font: "inherit", color: "inherit" }}
+                placeholder="What collaboration are you working on today?"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+              />
             </div>
+
+            {imagePreview && (
+              <div style={{ position: "relative", marginTop: 10 }}>
+                <img src={imagePreview} alt="preview" style={{ width: "100%", maxHeight: 280, objectFit: "cover", borderRadius: 12 }} />
+                <button
+                  onClick={() => { setImageFile(null); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                  style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer" }}
+                >✕</button>
+              </div>
+            )}
+
+            {postError && <p style={{ color: "#a13b3b", fontSize: 12, marginTop: 6 }}>{postError}</p>}
+
             <div className="post-actions">
-              <button className="post-action-btn col1">Portfolio</button>
-              <button className="post-action-btn col2">Collaboration</button>
-              <button className="post-action-btn col3">Achievement</button>
-              <button className="post-action-btn col4">Campaign</button>
+              <button className="post-action-btn col1" onClick={() => fileInputRef.current?.click()}>📷 Photo</button>
+              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageSelect} />
+              <button className="post-action-btn col2" onClick={handlePost} disabled={posting}>
+                {posting ? "Posting..." : "Post"}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Post 1 */}
-        <div className="card">
-          <div className="post-card-inner">
-            <div className="post-head">
-              <div className="post-ava" style={{ background: "linear-gradient(135deg,#0a1020,#1e2840)" }}>👗</div>
-              <div>
-                <div className="post-name">Priya Mehta <span className="badge badge-elite" style={{ fontSize: 10, padding: "2px 7px" }}>⭐ Elite</span></div>
-                <div className="post-meta">Fashion Creator · Trust 94 <span className="badge badge-verified-g" style={{ fontSize: 10, padding: "2px 7px" }}>✓</span></div>
-              </div>
-              <div className="post-time">2h ago</div>
-            </div>
-            <div className="post-text">
-              🎉 Just wrapped an <strong style={{ color: "#D4A373" }}>incredible campaign with Nike India</strong> — their Spring '26 collection is stunning. Worked with 3 other Elite creators over 6 weeks. This is what trust-based collabs look like. 🔥
-            </div>
-            <div className="post-img">
-              <div style={{ fontSize: 48, opacity: 0.4 }}>👟</div>
-              <span className="badge badge-verified-g" style={{ position: "absolute", top: 10, right: 12 }}>Verified Campaign</span>
-              <div className="post-img-label">Nike Spring '26 · IG Reel</div>
-            </div>
-            <div className="collab-banner">
-              <div className="collab-check">✓</div>
-              <div>
-                <div className="collab-title">Collaboration Verified</div>
-                <div className="collab-sub">Nike India marked as complete · +8 trust pts earned</div>
-              </div>
-              <div style={{ marginLeft: "auto", fontSize: 20 }}>🏅</div>
-            </div>
-            <div className="post-footer">
-              <div className="react-btn">❤️ 847</div>
-              <div className="react-btn">💬 92</div>
-              <div className="react-btn">↗️ Share</div>
-              <div className="react-btn">📩 DM</div>
-            </div>
-          </div>
-        </div>
+        {/* Real Feed */}
+        {postsLoading && (
+          <div className="card" style={{ padding: 18, textAlign: "center", opacity: 0.6 }}>Loading posts...</div>
+        )}
 
-        {/* Post 2 */}
-        <div className="card">
-          <div className="achievement-post">
-            <div className="post-head">
-              <div className="post-ava" style={{ background: "linear-gradient(135deg,#0a1a08,#1a3014)" }}>💄</div>
-              <div>
-                <div className="post-name">Sofia Lopes <span className="badge badge-level" style={{ fontSize: 10, padding: "2px 7px" }}>Lvl 9</span></div>
-                <div className="post-meta">Beauty Creator · 3.1M followers</div>
+        {!postsLoading && posts.length === 0 && (
+          <div className="card" style={{ padding: 18, textAlign: "center", opacity: 0.6 }}>No posts yet — share your first update!</div>
+        )}
+
+        {posts.map((p) => (
+          <div className="card" key={p._id}>
+            <div className="post-card-inner">
+              <div className="post-head">
+                <div className="post-ava" style={{ background: "linear-gradient(135deg,#0a1020,#1e2840)" }}>
+                  {p.author?.avatarUrl ? (
+                    <img src={p.author.avatarUrl} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                  ) : (p.author?.avatar || "👤")}
+                </div>
+                <div>
+                  <div className="post-name">{p.author?.name || "Unknown"}</div>
+                  <div className="post-meta">{p.author?.role === "brand" ? "Brand" : "Creator"}</div>
+                </div>
+                <div className="post-time">{timeAgo(p.createdAt)}</div>
               </div>
-              <div className="post-time">5h ago</div>
-            </div>
-            <div className="post-text">
-              ⭐ My Trust Score just crossed <strong style={{ color: "#D4A373" }}>96</strong> — officially in the top 1% of creators on Influency.
-            </div>
-            <div className="achievement-banner">
-              <div className="ach-icon">🏆</div>
-              <div>
-                <div className="ach-title">Trust Score Milestone</div>
-                <div className="ach-sub">Top Creator Badge Unlocked · 96/100</div>
+
+              {p.caption && <div className="post-text">{p.caption}</div>}
+
+              {p.imageUrl && (
+                <div className="post-img" style={{ padding: 0 }}>
+                  <img src={p.imageUrl} alt="post" style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 12 }} />
+                </div>
+              )}
+
+              <div className="post-footer">
+                <div className="react-btn">❤️ {p.likes?.length || 0}</div>
+                <div className="react-btn">💬 0</div>
+                <div className="react-btn">↗️ Share</div>
               </div>
-              <div className="score-bump">
-                <div className="score-old">88</div>
-                <div className="score-new">96</div>
-                <div style={{ fontSize: 10, color: "#22C55E" }}>+8 pts</div>
-              </div>
-            </div>
-            <div className="post-footer" style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-              <div className="react-btn">❤️ 2.1K</div>
-              <div className="react-btn">💬 148</div>
-              <div className="react-btn">↗️ Share</div>
-              <div className="react-btn">📩 DM</div>
             </div>
           </div>
-        </div>
+        ))}
 
         {/* Trending */}
         <div className="card trending-card">

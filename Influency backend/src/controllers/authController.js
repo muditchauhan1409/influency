@@ -51,11 +51,14 @@ const signup = async (req, res) => {
         message: "An account with this email already exists",
       });
     }
-    const baseHandle = "@" + name.toLowerCase().replace(/\s+/g, "") + Math.floor(Math.random() * 999);
+    const randomSuffix = Math.floor(Math.random() * 999);
+    const baseHandle = "@" + name.toLowerCase().replace(/\s+/g, "") + randomSuffix;
+    const baseUsername = name.toLowerCase().replace(/\s+/g, "_") + randomSuffix;
     const user = await User.create({
       name, email, password,
       role: role || "creator",
       handle: baseHandle,
+      username: baseUsername,
     });
     sendTokenResponse(user, 201, res);
   } catch (err) {

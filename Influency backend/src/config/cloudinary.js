@@ -9,7 +9,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = new CloudinaryStorage({
+// Avatar uploads — square, face-cropped
+const avatarStorage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: "influency/avatars",
@@ -19,8 +20,23 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({
-  storage,
+  storage: avatarStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
 });
 
-module.exports = { cloudinary, upload };
+// Post image uploads — larger, no forced crop
+const postStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "influency/posts",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    transformation: [{ width: 1080, crop: "limit" }],
+  },
+});
+
+const uploadPost = multer({
+  storage: postStorage,
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB max
+});
+
+module.exports = { cloudinary, upload, uploadPost };

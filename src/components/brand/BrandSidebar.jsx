@@ -1,15 +1,24 @@
 // PASTE PATH: src/components/brand/BrandSidebar.jsx
 import { useNavigate, useLocation } from "react-router-dom";
+import {
+  Home,
+  ClipboardList,
+  Compass,
+  MessageCircle,
+  Bell,
+  BarChart2,
+  Settings,
+} from "lucide-react";
 import "../../styles/dashboard.css";
 
 const BRAND_NAV_ITEMS = [
-  { icon: "🏠", label: "Home", path: "/brand-dashboard" },
-  { icon: "📋", label: "Forms", path: "/brand-forms" },
-  { icon: "🔍", label: "Discover", path: "/brand-discover" },
-  { icon: "💬", label: "Messages", path: "/messages" },
-  { icon: "🔔", label: "Notifications", path: "/notifications" },
-  { icon: "📊", label: "Analytics", path: "/brand-analytics" },
-  { icon: "⚙️", label: "Settings", path: "/settings" },
+  { icon: Home, label: "Home", path: "/brand-dashboard" },
+  { icon: ClipboardList, label: "Forms", path: "/brand-forms" },
+  { icon: Compass, label: "Discover", path: "/brand-discover" },
+  { icon: MessageCircle, label: "Messages", path: "/messages" },
+  { icon: Bell, label: "Notifications", path: "/notifications" },
+  { icon: BarChart2, label: "Analytics", path: "/brand-analytics" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 export default function BrandSidebar({ onOpenNotifications, notifUnreadCount }) {
@@ -44,7 +53,9 @@ export default function BrandSidebar({ onOpenNotifications, notifUnreadCount }) 
                 : navigate(item.path)
             }
           >
-            <span className="nav-emoji">{item.icon}</span>
+            <span className="nav-icon-wrap">
+              <item.icon size={18} strokeWidth={1.8} />
+            </span>
             <span className="nav-label">{item.label}</span>
             {badgeValue && <span className="nav-badge">{badgeValue}</span>}
           </div>

@@ -1,7 +1,7 @@
 // PASTE PATH: src/scripts/userProfile.js
 import { useState, useEffect } from "react";
 
-const STORAGE_KEY = "influency_user_profile";
+const API_URL = "http://localhost:5000/api";
 
 export const NICHE_OPTIONS = [
   "Lifestyle", "Fashion", "Clothing", "Beauty", "Beauty Products",
@@ -47,6 +47,7 @@ export const VERIFICATION_ITEMS = [
   { label: "Response Rate 88%", points: 4 },
 ];
 
+// Static placeholders — not backend-driven yet
 export const PORTFOLIO_ITEMS = [
   { id: 1, emoji: "👗", bg: "linear-gradient(135deg,#3d1424,#1a0810)" },
   { id: 2, emoji: "✈️", bg: "linear-gradient(135deg,#1e2840,#0a1020)" },
@@ -75,46 +76,71 @@ export const ANALYTICS_SNAPSHOT = {
   avgRating: "4.9★",
 };
 
-const defaultProfile = {
-  name: "Nikita Roy",
-  handle: "@nikitaroy",
-  bio: "Fashion-forward content creator from Mumbai obsessed with sustainable style, boutique travel, and the art of everyday elegance. I work with brands that actually believe in quality over quantity. 🌸",
-  location: "Mumbai, IN",
-  avatarEmoji: "👩‍🎨",
-  niches: ["Fashion", "Lifestyle", "Travel"],
-  contentCategories: ["OOTD", "Reels", "Travel Vlogs", "Reviews", "Brand Stories", "Unboxing", "Skincare"],
-  availability: "open",
-  bookedUntil: "",
-  radius: "50",
-  languages: ["English", "Hindi"],
-  responseTime: "Within a day",
-  rateMin: 5000,
-  rateMax: 25000,
-  socials: [
-    { platform: "Instagram", icon: "📸", handle: "@nikitaroy", followers: "120K", connected: true },
-    { platform: "YouTube", icon: "▶️", handle: "Nikita Roy", followers: "34K", connected: true },
-    { platform: "TikTok", icon: "🎵", handle: "", followers: "", connected: false },
-    { platform: "X (Twitter)", icon: "𝕏", handle: "", followers: "", connected: false },
-  ],
-};
+const emptySocials = [
+  { platform: "Instagram", icon: "📸", handle: "", followers: "", connected: false },
+  { platform: "YouTube", icon: "▶️", handle: "", followers: "", connected: false },
+  { platform: "TikTok", icon: "🎵", handle: "", followers: "", connected: false },
+  { platform: "X (Twitter)", icon: "𝕏", handle: "", followers: "", connected: false },
+];
+
+function mapUserToProfile(user) {
+  return {
+    _id: user._id || null,
+    name: user.name || "",
+    handle: user.handle ? `@${user.handle}` : "",
+    bio: user.bio || "",
+    location: user.location || "",
+    avatarEmoji: user.avatar || "👤",
+    avatarUrl: user.avatarUrl || null,
+    niches: user.niches?.length ? user.niches : [],
+    contentCategories: user.contentCategories?.length ? user.contentCategories : [],
+    availability: user.availability || "open",
+    bookedUntil: user.bookedUntil || "",
+    radius: user.radius || "50",
+    languages: user.languages?.length ? user.languages : [],
+    responseTime: user.responseTime || "Within a day",
+    rateMin: user.rateMin || 0,
+    rateMax: user.rateMax || 0,
+    socials: user.socials?.length ? user.socials : emptySocials,
+    followers: user.followers || 0,
+    campaignsCompleted: user.campaignsCompleted || 0,
+    rating: user.rating || 0,
+    trustScore: user.trustScore || 0,
+  };
+}
 
 export function useUserProfile() {
-  const [profile, setProfile] = useState(defaultProfile);
+  const [profile, setProfile] = useState(mapUserToProfile({}));
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setProfile(JSON.parse(stored));
-    } catch {
-      // corrupt/missing storage — keep defaults
-    }
+    fetchProfile();
   }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch(`${API_URL}/users/dashboard`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProfile(mapUserToProfile(data.dashboard));
+      }
+    } catch (err) {
+      console.error("Profile fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const updateField = (key, value) => {
     setProfile((prev) => ({ ...prev, [key]: value }));
-    setSaved(false);
   };
 
   const toggleInArray = (key, value) => {
@@ -124,7 +150,6 @@ export function useUserProfile() {
         ? prev[key].filter((v) => v !== value)
         : [...prev[key], value],
     }));
-    setSaved(false);
   };
 
   const updateSocial = (platform, key, value) => {
@@ -136,22 +161,63 @@ export function useUserProfile() {
           : s
       ),
     }));
-    setSaved(false);
   };
 
-  const handleSave = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-    setSaved(true);
-    setEditMode(false);
-    setTimeout(() => setSaved(false), 2500);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem("token");
+      const handleClean = profile.handle.replace(/^@/, "");
+
+      const res = await fetch(`${API_URL}/users/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: profile.name,
+          handle: handleClean,
+          bio: profile.bio,
+          location: profile.location,
+          niches: profile.niches,
+          contentCategories: profile.contentCategories,
+          languages: profile.languages,
+          availability: profile.availability,
+          bookedUntil: profile.bookedUntil,
+          radius: profile.radius,
+          responseTime: profile.responseTime,
+          rateMin: profile.rateMin,
+          rateMax: profile.rateMax,
+          socials: profile.socials,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.error("Save failed:", data.message);
+        return;
+      }
+
+      setProfile(mapUserToProfile(data.user));
+      setSaved(true);
+      setEditMode(false);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      console.error("Save error:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return {
     profile,
+    loading,
     updateField,
     toggleInArray,
     updateSocial,
     handleSave,
+    saving,
     saved,
     editMode,
     setEditMode,

@@ -13,6 +13,7 @@ const getDashboardData = async (req, res) => {
     res.json({
       success: true,
       dashboard: {
+        _id: user._id,
         name: user.name,
         handle: user.handle,
         avatarUrl: user.avatarUrl,
@@ -26,6 +27,15 @@ const getDashboardData = async (req, res) => {
         campaignsCompleted: user.campaignsCompleted,
         rating: user.rating,
         niches: user.niches,
+        contentCategories: user.contentCategories,
+        languages: user.languages,
+        availability: user.availability,
+        bookedUntil: user.bookedUntil,
+        radius: user.radius,
+        responseTime: user.responseTime,
+        rateMin: user.rateMin,
+        rateMax: user.rateMax,
+        socials: user.socials,
         isEmailVerified: user.isEmailVerified,
         onboardingStep: user.onboardingStep,
         createdAt: user.createdAt,
@@ -38,18 +48,33 @@ const getDashboardData = async (req, res) => {
 };
 
 // @route   PUT /api/users/profile
-// @desc    Profile update karo
+// @desc    Profile update karo (real-time save from Edit Profile page)
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
-    const { name, bio, location, niches, handle } = req.body;
+    const {
+      name, bio, location, niches, handle,
+      contentCategories, languages, availability,
+      bookedUntil, radius, responseTime,
+      rateMin, rateMax, socials,
+    } = req.body;
+
     const updateData = {};
 
-    if (name) updateData.name = name;
+    if (name !== undefined) updateData.name = name;
     if (bio !== undefined) updateData.bio = bio;
-    if (location) updateData.location = location;
-    if (niches) updateData.niches = Array.isArray(niches) ? niches : niches.split(",");
-    if (handle) updateData.handle = handle;
+    if (location !== undefined) updateData.location = location;
+    if (handle !== undefined) updateData.handle = handle;
+    if (niches !== undefined) updateData.niches = Array.isArray(niches) ? niches : niches.split(",");
+    if (contentCategories !== undefined) updateData.contentCategories = contentCategories;
+    if (languages !== undefined) updateData.languages = languages;
+    if (availability !== undefined) updateData.availability = availability;
+    if (bookedUntil !== undefined) updateData.bookedUntil = bookedUntil;
+    if (radius !== undefined) updateData.radius = radius;
+    if (responseTime !== undefined) updateData.responseTime = responseTime;
+    if (rateMin !== undefined) updateData.rateMin = rateMin;
+    if (rateMax !== undefined) updateData.rateMax = rateMax;
+    if (socials !== undefined) updateData.socials = socials;
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -60,6 +85,9 @@ const updateProfile = async (req, res) => {
     res.json({ success: true, user });
   } catch (err) {
     console.error("Update profile error:", err);
+    if (err.code === 11000) {
+      return res.status(400).json({ success: false, message: "Username already taken" });
+    }
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -73,14 +101,12 @@ const uploadAvatar = async (req, res) => {
       return res.status(400).json({ success: false, message: "No image uploaded" });
     }
 
-    // Old avatar delete karo Cloudinary se
     const user = await User.findById(req.user._id);
     if (user.avatarUrl) {
       const publicId = user.avatarUrl.split("/").pop().split(".")[0];
       await cloudinary.uploader.destroy(`influency/avatars/${publicId}`);
     }
 
-    // Naya URL save karo
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { avatarUrl: req.file.path },
@@ -98,13 +124,40 @@ const uploadAvatar = async (req, res) => {
   }
 };
 
+// @route   GET /api/users/search?query=...
+// @desc    Naam ya handle se users search karo
+// @access  Private
+const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query || query.trim().length === 0) {
+      return res.json({ success: true, users: [] });
+    }
+
+    const users = await User.find({
+      _id: { $ne: req.user._id },
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { handle: { $regex: query, $options: "i" } },
+      ],
+    })
+      .select("name handle avatarUrl avatar role trustScore niches")
+      .limit(20);
+
+    res.json({ success: true, users });
+  } catch (err) {
+    console.error("Search error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // @route   GET /api/users/:userId
 // @desc    Kisi bhi user ka public profile dekho
 // @access  Private
 const getPublicProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
-      .select("name handle avatarUrl bio location niches trustScore followers campaignsCompleted rating role");
+      .select("-password");
 
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
     res.json({ success: true, user });
@@ -113,4 +166,10 @@ const getPublicProfile = async (req, res) => {
   }
 };
 
-module.exports = { getDashboardData, updateProfile, uploadAvatar, getPublicProfile };
+module.exports = {
+  getDashboardData,
+  updateProfile,
+  uploadAvatar,
+  getPublicProfile,
+  searchUsers,
+};

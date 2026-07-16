@@ -10,11 +10,11 @@ import {
   RADIUS_OPTIONS,
   RESPONSE_TIME_OPTIONS,
   VERIFICATION_ITEMS,
-  PORTFOLIO_ITEMS,
   CAMPAIGN_HISTORY,
   REVIEWS,
   ANALYTICS_SNAPSHOT,
 } from "../../scripts/userProfile";
+import { useUserPosts } from "../../scripts/posts";
 import "../../styles/dashboard.css";
 import "../../styles/settings.css";
 import "../../styles/userProfile.css";
@@ -32,6 +32,8 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
     editMode,
     setEditMode,
   } = useUserProfile();
+
+  const { posts: myPosts, loading: postsLoading } = useUserPosts(profile._id);
 
   const currentAvailability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
@@ -377,7 +379,9 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
               <div className="profile-card-body">
                 <div className="profile-top-row">
                   <div className="profile-avatar">
-                    {profile.avatarEmoji}
+                    {profile.avatarUrl ? (
+                      <img src={profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                    ) : profile.avatarEmoji}
                     <div className="verify-dot">✓</div>
                   </div>
                   <button className="btn-outline-sm" onClick={() => setEditMode(true)}>
@@ -492,16 +496,27 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
               </div>
             </div>
 
-            {/* Portfolio */}
+            {/* My Posts */}
             <div className="card" style={{ padding: 18 }}>
               <div className="portfolio-header">
-                <div className="trend-section-title" style={{ marginBottom: 0 }}>Portfolio</div>
-                <span className="see-all-link">See all →</span>
+                <div className="trend-section-title" style={{ marginBottom: 0 }}>My Posts</div>
               </div>
+              {postsLoading && <p style={{ opacity: 0.6, marginTop: 10 }}>Loading...</p>}
+              {!postsLoading && myPosts.length === 0 && (
+                <p style={{ opacity: 0.6, marginTop: 10 }}>No posts yet.</p>
+              )}
               <div className="portfolio-grid">
-                {PORTFOLIO_ITEMS.map((p) => (
-                  <div className="portfolio-tile" style={{ background: p.bg }} key={p.id}>
-                    <span>{p.emoji}</span>
+                {myPosts.map((p) => (
+                  <div
+                    className="portfolio-tile"
+                    key={p._id}
+                    style={{ background: "#1a1a1a", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}
+                  >
+                    {p.imageUrl ? (
+                      <img src={p.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span style={{ fontSize: 12, padding: 8, textAlign: "center", color: "#fff" }}>{p.caption}</span>
+                    )}
                   </div>
                 ))}
               </div>

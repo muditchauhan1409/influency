@@ -6,11 +6,9 @@ const User = require("../models/User");
 const areMutuallyConnected = (userA, userB) => {
   const aIdStr = userA._id.toString();
   const bIdStr = userB._id.toString();
-  // A follows B: A's followingArr contains B
-  const aFollowsB = userA.followingArr?.some((id) => id.toString() === bIdStr);
-  // B follows A: B's followingArr contains A  OR  A's followersArr contains B
-  const bFollowsA = userB.followingArr?.some((id) => id.toString() === aIdStr)
-    || userA.followersArr?.some((id) => id.toString() === bIdStr);
+  const aFollowsB = userA.followingArr?.some((u) => u._id.toString() === bIdStr);
+  const bFollowsA = userB.followingArr?.some((u) => u._id.toString() === aIdStr)
+    || userA.followersArr?.some((u) => u._id.toString() === bIdStr);
   return aFollowsB && bFollowsA;
 };
 
@@ -22,12 +20,10 @@ const getConversations = async (req, res) => {
       .populate("followingArr", "username name avatar avatarUrl role followingArr followersArr")
       .populate("followersArr", "_id");
 
-    // Only mutual connections can message
     const mutuals = me.followingArr.filter((u) =>
       me.followersArr.map((f) => f._id.toString()).includes(u._id.toString())
     );
 
-    // For each mutual, get latest message
     const conversations = await Promise.all(
       mutuals.map(async (other) => {
         const conversationId = Message.getConversationId(me._id, other._id);
@@ -59,7 +55,6 @@ const getConversations = async (req, res) => {
       })
     );
 
-    // Sort by latest message
     conversations.sort((a, b) => {
       const aT = a.lastMessage?.time || 0;
       const bT = b.lastMessage?.time || 0;
@@ -86,13 +81,11 @@ const getMessages = async (req, res) => {
       .select("sender text createdAt read")
       .lean();
 
-    // Mark received messages as read
     await Message.updateMany(
       { conversationId, receiver: req.user._id, read: false },
       { read: true }
     );
 
-    // Add fromMe field so frontend doesn't need to compare IDs
     const myIdStr = req.user._id.toString();
     const messagesWithFromMe = messages.map((m) => ({
       ...m,
@@ -121,6 +114,12 @@ const sendMessage = async (req, res) => {
       .populate("followersArr", "_id");
 
     if (!other) return res.status(404).json({ success: false, message: "User not found" });
+
+    console.log("ME followingArr:", me.followingArr);
+    console.log("ME followersArr:", me.followersArr);
+    console.log("OTHER followingArr:", other.followingArr);
+    console.log("OTHER followersArr:", other.followersArr);
+
     if (!areMutuallyConnected(me, other)) {
       return res.status(403).json({ success: false, message: "You can only message mutual connections" });
     }

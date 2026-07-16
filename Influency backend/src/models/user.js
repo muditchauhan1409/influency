@@ -2,6 +2,17 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const SocialSchema = new mongoose.Schema(
+  {
+    platform: { type: String, required: true },
+    icon: { type: String, default: "" },
+    handle: { type: String, default: "" },
+    followers: { type: String, default: "" },
+    connected: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -28,57 +39,130 @@ const UserSchema = new mongoose.Schema(
       enum: ["creator", "brand"],
       default: "creator",
     },
-
-    // ── Username (primary display key, unique) ──
+    handle: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
     username: {
       type: String,
       unique: true,
       sparse: true,
       trim: true,
       lowercase: true,
-      match: [/^[a-z0-9_.]{3,30}$/, "Username: 3-30 chars, only letters/numbers/._"],
+    },
+    avatar: {
+      type: String,
+      default: "👩‍🎨",
+    },
+    avatarUrl: {
+      type: String,
+      default: null,
+    },
+    bio: {
+      type: String,
+      maxlength: [300, "Bio cannot exceed 300 characters"],
+      default: "",
+    },
+    location: {
+      type: String,
+      default: "",
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    trustScore: {
+      type: Number,
+      default: 0,
+    },
+    followers: {
+      type: Number,
+      default: 0,
+    },
+    following: {
+      type: Number,
+      default: 0,
+    },
+    campaignsCompleted: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    niches: {
+      type: [String],
+      default: [],
+    },
+    followersArr: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
+    followingArr: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
+    },
+    followRequests: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      default: [],
     },
 
-    handle: { type: String, unique: true, sparse: true, trim: true },
-    avatar: { type: String, default: "👩‍🎨" },
-    avatarUrl: { type: String, default: null },
-    bio: { type: String, maxlength: [300, "Bio cannot exceed 300 characters"], default: "" },
-    location: { type: String, default: "" },
-    isEmailVerified: { type: Boolean, default: false },
-    trustScore: { type: Number, default: 0 },
-    campaignsCompleted: { type: Number, default: 0 },
-    rating: { type: Number, default: 0 },
-    niches: { type: [String], default: [] },
+    // ==== Extended profile fields ====
+    contentCategories: {
+      type: [String],
+      default: [],
+    },
+    languages: {
+      type: [String],
+      default: [],
+    },
+    availability: {
+      type: String,
+      enum: ["open", "booked", "unavailable", "closed"],
+      default: "open",
+    },
+    bookedUntil: {
+      type: String,
+      default: "",
+    },
+    radius: {
+      type: String,
+      default: "50",
+    },
+    responseTime: {
+      type: String,
+      default: "Within a day",
+    },
+    rateMin: {
+      type: Number,
+      default: 0,
+    },
+    rateMax: {
+      type: Number,
+      default: 0,
+    },
+    socials: {
+      type: [SocialSchema],
+      default: [],
+    },
+
     googleId: { type: String, sparse: true },
     instagramId: { type: String, sparse: true },
-    onboardingStep: { type: Number, default: 1 },
-
-    // ── Follow system ──
-    followersArr: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    followingArr: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-
-    // Incoming follow requests (pending)
-    followRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-
-    // Extra profile fields
-    rateMin: { type: Number, default: 0 },
-    rateMax: { type: Number, default: 0 },
-    availability: { type: String, default: "open" },
-    responseTime: { type: String, default: "Within a day" },
+    onboardingStep: {
+      type: Number,
+      default: 1,
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-
-// Virtual counts (always fresh from arrays)
-UserSchema.virtual("followersCount").get(function () {
-  return this.followersArr?.length || 0;
-});
-UserSchema.virtual("followingCount").get(function () {
-  return this.followingArr?.length || 0;
-});
-
-UserSchema.set("toJSON", { virtuals: true });
-UserSchema.set("toObject", { virtuals: true });
 
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;

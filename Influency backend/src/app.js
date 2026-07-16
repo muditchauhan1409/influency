@@ -40,6 +40,7 @@ const formRoutes = require("./routes/form");
 const userRoutes = require("./routes/users");
 const followRoutes = require("./routes/follow");
 const messageRoutes = require("./routes/messages");
+const postRoutes = require("./routes/posts");
 
 // Routes + Rate Limiting
 app.use("/api/auth", authLimiter, authRoutes);
@@ -51,6 +52,7 @@ app.use("/api/users", generalLimiter, userRoutes);
 app.use("/api/follow", generalLimiter, followRoutes);
 
 app.use("/api/messages", generalLimiter, messageRoutes);
+app.use("/api/posts", postRoutes);
 
 // 404
 app.use((req, res) => {
