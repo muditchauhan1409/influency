@@ -11,6 +11,7 @@ export function useSignUp() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
@@ -26,6 +27,9 @@ export function useSignUp() {
     if (!name.trim()) return triggerShake("Please enter your name.");
     if (!email.trim() || !email.includes("@")) return triggerShake("Please enter a valid email.");
     if (!password.trim() || password.length < 6) return triggerShake("Password must be at least 6 characters.");
+    if (username.trim() && !/^[a-zA-Z0-9_.]{3,30}$/.test(username.trim())) {
+      return triggerShake("Username must be 3-30 characters (letters, numbers, . and _ only).");
+    }
     if (!agreed) return triggerShake("Please agree to the Terms of Service and Privacy Policy.");
 
     setError("");
@@ -35,7 +39,7 @@ export function useSignUp() {
       const res = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role, username: username.trim() }),
       });
 
       const data = await res.json();
@@ -63,6 +67,7 @@ export function useSignUp() {
     name, setName,
     email, setEmail,
     password, setPassword,
+    username, setUsername,
     agreed, setAgreed,
     error, shake, loading,
     handleCreateAccount,

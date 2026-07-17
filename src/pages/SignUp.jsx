@@ -7,7 +7,8 @@ import "../styles/signUp.css";
 export default function SignUp() {
   const {
     role, agreed, setAgreed, handleCreateAccount, error, shake,
-    name, setName, email, setEmail, password, setPassword, loading
+    name, setName, email, setEmail, password, setPassword, loading,
+    username, setUsername
   } = useSignUp();
 
   return (
@@ -81,6 +82,13 @@ export default function SignUp() {
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className="signup-input"
+              type="text"
+              placeholder="Choose a username (optional, e.g. john_doe)"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <input
               className="signup-input"

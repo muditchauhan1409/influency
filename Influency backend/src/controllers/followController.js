@@ -77,12 +77,12 @@ const acceptFollowRequest = async (req, res) => {
     const requester = await User.findById(req.params.requesterId);
     if (!requester) return res.status(404).json({ success: false, message: "User not found" });
 
-    // Remove from requests
+    // Remove from pending requests
     me.followRequests = me.followRequests.filter(
       (id) => id.toString() !== requester._id.toString()
     );
 
-    // Add to followers/following arrays
+    // requester → me (already existing direction)
     if (!me.followersArr.map(String).includes(requester._id.toString())) {
       me.followersArr.push(requester._id);
     }
@@ -90,10 +90,18 @@ const acceptFollowRequest = async (req, res) => {
       requester.followingArr.push(me._id);
     }
 
+    // me → requester (auto follow-back, no search needed)
+    if (!me.followingArr.map(String).includes(requester._id.toString())) {
+      me.followingArr.push(requester._id);
+    }
+    if (!requester.followersArr.map(String).includes(me._id.toString())) {
+      requester.followersArr.push(me._id);
+    }
+
     await me.save();
     await requester.save();
 
-    res.json({ success: true, message: `Now followed by @${requester.username}` });
+    res.json({ success: true, message: `You and @${requester.username} are now connected` });
   } catch (err) {
     console.error("Accept follow request error:", err);
     res.status(500).json({ success: false, message: "Server error" });

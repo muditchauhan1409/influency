@@ -43,7 +43,7 @@ const signup = async (req, res) => {
     });
   }
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, username } = req.body;
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(409).json({
@@ -51,14 +51,34 @@ const signup = async (req, res) => {
         message: "An account with this email already exists",
       });
     }
-    const randomSuffix = Math.floor(Math.random() * 999);
-    const baseHandle = "@" + name.toLowerCase().replace(/\s+/g, "") + randomSuffix;
-    const baseUsername = name.toLowerCase().replace(/\s+/g, "_") + randomSuffix;
+
+    let finalUsername;
+    if (username && username.trim()) {
+      const clean = username.toLowerCase().trim();
+      if (!/^[a-z0-9_.]{3,30}$/.test(clean)) {
+        return res.status(400).json({
+          success: false,
+          message: "Username must be 3-30 characters (letters, numbers, . and _ only)",
+        });
+      }
+      const taken = await User.findOne({ username: clean });
+      if (taken) {
+        return res.status(409).json({ success: false, message: "Username already taken" });
+      }
+      finalUsername = clean;
+    } else {
+      const randomSuffix = Math.floor(Math.random() * 999);
+      finalUsername = name.toLowerCase().replace(/\s+/g, "_") + randomSuffix;
+    }
+
+    const randomSuffix2 = Math.floor(Math.random() * 999);
+    const baseHandle = "@" + name.toLowerCase().replace(/\s+/g, "") + randomSuffix2;
+
     const user = await User.create({
       name, email, password,
       role: role || "creator",
       handle: baseHandle,
-      username: baseUsername,
+      username: finalUsername,
     });
     sendTokenResponse(user, 201, res);
   } catch (err) {
