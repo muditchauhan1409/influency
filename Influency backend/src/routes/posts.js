@@ -1,12 +1,22 @@
-﻿const express = require("express");
+﻿// PASTE PATH: src/routes/posts.js
+const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/auth");
-const { uploadPost } = require("../config/cloudinary");
-const { createPost, getFeed, getUserPosts, deletePost } = require("../controllers/postController");
+const {
+  createPost,
+  getFeed,
+  getBrandPosts,
+  applyToPost,
+  toggleLike,
+  deletePost,
+  uploadPostImage,
+} = require("../controllers/postController");
 
-router.post("/", protect, uploadPost.single("image"), createPost);
+router.post("/create", protect, uploadPostImage, createPost);
 router.get("/feed", protect, getFeed);
-router.get("/user/:userId", protect, getUserPosts);
-router.delete("/:id", protect, deletePost);
+router.get("/brand", protect, getBrandPosts);
+router.post("/:postId/apply", protect, applyToPost);
+router.post("/:postId/like", protect, toggleLike);
+router.delete("/:postId", protect, deletePost);
 
 module.exports = router;

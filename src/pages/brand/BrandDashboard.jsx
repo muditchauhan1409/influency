@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBrandDashboard } from "../../scripts/brandDashboard";
 import BrandSidebar from "../../components/brand/BrandSidebar";
+import BrandPostCreate from "../../components/brand/BrandPostCreate";
 import "../../styles/dashboard.css";
 import "../../styles/brandDashboard.css";
 import "../../styles/settings.css";
@@ -71,6 +72,8 @@ export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }
 
       {/* FEED */}
       <div className="feed">
+        {/* POST CREATE */}
+<BrandPostCreate onPostCreated={() => {}} />
 
         {/* Brand Profile Card */}
         <div className="card">
@@ -114,6 +117,7 @@ export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }
             </div>
           </div>
         </div>
+        
 
         {/* Forms Section */}
         <div className="card trending-card">
