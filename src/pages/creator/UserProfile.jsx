@@ -1,4 +1,6 @@
 // PASTE PATH: src/pages/UserProfile.jsx
+import { useState, useRef } from "react";
+import { useUserPosts, usePosts } from "../../scripts/posts";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS, BRAND_MATCHES } from "../../scripts/dashboard";
 import {
@@ -14,7 +16,7 @@ import {
   REVIEWS,
   ANALYTICS_SNAPSHOT,
 } from "../../scripts/userProfile";
-import { useUserPosts } from "../../scripts/posts";
+
 import "../../styles/dashboard.css";
 import "../../styles/settings.css";
 import "../../styles/userProfile.css";
@@ -33,7 +35,31 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
     setEditMode,
   } = useUserProfile();
 
-  const { posts: myPosts, loading: postsLoading } = useUserPosts(profile._id);
+  const { posts: myPosts, loading: postsLoading, refetch: refetchMyPosts } = useUserPosts(profile._id);
+  const { posting, postError, createPost } = usePosts();
+
+  const [caption, setCaption] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handlePost = async () => {
+    const ok = await createPost({ caption, imageFile });
+    if (ok) {
+      setCaption("");
+      setImageFile(null);
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      refetchMyPosts(); // simplest way to refresh "My Posts" list
+    }
+  };
 
   const currentAvailability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
@@ -495,6 +521,47 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
                 ))}
               </div>
             </div>
+            {/* Create Post Box */}
+            <div className="card">
+              <div className="post-box">
+                <div className="post-box-inner">
+                  <div className="mini-avatar">
+                    {profile.avatarUrl ? (
+                      <img src={profile.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
+                    ) : profile.avatarEmoji}
+                  </div>
+                  <input
+                    className="post-input"
+                    style={{ border: "none", outline: "none", background: "transparent", width: "100%", font: "inherit", color: "inherit" }}
+                    placeholder="What collaboration are you working on today?"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                  />
+                </div>
+
+                {imagePreview && (
+                  <div style={{ position: "relative", marginTop: 10 }}>
+                    <img src={imagePreview} alt="preview" style={{ width: "100%", maxHeight: 280, objectFit: "cover", borderRadius: 12 }} />
+                    <button
+                      onClick={() => { setImageFile(null); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                      style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer" }}
+                    >✕</button>
+                  </div>
+                )}
+
+                {postError && <p style={{ color: "#a13b3b", fontSize: 12, marginTop: 6 }}>{postError}</p>}
+
+                <div className="post-actions">
+                  <button className="post-action-btn col1" onClick={() => fileInputRef.current?.click()}>📷 Photo</button>
+                  <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageSelect} />
+                  <button className="post-action-btn col2" onClick={handlePost} disabled={posting}>
+                    {posting ? "Posting..." : "Post"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            
 
             {/* My Posts */}
             <div className="card" style={{ padding: 18 }}>

@@ -1,4 +1,3 @@
-import { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS, CAMPAIGNS, BRAND_MATCHES, CREATORS, SCORE_FACTORS } from "../../scripts/dashboard";
 import "../../styles/dashboard.css";
@@ -9,29 +8,7 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading, uploadAvatar, avatarUploading, avatarError } = useDashboard();
-  const { posts, loading: postsLoading, posting, postError, createPost } = usePosts();
-
-  const [caption, setCaption] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
-
-  const handleImageSelect = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-  };
-
-  const handlePost = async () => {
-    const ok = await createPost({ caption, imageFile });
-    if (ok) {
-      setCaption("");
-      setImageFile(null);
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
+  const { posts, loading: postsLoading } = usePosts();
 
   const timeAgo = (dateStr) => {
     const diff = Date.now() - new Date(dateStr).getTime();
@@ -163,7 +140,7 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
 
 <div className="profile-stats">
   {[
-    [user?.followers ? `${(user.followers / 1000).toFixed(0)}K` : "0", "Followers"],
+    [user?.followersArr?.length || "0", "Followers"],
     [user?.campaignsCompleted || "0", "Campaigns"],
     [user?.rating ? `${user.rating}★` : "N/A", "Rating"],
     [user?.trustScore || "0", "Trust"],
@@ -188,45 +165,7 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
       </div>
         </div>
 
-        {/* Create Post Box */}
-        <div className="card">
-          <div className="post-box">
-            <div className="post-box-inner">
-              <div className="mini-avatar">
-                {user?.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />
-                ) : (user?.avatar || "👤")}
-              </div>
-              <input
-                className="post-input"
-                style={{ border: "none", outline: "none", background: "transparent", width: "100%", font: "inherit", color: "inherit" }}
-                placeholder="What collaboration are you working on today?"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-              />
-            </div>
-
-            {imagePreview && (
-              <div style={{ position: "relative", marginTop: 10 }}>
-                <img src={imagePreview} alt="preview" style={{ width: "100%", maxHeight: 280, objectFit: "cover", borderRadius: 12 }} />
-                <button
-                  onClick={() => { setImageFile(null); setImagePreview(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                  style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.6)", color: "#fff", border: "none", borderRadius: "50%", width: 26, height: 26, cursor: "pointer" }}
-                >✕</button>
-              </div>
-            )}
-
-            {postError && <p style={{ color: "#a13b3b", fontSize: 12, marginTop: 6 }}>{postError}</p>}
-
-            <div className="post-actions">
-              <button className="post-action-btn col1" onClick={() => fileInputRef.current?.click()}>📷 Photo</button>
-              <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageSelect} />
-              <button className="post-action-btn col2" onClick={handlePost} disabled={posting}>
-                {posting ? "Posting..." : "Post"}
-              </button>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Real Feed */}
         {postsLoading && (
