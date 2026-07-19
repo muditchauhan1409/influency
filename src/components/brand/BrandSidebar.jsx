@@ -8,17 +8,18 @@ import {
   Bell,
   BarChart2,
   Settings,
+  Briefcase,   // ← add this
 } from "lucide-react";
-import "../../styles/dashboard.css";
 
 const BRAND_NAV_ITEMS = [
-  { icon: Home, label: "Home", path: "/brand-dashboard" },
-  { icon: ClipboardList, label: "Forms", path: "/brand-forms" },
-  { icon: Compass, label: "Discover", path: "/brand-discover" },
-  { icon: MessageCircle, label: "Messages", path: "/messages" },
-  { icon: Bell, label: "Notifications", path: "/notifications" },
-  { icon: BarChart2, label: "Analytics", path: "/brand-analytics" },
-  { icon: Settings, label: "Settings", path: "/settings" },
+  { icon: Home,          label: "Home",             path: "/brand-dashboard" },
+  { icon: Briefcase,     label: "Collaborations",   path: "/brand-dashboard?tab=collaborations" },
+  { icon: Compass,       label: "Discover",         path: "/brand-discover" },
+  { icon: ClipboardList, label: "Forms",            path: "/brand-forms" },
+  { icon: MessageCircle, label: "Messages",         path: "/messages" },
+  { icon: Bell,          label: "Notifications",    path: "/notifications" },
+  { icon: BarChart2,     label: "Analytics",        path: "/brand-analytics" },
+  { icon: Settings,      label: "Settings",         path: "/settings" },
 ];
 
 export default function BrandSidebar({ onOpenNotifications, notifUnreadCount }) {
@@ -46,7 +47,12 @@ export default function BrandSidebar({ onOpenNotifications, notifUnreadCount }) 
         return (
           <div
             key={item.label}
-            className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+            className={`nav-item ${
+  !isNotif && (
+    location.pathname + location.search === item.path ||
+    (location.pathname === item.path.split("?")[0] && !item.path.includes("?"))
+  ) ? "active" : ""
+}`}
             onClick={() =>
               isNotif
                 ? onOpenNotifications && onOpenNotifications()

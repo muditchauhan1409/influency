@@ -1,4 +1,5 @@
 // PASTE PATH: src/pages/Collaborations.jsx
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS } from "../../scripts/dashboard";
 import { COLLAB_TABS, useCollaborations } from "../../scripts/collaborations";
@@ -9,19 +10,27 @@ import "../../styles/formInbox.css";
 export default function Collaborations({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const {
-    activeTab, setActiveTab, filtered, counts,
+    activeTab, setActiveTab,
+    filtered, counts,
+    collabsLoading,
+    acceptCollab, declineCollab,
+    submitWorkModal, setSubmitWorkModal,
+    submitWorkUrl,  setSubmitWorkUrl,
+    submitWorkNote, setSubmitWorkNote,
+    submitWorkLoading, submitWork,
     forms, formsLoading,
     activeForm, formAnswers,
     updateAnswer, openForm, submitForm, closeForm,
-    dismissForm,
     submitting, submitSuccess,
+    dismissForm,
   } = useCollaborations();
 
   return (
     <div className="inf-wrap discover-wrap">
 
-      {/* LEFT SIDEBAR */}
+      {/* ── LEFT SIDEBAR ── */}
       <div className="left-sb">
         <div className="logo-block">
           <div className="logo-icon">✦</div>
@@ -42,13 +51,13 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
               className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
               onClick={() =>
                 isNotif
-                  ? onOpenNotifications && onOpenNotifications()
+                  ? onOpenNotifications?.()
                   : item.path && navigate(item.path)
               }
             >
               <span className="nav-icon-wrap">
-  {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
-</span>
+                {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
+              </span>
               <span className="nav-label">{item.label}</span>
               {badgeValue && <span className="nav-badge">{badgeValue}</span>}
             </div>
@@ -56,7 +65,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
         })}
       </div>
 
-      {/* MAIN CONTENT */}
+      {/* ── MAIN CONTENT ── */}
       <div className="discover-main">
 
         <div className="discover-header">
@@ -64,6 +73,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
           <div className="discover-sub">Track your brand partnerships and fill incoming forms</div>
         </div>
 
+        {/* TABS */}
         <div className="collab-tabs">
           {COLLAB_TABS.map((tab) => (
             <button
@@ -79,7 +89,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
           ))}
         </div>
 
-        {/* FORMS TAB */}
+        {/* ── FORMS TAB ── */}
         {activeTab === "Forms" && (
           <div className="form-inbox">
             {formsLoading ? (
@@ -100,9 +110,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                   <button className="back-link" onClick={closeForm}>← Back</button>
                   <div>
                     <div className="form-fill-title">{activeForm.title}</div>
-                    <div className="form-fill-brand">
-                      From: {activeForm.brand?.name || "Brand"}
-                    </div>
+                    <div className="form-fill-brand">From: {activeForm.brand?.name || "Brand"}</div>
                   </div>
                   <div className="badge badge-verified-g">Auto-filled from profile</div>
                 </div>
@@ -113,9 +121,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                       <label className="form-field-label">
                         {q.label}
                         {q.required && <span className="form-required">*</span>}
-                        {q.profileField && (
-                          <span className="form-autofill-tag">⚡ Auto-filled</span>
-                        )}
+                        {q.profileField && <span className="form-autofill-tag">⚡ Auto-filled</span>}
                       </label>
 
                       {q.type === "text" && (
@@ -126,7 +132,6 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                           placeholder={`Enter ${q.label.toLowerCase()}...`}
                         />
                       )}
-
                       {q.type === "textarea" && (
                         <textarea
                           className="settings-input form-input"
@@ -136,7 +141,6 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                           placeholder={`Enter ${q.label.toLowerCase()}...`}
                         />
                       )}
-
                       {q.type === "select" && (
                         <select
                           className="settings-select form-input"
@@ -149,13 +153,11 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                           ))}
                         </select>
                       )}
-
                       {q.type === "multiselect" && (
                         <div className="form-multiselect">
                           {q.options.map((opt) => {
                             const selected = Array.isArray(formAnswers[q.id])
-                              ? formAnswers[q.id].includes(opt)
-                              : false;
+                              ? formAnswers[q.id].includes(opt) : false;
                             return (
                               <button
                                 key={opt}
@@ -163,12 +165,9 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                                 onClick={() => {
                                   const current = Array.isArray(formAnswers[q.id])
                                     ? formAnswers[q.id] : [];
-                                  updateAnswer(
-                                    q.id,
-                                    selected
-                                      ? current.filter((v) => v !== opt)
-                                      : [...current, opt]
-                                  );
+                                  updateAnswer(q.id, selected
+                                    ? current.filter((v) => v !== opt)
+                                    : [...current, opt]);
                                 }}
                               >
                                 {opt}
@@ -203,8 +202,10 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                 <div className="collab-list">
                   {forms.map((form) => (
                     <div className="collab-card" key={form._id}>
-                      <div className="collab-card-logo"
-                        style={{ background: "linear-gradient(135deg,#7a1f33,#c87a4a)", color: "#fff" }}>
+                      <div
+                        className="collab-card-logo"
+                        style={{ background: "linear-gradient(135deg,#7a1f33,#c87a4a)", color: "#fff" }}
+                      >
                         {form.brand?.name?.[0] || "B"}
                       </div>
                       <div className="collab-card-info">
@@ -214,9 +215,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                             {form.status === "pending" ? "Pending" : "Submitted"}
                           </span>
                         </div>
-                        <div className="collab-card-campaign">
-                          From: {form.brand?.name || "Brand"}
-                        </div>
+                        <div className="collab-card-campaign">From: {form.brand?.name || "Brand"}</div>
                         <div className="collab-card-meta">
                           <span>Received: {new Date(form.sentAt).toLocaleDateString("en-IN")}</span>
                           {form.status === "submitted" && (
@@ -228,27 +227,19 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
                         </div>
                       </div>
                       <div className="collab-card-actions">
-  {form.status === "pending" ? (
-    <>
-      <button
-        className="collab-action-btn primary"
-        onClick={() => openForm(form._id)}
-      >
-        Fill Form
-      </button>
-      <button
-        className="collab-action-btn outline"
-        onClick={() => dismissForm(form._id)}
-      >
-        Dismiss
-      </button>
-    </>
-  ) : (
-    <button className="collab-action-btn outline" disabled>
-      Submitted
-    </button>
-  )}
-</div>
+                        {form.status === "pending" ? (
+                          <>
+                            <button className="collab-action-btn primary" onClick={() => openForm(form._id)}>
+                              Fill Form
+                            </button>
+                            <button className="collab-action-btn outline" onClick={() => dismissForm(form._id)}>
+                              Dismiss
+                            </button>
+                          </>
+                        ) : (
+                          <button className="collab-action-btn outline" disabled>Submitted</button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -257,61 +248,167 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
           </div>
         )}
 
-        {/* OTHER TABS */}
+        {/* ── ACTIVE / PENDING / COMPLETED TABS ── */}
         {activeTab !== "Forms" && (
           <div className="collab-list">
-            {filtered.map((c) => (
-              <div className="collab-card" key={c.id}>
-                <div className="collab-card-logo" style={{ background: c.bg }}>
-                  {c.initials}
-                </div>
-                <div className="collab-card-info">
-                  <div className="collab-card-top">
-                    <div className="collab-card-brand">{c.brand}</div>
-                    <span className={`collab-status-tag ${c.status.toLowerCase()}`}>
-                      {c.status}
-                    </span>
+            {collabsLoading ? (
+              <p className="discover-empty">Loading collaborations...</p>
+            ) : filtered.length === 0 ? (
+              <div className="discover-empty">
+                {activeTab === "Pending"
+                  ? "No pending collaborations — brands will appear here after they accept your application."
+                  : activeTab === "Active"
+                  ? "No active collaborations yet. Accept a pending collab to get started!"
+                  : "No completed collaborations yet."}
+              </div>
+            ) : (
+              filtered.map((c) => (
+                <div className="collab-card" key={c._id}>
+                  <div className="collab-card-logo" style={{ background: c.bg }}>
+                    {c.initials}
                   </div>
-                  <div className="collab-card-campaign">{c.campaign}</div>
-                  <div className="collab-card-meta">
-                    <span>{c.budget}</span>
-                    <span className="collab-dot">•</span>
-                    <span>{c.deadline}</span>
-                    {c.earnedTrust && (
-                      <>
-                        <span className="collab-dot">•</span>
-                        <span className="collab-trust-earned">+{c.earnedTrust} trust pts earned</span>
-                      </>
+
+                  <div className="collab-card-info">
+                    <div className="collab-card-top">
+                      <div className="collab-card-brand">{c.brand}</div>
+                      <span className={`collab-status-tag ${activeTab.toLowerCase()}`}>
+                        {activeTab}
+                      </span>
+                    </div>
+                    <div className="collab-card-campaign">{c.campaign}</div>
+                    <div className="collab-card-meta">
+                      <span>{c.budget}</span>
+                      <span className="collab-dot">•</span>
+                      <span>{c.deadline}</span>
+                      {c.brandFeedback && (
+                        <>
+                          <span className="collab-dot">•</span>
+                          <span className="collab-trust-earned">"{c.brandFeedback}"</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Progress bar for active */}
+                    {activeTab === "Active" && (
+                      <div className="collab-progress-bar">
+                        <span style={{ width: `${c.progress}%` }} />
+                      </div>
+                    )}
+
+                    {/* Submission info if submitted */}
+                    {c.status === "submitted" && c.submissionUrl && (
+                      <div className="collab-card-meta" style={{ marginTop: 4 }}>
+                        <span>📎 Submitted:</span>
+                        <a
+                          href={c.submissionUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#7a1f33", textDecoration: "underline", fontSize: 13 }}
+                        >
+                          View Work
+                        </a>
+                      </div>
                     )}
                   </div>
-                  {c.status === "Active" && (
-                    <div className="collab-progress-bar">
-                      <span style={{ width: `${c.progress}%` }} />
-                    </div>
-                  )}
+
+                  {/* ── ACTIONS ── */}
+                  <div className="collab-card-actions">
+                    {/* PENDING — brand accepted, creator needs to accept/decline */}
+                    {c.status === "brand_accepted" && (
+                      <>
+                        <button
+                          className="collab-action-btn primary"
+                          onClick={() => acceptCollab(c._id)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="collab-action-btn outline"
+                          onClick={() => declineCollab(c._id)}
+                        >
+                          Decline
+                        </button>
+                      </>
+                    )}
+
+                    {/* ACTIVE — creator submits work */}
+                    {c.status === "active" && (
+                      <button
+                        className="collab-action-btn primary"
+                        onClick={() => setSubmitWorkModal(c._id)}
+                      >
+                        Submit Work
+                      </button>
+                    )}
+
+                    {/* SUBMITTED — waiting for brand */}
+                    {c.status === "submitted" && (
+                      <button className="collab-action-btn outline" disabled>
+                        Awaiting Approval
+                      </button>
+                    )}
+
+                    {/* COMPLETED */}
+                    {c.status === "completed" && (
+                      <button className="collab-action-btn outline">View Summary</button>
+                    )}
+                  </div>
                 </div>
-                <div className="collab-card-actions">
-                  {c.status === "Active" && (
-                    <button className="collab-action-btn primary">View Details</button>
-                  )}
-                  {c.status === "Pending" && (
-                    <>
-                      <button className="collab-action-btn primary">Accept</button>
-                      <button className="collab-action-btn outline">Decline</button>
-                    </>
-                  )}
-                  {c.status === "Completed" && (
-                    <button className="collab-action-btn outline">View Summary</button>
-                  )}
-                </div>
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <p className="discover-empty">No {activeTab.toLowerCase()} collaborations yet.</p>
+              ))
             )}
           </div>
         )}
       </div>
+
+      {/* ── SUBMIT WORK MODAL ── */}
+      {submitWorkModal && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSubmitWorkModal(null)}
+        >
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-title">Submit Your Work</div>
+            <div className="modal-sub">Share your content link and an optional note for the brand.</div>
+
+            <input
+              className="settings-input"
+              placeholder="Content link (Instagram, YouTube, Drive...)"
+              value={submitWorkUrl}
+              onChange={(e) => setSubmitWorkUrl(e.target.value)}
+              style={{ marginBottom: 12 }}
+            />
+            <textarea
+              className="settings-input"
+              rows={3}
+              placeholder="Note for the brand (optional)"
+              value={submitWorkNote}
+              onChange={(e) => setSubmitWorkNote(e.target.value)}
+              style={{ marginBottom: 20, resize: "none" }}
+            />
+
+            <div className="form-fill-footer">
+              <button
+                className="btn-outline-sm"
+                onClick={() => {
+                  setSubmitWorkModal(null);
+                  setSubmitWorkUrl("");
+                  setSubmitWorkNote("");
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn-primary-sm"
+                onClick={submitWork}
+                disabled={submitWorkLoading || !submitWorkUrl.trim()}
+                style={{ padding: "10px 24px" }}
+              >
+                {submitWorkLoading ? "Submitting..." : "Submit Work"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
