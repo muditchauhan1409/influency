@@ -21,6 +21,9 @@ app.use("/api/forms", require("./routes/forms"));
 app.use("/api/follow", require("./routes/follow"));
 app.use("/api/messages", require("./routes/messages"));
 
+const collabRoutes = require("./routes/collab");
+app.use("/api/collab", collabRoutes);
+
 // ── MongoDB ──
 mongoose
   .connect(process.env.MONGO_URI)

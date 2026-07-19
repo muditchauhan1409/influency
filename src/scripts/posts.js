@@ -16,7 +16,7 @@ export function usePosts() {
   const fetchFeed = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/posts/feed`, {
+      const res = await fetch(`${API_URL}/social-posts/feed`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -33,25 +33,19 @@ export function usePosts() {
       setPostError("Add a caption or a photo");
       return false;
     }
-
     setPosting(true);
     setPostError("");
-
     try {
       const token = localStorage.getItem("token");
       const formData = new FormData();
-
       formData.append("caption", caption || "");
       if (imageFile) formData.append("image", imageFile);
 
-      const res = await fetch(`${API_URL}/posts`, {
+      const res = await fetch(`${API_URL}/social-posts`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -72,34 +66,18 @@ export function usePosts() {
   const deletePost = async (postId) => {
     try {
       const token = localStorage.getItem("token");
-
-      await fetch(`${API_URL}/posts/${postId}`, {
+      await fetch(`${API_URL}/social-posts/${postId}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       setPosts((prev) => prev.filter((p) => p._id !== postId));
     } catch (err) {
       console.error("Delete post error:", err);
     }
   };
 
-  return {
-    posts,
-    loading,
-    posting,
-    postError,
-    createPost,
-    deletePost,
-    refetch: fetchFeed,
-  };
+  return { posts, loading, posting, postError, createPost, deletePost, refetch: fetchFeed };
 }
-
-/* ===========================
-   USER POSTS HOOK
-=========================== */
 
 export function useUserPosts(userId) {
   const [posts, setPosts] = useState([]);
@@ -112,21 +90,13 @@ export function useUserPosts(userId) {
 
   const fetchUserPosts = async () => {
     setLoading(true);
-
     try {
       const token = localStorage.getItem("token");
-
-      const res = await fetch(`${API_URL}/posts/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${API_URL}/social-posts/user/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       const data = await res.json();
-
-      if (data.success) {
-        setPosts(data.posts);
-      }
+      if (data.success) setPosts(data.posts);
     } catch (err) {
       console.error("User posts fetch error:", err);
     } finally {
@@ -134,9 +104,5 @@ export function useUserPosts(userId) {
     }
   };
 
-  return {
-    posts,
-    loading,
-    refetch: fetchUserPosts,
-  };
+  return { posts, loading, refetch: fetchUserPosts };
 }

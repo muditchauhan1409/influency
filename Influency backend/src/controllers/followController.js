@@ -210,6 +210,28 @@ const setUsername = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+const discoverUsers = async (req, res) => {
+  try {
+    const currentUserId = req.user._id;
+
+    // Get current user's following list from User doc (matches your schema)
+    const me = await User.findById(currentUserId).select("followingArr");
+    const followingIds = me.followingArr || [];
+
+    // Exclude self and already-followed users
+    const users = await User.find({
+      _id: { $nin: [...followingIds, currentUserId] }
+    })
+      .select("name username avatar avatarUrl bio role")  // matches your populate fields
+      .limit(20)
+      .lean();
+
+    res.status(200).json({ success: true, users });
+  } catch (error) {
+    console.error("discoverUsers error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
 
 module.exports = {
   searchUsers,
@@ -220,4 +242,5 @@ module.exports = {
   getFollowRequests,
   getConnections,
   setUsername,
+  discoverUsers, 
 };

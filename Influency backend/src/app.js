@@ -33,6 +33,8 @@ const userRoutes = require("./routes/users");
 const followRoutes = require("./routes/follow");
 const messageRoutes = require("./routes/messages");
 const postRoutes = require("./routes/posts");  // ← sirf ek baar
+const socialPostRoutes = require("./routes/socialPosts");
+const collabRoutes    = require("./routes/collab"); 
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/forms", generalLimiter, formRoutes);
@@ -40,6 +42,8 @@ app.use("/api/users", generalLimiter, userRoutes);
 app.use("/api/follow", generalLimiter, followRoutes);
 app.use("/api/messages", generalLimiter, messageRoutes);
 app.use("/api/posts", generalLimiter, postRoutes);  // ← rate limiter bhi add kiya
+app.use("/api/social-posts", socialPostRoutes);
+app.use("/api/collab",       generalLimiter, collabRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
