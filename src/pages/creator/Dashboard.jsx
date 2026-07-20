@@ -86,7 +86,7 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
         {/* Profile Card */}
         <div className="card">
           <div className="profile-card-cover">
-            <span className="badge badge-verified-g cover-badge">✓ Verified Creator</span>
+            <span className="badge badge-verified-g cover-badge">✓ Verified Creatorss</span>
           </div>
           <div className="profile-card-body">
             <div className="profile-top-row">
