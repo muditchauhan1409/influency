@@ -24,7 +24,7 @@ const PostSchema = new mongoose.Schema(
         appliedAt: { type: Date, default: Date.now },
         status: {
           type: String,
-          enum: ["pending", "accepted", "rejected"],
+          enum: ["pending", "accepted", "rejected","completed"],
           default: "pending",
         },
       },

@@ -27,7 +27,8 @@ const COLLAB_STATUS_TAB = {
 
 export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
-  const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms } = useBrandDashboard();
+  const location = useLocation();
+const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, campaigns, campaignsLoading, fetchCampaigns } = useBrandDashboard();
   const {
     collabs, collabsLoading,
     applicants, applicantsLoading, fetchApplicants,
@@ -111,9 +112,6 @@ export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }
         {/* ════════════════ HOME TAB ════════════════ */}
         {activeTab === "Home" && (
           <>
-            {/* Campaign Post Create */}
-            <BrandPostCreate onPostCreated={() => {}} />
-
             {/* Brand Profile Card */}
             <div className="card">
               <div className="profile-card-cover brand-cover">
@@ -156,6 +154,54 @@ export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }
                 </div>
               </div>
             </div>
+
+            {/* Campaign Post Create */}
+<BrandPostCreate onPostCreated={fetchCampaigns} />
+
+{/* My Campaigns */}
+<div className="card">
+  <div className="post-card-inner">
+    <div className="trend-section-title">My Campaigns</div>
+    {campaignsLoading ? (
+      <p className="discover-empty">Loading campaigns...</p>
+    ) : campaigns.length === 0 ? (
+      <p className="discover-empty">No campaigns posted yet — create one above!</p>
+    ) : (
+      campaigns.map((c) => {
+        const pendingCount = c.applicants?.filter((a) => a.status === "pending").length || 0;
+        return (
+          <div className="campaign-card" key={c._id} style={{ marginBottom: 10 }}>
+            <div className="campaign-head">
+              <div className="brand-logo" style={{ background: "rgba(122,31,51,0.1)", color: "#7a1f33" }}>
+                {c.niches?.[0]?.[0] || "C"}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div className="brand-name">{c.title}</div>
+                <div className="brand-cat">{c.niches?.join(" · ")}</div>
+              </div>
+              <span className="pill pill-budget">{c.budget || "No budget"}</span>
+            </div>
+            <div className="campaign-pills">
+              <span className="pill pill-cat">{c.applicants?.length || 0} applicant{c.applicants?.length !== 1 ? "s" : ""}</span>
+              {pendingCount > 0 && (
+                <span className="pill pill-dead">{pendingCount} pending review</span>
+              )}
+            </div>
+            <button
+              className="collab-action-btn primary"
+              style={{ marginTop: 10, width: "100%" }}
+              onClick={() => openApplicants(c._id)}
+            >
+              View Applicants →
+            </button>
+          </div>
+        );
+      })
+    )}
+  </div>
+</div>
+
+{/* Recommended Creators */}
 
             {/* Recommended Creators */}
             <div className="card">
@@ -495,6 +541,72 @@ export default function BrandDashboard({ onOpenNotifications, notifUnreadCount }
         </div>
       )}
 
+      {/* ── APPLICANTS MODAL ── */}
+      {applicantsPostId && (
+        <div className="modal-backdrop" onClick={() => setApplicantsPostId(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div className="modal-header">
+              <div className="modal-title">Campaign Applicants</div>
+              <button className="notif-close-btn" onClick={() => setApplicantsPostId(null)}>✕</button>
+            </div>
+            <div className="modal-body" style={{ maxHeight: 420, overflowY: "auto" }}>
+              {applicantsLoading ? (
+                <p className="discover-empty">Loading applicants...</p>
+              ) : applicants.length === 0 ? (
+                <p className="discover-empty">No applicants yet for this campaign.</p>
+              ) : (
+                applicants.map((a) => (
+                  <div className="settings-row" key={a.creatorId?._id || a.creatorId}>
+                    <div className="settings-row-icon">
+                      {a.creatorId?.avatarUrl ? (
+                        <img src={a.creatorId.avatarUrl} alt=""
+                          style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover" }} />
+                      ) : "👤"}
+                    </div>
+                    <div className="settings-row-info">
+                      <div className="settings-row-label">{a.creatorId?.name || "Creator"}</div>
+                      <div className="settings-row-sub">
+                        @{a.creatorId?.username || "—"} · {a.status}
+                      </div>
+                    </div>
+                    <div className="settings-row-right" style={{ display: "flex", gap: 6 }}>
+                      {a.status === "pending" && (
+                        <>
+                          <button
+                            className="collab-action-btn primary"
+                            style={{ padding: "6px 12px", fontSize: 12 }}
+                            onClick={() => brandAccept(applicantsPostId, a.creatorId._id || a.creatorId)}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            className="collab-action-btn outline"
+                            style={{ padding: "6px 12px", fontSize: 12 }}
+                            onClick={() => brandReject(applicantsPostId, a.creatorId._id || a.creatorId)}
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
+                      {a.status === "accepted" && (
+                        <span className="settings-tag green">✓ Accepted</span>
+                      )}
+                      {a.status === "rejected" && (
+                        <span className="settings-tag">Rejected</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn-outline-sm" onClick={() => setApplicantsPostId(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
+
   );
 }
