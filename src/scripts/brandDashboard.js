@@ -10,12 +10,31 @@ export function useBrandDashboard() {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
+  const [campaignsLoading, setCampaignsLoading] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (stored) setUser(JSON.parse(stored));
     fetchForms();
+    fetchCampaigns();
   }, []);
+
+  const fetchCampaigns = async () => {
+    setCampaignsLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/posts/brand`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) setCampaigns(data.posts);
+    } catch (err) {
+      console.error("Fetch campaigns error:", err);
+    } finally {
+      setCampaignsLoading(false);
+    }
+  };
 
   const fetchForms = async () => {
     try {
@@ -35,7 +54,7 @@ export function useBrandDashboard() {
   const handleCreateForm = () => navigate("/brand-forms/create");
   const handleViewForm = (formId) => navigate(`/brand-form-responses/${formId}`);
 
-  return { forms, loading, user, handleCreateForm, handleViewForm, fetchForms };
+  return { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, campaigns, campaignsLoading, fetchCampaigns };
 }
 
 // ── New hook for Brand Collaborations ──

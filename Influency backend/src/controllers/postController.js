@@ -177,6 +177,119 @@ const deletePost = async (req, res) => {
   }
 };
 
+// @route   GET /api/posts/:postId
+// @desc    Single campaign ka full detail lo (creator tap karega toh yeh call hoga)
+// @access  Private
+const getPostDetail = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .populate("brandId", "name avatarUrl avatar email");
+    if (!post) return res.status(404).json({ success: false, message: "Campaign not found" });
+
+    const myApplication = post.applicants.find(
+      (a) => a.creatorId.toString() === req.user._id.toString()
+    );
+
+    res.json({
+      success: true,
+      post: {
+        ...post.toObject(),
+        myStatus: myApplication ? myApplication.status : null,
+        liked: post.likes.some((id) => id.toString() === req.user._id.toString()),
+      },
+    });
+  } catch (err) {
+    console.error("Get post detail error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// @route   GET /api/posts/my-applications
+// @desc    Creator ke saare applied campaigns, status ke saath (Active/Pending/Completed)
+// @access  Private (Creator)
+const getMyApplications = async (req, res) => {
+  try {
+    const posts = await Post.find({ "applicants.creatorId": req.user._id })
+      .populate("brandId", "name avatarUrl avatar")
+      .sort({ createdAt: -1 });
+
+    const applications = posts.map((post) => {
+      const app = post.applicants.find(
+        (a) => a.creatorId.toString() === req.user._id.toString()
+      );
+      return {
+        _id: post._id,
+        title: post.title,
+        description: post.description,
+        imageUrl: post.imageUrl,
+        budget: post.budget,
+        niches: post.niches,
+        brand: post.brandId,
+        appliedAt: app.appliedAt,
+        status: app.status, // pending | accepted | rejected | completed
+      };
+    });
+
+    res.json({ success: true, applications });
+  } catch (err) {
+    console.error("My applications error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// @route   GET /api/posts/:postId/applicants
+// @desc    Brand apne campaign ke applicants dekhe
+// @access  Private (Brand only)
+const getPostApplicants = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.postId)
+      .populate("applicants.creatorId", "name email avatarUrl avatar niches trustScore");
+    if (!post) return res.status(404).json({ success: false, message: "Campaign not found" });
+    if (post.brandId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+    res.json({ success: true, applicants: post.applicants });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// @route   PATCH /api/posts/:postId/applicants/:creatorId
+// @desc    Brand applicant ko confirm/reject/complete kare
+// @access  Private (Brand only)
+const updateApplicantStatus = async (req, res) => {
+  try {
+    const { status } = req.body; // "accepted" | "rejected" | "completed"
+    if (!["accepted", "rejected", "completed"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
+
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ success: false, message: "Campaign not found" });
+    if (post.brandId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    const applicant = post.applicants.find(
+      (a) => a.creatorId.toString() === req.params.creatorId
+    );
+    if (!applicant) return res.status(404).json({ success: false, message: "Applicant not found" });
+
+    // completed sirf accepted se hi ho sakta hai
+    if (status === "completed" && applicant.status !== "accepted") {
+      return res.status(400).json({ success: false, message: "Only accepted collaborations can be marked completed" });
+    }
+
+    applicant.status = status;
+    await post.save();
+
+    res.json({ success: true, message: `Applicant marked as ${status}` });
+  } catch (err) {
+    console.error("Update applicant status error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   createPost,
   getFeed,
@@ -185,4 +298,9 @@ module.exports = {
   toggleLike,
   deletePost,
   uploadPostImage,
+  getPostDetail,
+  getMyApplications,
+  getPostApplicants,
+  updateApplicantStatus,
 };
+
