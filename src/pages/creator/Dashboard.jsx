@@ -157,7 +157,7 @@ export default function Dashboard({ darkMode, setDarkMode, onOpenNotifications, 
             <div className="btn-row">
               <button className="btn-primary-sm">👤 Connect</button>
               <button className="btn-primary-sm">✨ Collaborate</button>
-              <button className="btn-outline-sm">💬 Message</button>
+              <button className="btn-outline-sm">💬 Messages</button>
             </div>
 
             {avatarError && (
