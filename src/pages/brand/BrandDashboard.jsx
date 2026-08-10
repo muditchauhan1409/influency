@@ -8,6 +8,7 @@ import "../../styles/dashboard.css";
 import "../../styles/brandDashboard.css";
 import "../../styles/collaborations.css";
 import "../../styles/settings.css";
+import CollabSummaryModal from "../../components/CollabSummaryModal";
 
 const TOP_CREATORS = [
   { initials: "AR", name: "Aria Chen", sub: "Fashion · 2.4M · Trust 94", bg: "linear-gradient(135deg,#3d1424,#1a0810)" },
@@ -59,6 +60,7 @@ const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, camp
 
   // Applicants modal
   const [applicantsPostId, setApplicantsPostId] = useState(null);
+  const [summaryCollab, setSummaryCollab] = useState(null);
 
   const handleSendForm = async () => {
     if (!selectedFormId || !creatorEmail.trim()) {
@@ -407,8 +409,10 @@ const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, camp
 
                         {/* Completed */}
                         {c.status === "completed" && (
-                          <button className="collab-action-btn outline">View Summary</button>
-                        )}
+  <button className="collab-action-btn outline" onClick={() => setSummaryCollab(c)}>
+    View Summary
+  </button>
+)}
                       </div>
                     </div>
                   ))
@@ -605,6 +609,13 @@ const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, camp
           </div>
         </div>
       )}
+      {summaryCollab && (
+  <CollabSummaryModal
+    collab={summaryCollab}
+    viewerRole="brand"
+    onClose={() => setSummaryCollab(null)}
+  />
+)}
 
     </div>
 

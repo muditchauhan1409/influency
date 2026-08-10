@@ -6,6 +6,7 @@ import { COLLAB_TABS, useCollaborations } from "../../scripts/collaborations";
 import "../../styles/dashboard.css";
 import "../../styles/collaborations.css";
 import "../../styles/formInbox.css";
+import CollabSummaryModal from "../../components/CollabSummaryModal";
 
 export default function Collaborations({ onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
     submitting, submitSuccess,
     dismissForm,
   } = useCollaborations();
+
+  const [summaryCollab, setSummaryCollab] = useState(null);
 
   return (
     <div className="inf-wrap discover-wrap">
@@ -350,7 +353,9 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
 
                     {/* COMPLETED */}
                     {c.status === "completed" && (
-                      <button className="collab-action-btn outline">View Summary</button>
+                       <button className="collab-action-btn outline" onClick={() => setSummaryCollab(c)}>
+                           View Summary
+                        </button>
                     )}
                   </div>
                 </div>
@@ -409,6 +414,13 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
           </div>
         </div>
       )}
+      {summaryCollab && (
+  <CollabSummaryModal
+    collab={summaryCollab}
+    viewerRole="creator"
+    onClose={() => setSummaryCollab(null)}
+  />
+)}
     </div>
   );
 }
