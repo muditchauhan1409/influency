@@ -133,7 +133,7 @@ export default function Analytics({ onOpenNotifications, notifUnreadCount }) {
 
         <div className="discover-header">
           <div className="discover-title">Analytics</div>
-          <div className="discover-sub">Track your growth, performance, and trust journey</div>
+          <div className="discover-sub">Track your growth, performance, and trust </div>
         </div>
 
         {/* Stat Cards */}
