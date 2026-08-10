@@ -1,4 +1,4 @@
-// PASTE PATH: src/components/brand/BrandSidebar.jsx
+//src/components/brand/BrandSidebar.jsx
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Home,

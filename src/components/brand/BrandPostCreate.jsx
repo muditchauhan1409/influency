@@ -69,6 +69,7 @@ export default function BrandPostCreate({ onPostCreated }) {
             ))}
           </div>
         </div>
+        
 
         {/* Image Upload */}
         <div>
