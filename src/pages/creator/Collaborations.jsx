@@ -15,6 +15,7 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
   const {
     activeTab, setActiveTab,
     filtered, counts,
+    collabs,
     collabsLoading,
     acceptCollab, declineCollab,
     submitWorkModal, setSubmitWorkModal,
@@ -353,10 +354,16 @@ export default function Collaborations({ onOpenNotifications, notifUnreadCount }
 
                     {/* COMPLETED */}
                     {c.status === "completed" && (
-                       <button className="collab-action-btn outline" onClick={() => setSummaryCollab(c)}>
-                           View Summary
-                        </button>
-                    )}
+  <button
+    className="collab-action-btn outline"
+    onClick={() => {
+      const raw = collabs.find((rc) => rc._id === c._id);
+      setSummaryCollab(raw || c);
+    }}
+  >
+    View Summary
+  </button>
+)}
                   </div>
                 </div>
               ))

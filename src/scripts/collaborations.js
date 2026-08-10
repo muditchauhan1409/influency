@@ -201,6 +201,7 @@ export function useCollaborations() {
   return {
     activeTab, setActiveTab,
     filtered, counts,
+    collabs,
     collabsLoading,
     acceptCollab, declineCollab,
     submitWorkModal, setSubmitWorkModal,
