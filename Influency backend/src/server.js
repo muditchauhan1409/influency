@@ -20,7 +20,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/forms", require("./routes/forms"));
 app.use("/api/follow", require("./routes/follow"));
 app.use("/api/messages", require("./routes/messages"));
-
+app.use("/api/notifications", require("./routes/notifications"));
 const collabRoutes = require("./routes/collab");
 app.use("/api/collab", collabRoutes);
 
@@ -34,12 +34,19 @@ mongoose
 const wss = new WebSocket.Server({ server });
 const Message = require("./models/Message");
 const User = require("./models/User");
+const Notification = require("./models/Notification");
+const { pushNotification, setClients } = require("./utils/notify");
+
 
 // Map: userId (string) → WebSocket
 const clients = new Map();
+setClients(clients);
+
+
 
 wss.on("connection", (ws) => {
   let userId = null;
+  
 
   ws.on("message", async (raw) => {
     let data;
@@ -106,6 +113,12 @@ wss.on("connection", (ws) => {
         if (receiverWs?.readyState === WebSocket.OPEN) {
           receiverWs.send(JSON.stringify(payload));
         }
+                pushNotification(receiverId, {
+          type: "message",
+          title: `${me.username || me.name} sent you a message`,
+          desc: saved.text.length > 60 ? saved.text.slice(0, 60) + "…" : saved.text,
+          relatedId: saved._id,
+        }).catch((e) => console.error("Notify error:", e));
 
         // Echo back to sender (confirmation)
         ws.send(JSON.stringify({ ...payload, type: "message_sent" }));

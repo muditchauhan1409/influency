@@ -25,11 +25,13 @@ import BrandDashboard from "./pages/brand/BrandDashboard";
 import BrandFormCreate from "./pages/brand/BrandFormCreate";
 import BrandFormResponses from "./pages/brand/BrandFormResponses";
 import BrandForms from "./pages/brand/BrandForms";
+import { CreatorRoute, BrandRoute, SharedRoute } from "./components/ProtectedRoute";
+import BrandProfile from "./pages/brand/BrandProfile";
 
 // Components
 import NotificationsPanel from "./components/NotificationsPanel";
 import { useNotificationsPanel } from "./scripts/notifications";
-import { CreatorRoute, BrandRoute } from "./components/ProtectedRoute";
+
 
 
 import { getCurrentUser } from "./scripts/auth";
@@ -88,11 +90,7 @@ function App() {
             <Collaborations onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
           </CreatorRoute>
         } />
-        <Route path="/messages" element={
-          <CreatorRoute>
-            <Messages onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
-          </CreatorRoute>
-        } />
+        
         <Route path="/notifications" element={<ComingSoon title="Notifications" />} />
         <Route path="/profile" element={
           <CreatorRoute>
@@ -128,6 +126,16 @@ function App() {
             <BrandForms />
           </BrandRoute>
         } />
+              <Route path="/brand/profile" element={
+        <BrandRoute>
+          <BrandProfile
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            onOpenNotifications={notif.open}
+            notifUnreadCount={notif.unreadCount}
+          />
+        </BrandRoute>
+      } />
         <Route path="/brand-form-responses/:formId" element={
           <BrandRoute>
             <BrandFormResponses />
@@ -135,6 +143,11 @@ function App() {
         } />
         <Route path="/brand-discover" element={<ComingSoon title="Find Creators" />} />
         <Route path="/brand-analytics" element={<ComingSoon title="Brand Analytics" />} />
+        <Route path="/messages" element={
+  <SharedRoute>
+    <Messages onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
+  </SharedRoute>
+} />
 
       </Routes>
 

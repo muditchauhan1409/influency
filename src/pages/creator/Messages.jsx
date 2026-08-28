@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { NAV_ITEMS } from "../../scripts/dashboard";
+import BrandSidebar from "../../components/brand/BrandSidebar";
 import { useMessages } from "../../scripts/messages";
 import "../../styles/dashboard.css";
 import "../../styles/settings.css";
@@ -46,6 +47,8 @@ export default function Messages({ onOpenNotifications, notifUnreadCount }) {
   const [hoveredMsg, setHoveredMsg] = useState(null);
 
   const meId = JSON.parse(localStorage.getItem("user") || "{}")?._id;
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+const isBrand = currentUser.role === "brand";
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -58,58 +61,65 @@ export default function Messages({ onOpenNotifications, notifUnreadCount }) {
     <div className="messages-wrap">
 
       {/* LEFT SIDEBAR */}
-      <div className="left-sb">
-        <div className="logo-block">
-          <div className="logo-icon">✦</div>
-          <div className="logo-text">
-            <span className="logo-gold">Influ</span>
-            <span className="logo-white">ency</span>
-          </div>
+{isBrand ? (
+  <BrandSidebar
+    onOpenNotifications={onOpenNotifications}
+    notifUnreadCount={notifUnreadCount}
+  />
+) : (
+  <div className="left-sb">
+    <div className="logo-block">
+      <div className="logo-icon">✦</div>
+      <div className="logo-text">
+        <span className="logo-gold">Influ</span>
+        <span className="logo-white">ency</span>
+      </div>
+    </div>
+
+    {NAV_ITEMS.map((item) => {
+      const isNotif = item.label === "Notifications";
+      const badgeValue = isNotif
+        ? (notifUnreadCount > 0 ? notifUnreadCount : null)
+        : item.badge;
+      return (
+        <div
+          key={item.label}
+          className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
+          onClick={() =>
+            isNotif
+              ? onOpenNotifications?.()
+              : item.path && navigate(item.path)
+          }
+        >
+          <span className="nav-icon-wrap">
+            {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
+          </span>
+          <span className="nav-label">{item.label}</span>
+          {badgeValue && <span className="nav-badge">{badgeValue}</span>}
         </div>
+      );
+    })}
 
-        {NAV_ITEMS.map((item) => {
-          const isNotif = item.label === "Notifications";
-          const badgeValue = isNotif
-            ? (notifUnreadCount > 0 ? notifUnreadCount : null)
-            : item.badge;
-          return (
-            <div
-              key={item.label}
-              className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
-              onClick={() =>
-                isNotif
-                  ? onOpenNotifications?.()
-                  : item.path && navigate(item.path)
-              }
-            >
-              <span className="nav-icon-wrap">
-  {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
-</span>
-              <span className="nav-label">{item.label}</span>
-              {badgeValue && <span className="nav-badge">{badgeValue}</span>}
-            </div>
-          );
-        })}
+    <div className="spacer" />
 
-        <div className="spacer" />
-
-        <div className="trust-card">
-          <div className="trust-ring-wrap">
-            <div style={{ width: 40, height: 40, borderRadius: 12,
-              background: "linear-gradient(135deg,#7a1f33,#c87a4a)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: "#fff", fontWeight: 700, fontSize: 16 }}>
-              ✦
-            </div>
-            <div className="trust-meta">
-              <div className="trust-score-big" style={{ fontSize: 13, color: wsReady ? "#2f8f53" : "#aaa" }}>
-                {wsReady ? "● Live" : "○ Offline"}
-              </div>
-              <div className="trust-label">Messages</div>
-            </div>
+    <div className="trust-card">
+      <div className="trust-ring-wrap">
+        <div style={{ width: 40, height: 40, borderRadius: 12,
+          background: "linear-gradient(135deg,#7a1f33,#c87a4a)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontWeight: 700, fontSize: 16 }}>
+          ✦
+        </div>
+        <div className="trust-meta">
+          <div className="trust-score-big" style={{ fontSize: 13, color: wsReady ? "#2f8f53" : "#aaa" }}>
+            {wsReady ? "● Live" : "○ Offline"}
           </div>
+          <div className="trust-label">Messages</div>
         </div>
       </div>
+    </div>
+  </div>
+)}
 
       {/* CONVERSATION + SEARCH LIST */}
       <div className="conv-list">

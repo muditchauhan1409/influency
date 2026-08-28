@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const app = require("./src/app");
 const connectDB = require("./src/config/db");
 const Message = require("./src/models/Message");
+const { pushNotification, setClients } = require("./src/utils/notify");
 
 const PORT = process.env.PORT || 5000;
 
@@ -16,6 +17,7 @@ const wss = new WebSocket.Server({ server });
 
 // userId -> WebSocket
 const clients = new Map();
+setClients(clients);
 
 wss.on("connection", (ws) => {
   console.log("🔌 WebSocket connected");
@@ -93,7 +95,7 @@ wss.on("connection", (ws) => {
           data.receiverId.toString()
         );
 
-        if (
+                if (
           receiverSocket &&
           receiverSocket.readyState === WebSocket.OPEN
         ) {
@@ -104,6 +106,14 @@ wss.on("connection", (ws) => {
             })
           );
         }
+
+        // ── Notification for receiver ──
+        pushNotification(data.receiverId, {
+          type: "message",
+          title: "You have a new message",
+          desc: message.text.length > 60 ? message.text.slice(0, 60) + "…" : message.text,
+          relatedId: message._id,
+        }).catch((e) => console.error("Notify error:", e));
 
         return;
       }

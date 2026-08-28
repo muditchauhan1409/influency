@@ -131,8 +131,16 @@ const sendMessage = async (req, res) => {
       receiver: other._id,
       text: text.trim(),
     });
+     const { pushNotification } = require("../utils/notify");
+    pushNotification(other._id, {
+      type: "message",
+      title: `${me.username || me.name} sent you a message`,
+      desc: message.text.length > 60 ? message.text.slice(0, 60) + "…" : message.text,
+      relatedId: message._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.status(201).json({ success: true, message });
+
   } catch (err) {
     console.error("Send message error:", err);
     res.status(500).json({ success: false, message: "Server error" });

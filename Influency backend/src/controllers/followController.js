@@ -1,5 +1,7 @@
 // PASTE PATH: src/controllers/followController.js
 const User = require("../models/User");
+const { pushNotification } = require("../utils/notify");
+
 
 // ── Search users by username ──
 // GET /api/follow/search?q=username
@@ -61,6 +63,12 @@ const sendFollowRequest = async (req, res) => {
 
     target.followRequests.push(me._id);
     await target.save();
+        pushNotification(target._id, {
+      type: "follow_request",
+      title: `@${me.username || me.name} sent you a follow request`,
+      desc: "",
+      relatedId: me._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: `Follow request sent to @${target.username}` });
   } catch (err) {
@@ -100,6 +108,12 @@ const acceptFollowRequest = async (req, res) => {
 
     await me.save();
     await requester.save();
+        pushNotification(requester._id, {
+      type: "follow_accept",
+      title: `@${me.username || me.name} accepted your follow request`,
+      desc: "You are now connected",
+      relatedId: me._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: `You and @${requester.username} are now connected` });
   } catch (err) {

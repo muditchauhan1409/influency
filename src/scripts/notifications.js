@@ -1,32 +1,49 @@
 // PASTE PATH: src/scripts/notifications.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
-export const NOTIFICATIONS = [
-  { id: 1, category: "brand", icon: "🏷️", accent: "#7a1f33", title: "Nike India sent a new campaign brief", desc: "Air Max Summer '26 — budget ₹2,00,000", time: "5m ago", read: false },
-  { id: 2, category: "trust", icon: "📈", accent: "#2f8f53", title: "Your Trust Score increased to 92", desc: "+4 pts from Response Rate improvement", time: "1h ago", read: false },
-  { id: 3, category: "message", icon: "💬", accent: "#6366f1", title: "Aria Chen sent you a message", desc: "\"We should do a joint collab sometime...\"", time: "2h ago", read: false },
-  { id: 4, category: "campaign", icon: "✅", accent: "#c87a4a", title: "Campaign marked as completed", desc: "Nike 'Air Max Summer' verified · +8 trust pts", time: "3h ago", read: true },
-  { id: 5, category: "brand", icon: "🤝", accent: "#7a1f33", title: "boAt approved your collaboration request", desc: "Nirvana 521 ANC Launch", time: "Yesterday", read: true },
-  { id: 6, category: "system", icon: "👁️", accent: "#8a7a7e", title: "Your profile was viewed by 12 new brands", desc: "This week", time: "Yesterday", read: true },
-  { id: 7, category: "campaign", icon: "⏰", accent: "#c87a4a", title: "Nykaa campaign deadline in 2 days", desc: "New Nude Palette Launch — submit by Jun 23", time: "2d ago", read: true },
-  { id: 8, category: "trust", icon: "🛡️", accent: "#2f8f53", title: "Identity verification approved", desc: "+15 Trust Score points added", time: "3d ago", read: true },
-  { id: 9, category: "message", icon: "💬", accent: "#6366f1", title: "Starbucks India sent you a message", desc: "\"Excited for the next collection reveal!\"", time: "4d ago", read: true },
-  { id: 10, category: "system", icon: "🔔", accent: "#8a7a7e", title: "Weekly performance report is ready", desc: "6.8% engagement · 2.1M reach", time: "1w ago", read: true },
-];
+const API = "http://localhost:5000/api";
+const WS_URL = "ws://localhost:5000";
+
+function authHeaders() {
+  const token = localStorage.getItem("token");
+  return { Authorization: `Bearer ${token}` };
+}
 
 export const NOTIF_TABS = [
   { value: "all", label: "All" },
-  { value: "brand", label: "Brands" },
-  { value: "trust", label: "Trust" },
-  { value: "campaign", label: "Campaigns" },
+  { value: "follow_request", label: "Follows" },
+  { value: "follow_accept", label: "Connections" },
   { value: "message", label: "Messages" },
+  { value: "campaign", label: "Campaigns" },
   { value: "system", label: "System" },
 ];
+
+// category → { icon key, accent color } — icon rendering handled in NotificationsPanel.jsx
+export const NOTIF_META = {
+  follow_request: { accent: "#7a1f33" },
+  follow_accept: { accent: "#2f8f53" },
+  message: { accent: "#6366f1" },
+  campaign: { accent: "#c87a4a" },
+  system: { accent: "#8a7a7e" },
+};
+
+function timeLabel(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return "now";
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  if (diff < 7 * 86400000) return `${Math.floor(diff / 86400000)}d ago`;
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+}
 
 export function useNotificationsPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
-  const [allNotifications, setAllNotifications] = useState(NOTIFICATIONS);
+  const [allNotifications, setAllNotifications] = useState([]);
+  const wsRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -39,22 +56,89 @@ export function useNotificationsPanel() {
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
 
+  // ── Initial fetch ──
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch(`${API}/notifications`, { headers: authHeaders() });
+      const data = await res.json();
+      if (data.success) setAllNotifications(data.notifications || []);
+    } catch (err) {
+      console.error("Fetch notifications error:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  // ── Real WebSocket connection for live push ──
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const ws = new WebSocket(WS_URL);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ type: "auth", token }));
+    };
+
+    ws.onmessage = (event) => {
+      let data;
+      try { data = JSON.parse(event.data); } catch { return; }
+
+      if (data.type === "notification" && data.notification) {
+        setAllNotifications((prev) => [data.notification, ...prev]);
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.error("Notification WS error:", err);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
   const unreadCount = allNotifications.filter((n) => !n.read).length;
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
     setAllNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    try {
+      await fetch(`${API}/notifications/read-all`, {
+        method: "PATCH",
+        headers: authHeaders(),
+      });
+    } catch (err) {
+      console.error("Mark all read error:", err);
+    }
   };
 
-  const markRead = (id) => {
+  const markRead = async (id) => {
     setAllNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) => (n._id === id ? { ...n, read: true } : n))
     );
+    try {
+      await fetch(`${API}/notifications/${id}/read`, {
+        method: "PATCH",
+        headers: authHeaders(),
+      });
+    } catch (err) {
+      console.error("Mark read error:", err);
+    }
   };
 
-  const notifications =
+  const notifications = (
     activeTab === "all"
       ? allNotifications
-      : allNotifications.filter((n) => n.category === activeTab);
+      : allNotifications.filter((n) => n.type === activeTab)
+  ).map((n) => ({
+    ...n,
+    id: n._id,
+    time: timeLabel(n.createdAt),
+    accent: NOTIF_META[n.type]?.accent || "#8a7a7e",
+  }));
 
   return {
     isOpen,

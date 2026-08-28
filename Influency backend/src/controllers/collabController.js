@@ -1,6 +1,7 @@
 const Post  = require("../models/Post");
 const Collab = require("../models/Collab");
 const User  = require("../models/User");
+const { pushNotification } = require("../utils/notify");
 
 // ── Creator applies to a post ──
 // POST /api/collab/apply/:postId
@@ -20,6 +21,12 @@ const applyToPost = async (req, res) => {
 
     post.applicants.push({ creatorId, status: "pending" });
     await post.save();
+        pushNotification(post.brandId, {
+      type: "campaign",
+      title: `New applicant for "${post.title}"`,
+      desc: `${req.user.username || req.user.name} applied to your campaign`,
+      relatedId: post._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Applied successfully" });
   } catch (err) {
@@ -72,6 +79,12 @@ const brandAccept = async (req, res) => {
     if (!existing) {
       await Collab.create({ postId, brandId, creatorId, status: "brand_accepted", brandAcceptedAt: new Date() });
     }
+        pushNotification(creatorId, {
+      type: "campaign",
+      title: "You've been accepted!",
+      desc: `A brand accepted you for "${post.title}"`,
+      relatedId: post._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Creator accepted, waiting for creator confirmation" });
   } catch (err) {
@@ -94,6 +107,12 @@ const creatorAccept = async (req, res) => {
     collab.status = "active";
     collab.creatorAcceptedAt = new Date();
     await collab.save();
+        pushNotification(collab.brandId, {
+      type: "campaign",
+      title: "Creator confirmed the collab",
+      desc: "The collab is now active",
+      relatedId: collab._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Collab is now Active!" });
   } catch (err) {
@@ -113,6 +132,12 @@ const creatorDecline = async (req, res) => {
 
     collab.status = "declined";
     await collab.save();
+        pushNotification(collab.brandId, {
+      type: "campaign",
+      title: "Creator declined the collab",
+      desc: "",
+      relatedId: collab._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Collab declined" });
   } catch (err) {
@@ -138,6 +163,12 @@ const submitWork = async (req, res) => {
     collab.submissionNote = submissionNote || null;
     collab.submittedAt = new Date();
     await collab.save();
+        pushNotification(collab.brandId, {
+      type: "campaign",
+      title: "Creator submitted work",
+      desc: submissionNote || "Review the submission",
+      relatedId: collab._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Work submitted! Waiting for brand approval." });
   } catch (err) {
@@ -162,6 +193,12 @@ const approveWork = async (req, res) => {
     collab.brandFeedback = feedback || null;
     collab.completedAt = new Date();
     await collab.save();
+        pushNotification(collab.creatorId, {
+      type: "campaign",
+      title: "Your submission was approved!",
+      desc: feedback || "Collab marked completed",
+      relatedId: collab._id,
+    }).catch((e) => console.error("Notify error:", e));
 
     res.json({ success: true, message: "Collab completed!" });
   } catch (err) {

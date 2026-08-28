@@ -1,0 +1,510 @@
+/* ─── PASTE PATH: src/styles/brandProfile.css ───
+   Import this in BrandProfile.jsx alongside userProfile.css
+   All classes here are brand-specific; they extend, not override, userProfile.css
+*/
+/* PASTE PATH: src/styles/userProfile.css */
+
+/* ===== VIEW MODE ===== */
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.profile-bio-text {
+  font-size: 13.5px;
+  color: #4a3438;
+  line-height: 1.65;
+  margin: 12px 0;
+}
+
+/* Trust analysis */
+.trust-analysis-card { padding: 18px 20px; }
+
+.trust-analysis-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.trust-analysis-sub {
+  font-size: 12.5px;
+  color: #8a7a7e;
+  max-width: 360px;
+}
+
+.verify-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.verify-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(122,31,51,0.06);
+}
+
+.verify-list-row:last-child { border-bottom: none; }
+
+.verify-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(47,143,83,0.12);
+  color: #2f8f53;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; flex-shrink: 0;
+}
+
+.verify-label {
+  flex: 1;
+  font-size: 13px;
+  color: #2a1a1f;
+}
+
+/* About */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.about-box {
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.about-label {
+  font-size: 11px;
+  color: #8a7a7e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.about-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2a1a1f;
+}
+
+.about-value-accent { color: #7a1f33; }
+
+/* Portfolio */
+.portfolio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.see-all-link {
+  font-size: 12.5px;
+  color: #7a1f33;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.portfolio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.portfolio-tile {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+/* Campaign history */
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 14px;
+  padding: 13px 16px;
+}
+
+.history-row-info { flex: 1; }
+
+.history-rating {
+  font-size: 13px;
+  font-weight: 600;
+  color: #c87a4a;
+  white-space: nowrap;
+}
+
+/* Reviews */
+.reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.reviews-score {
+  font-size: 13px;
+  color: #c87a4a;
+  font-weight: 600;
+}
+
+.reviews-score span { color: #8a7a7e; font-weight: 400; }
+
+.review-card {
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+
+.review-card:last-child { margin-bottom: 0; }
+
+.review-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.review-brand { font-size: 13.5px; font-weight: 600; color: #2a1a1f; }
+.review-date { font-size: 11.5px; color: #8a7a7e; margin-top: 2px; }
+.review-stars { color: #c87a4a; font-size: 13px; }
+
+.review-text {
+  font-size: 13px;
+  color: #4a3438;
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Sidebar extras */
+.view-all-btn {
+  width: 100%;
+  margin-top: 6px;
+  background: transparent;
+  color: #7a1f33;
+  border: 1px solid rgba(122,31,51,0.25);
+  padding: 9px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-all-btn:hover { background: rgba(122,31,51,0.06); }
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.analytics-box {
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+
+.analytics-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #7a1f33;
+}
+
+.analytics-lbl {
+  font-size: 11px;
+  color: #8a7a7e;
+  margin-top: 3px;
+}
+
+.availability-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availability-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.availability-label {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+/* ===== EDIT MODE ===== */
+
+.edit-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+}
+
+.edit-topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2a1a1f;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.profile-grid-full { grid-column: 1 / -1; }
+
+@media (max-width: 900px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.12);
+  color: #4a3438;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip:hover {
+  border-color: rgba(122,31,51,0.3);
+  background: rgba(122,31,51,0.04);
+}
+
+.chip-active {
+  background: rgba(122,31,51,0.1);
+  border-color: #7a1f33;
+  color: #7a1f33;
+  font-weight: 600;
+}
+
+.radius-hint {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: #8a7a7e;
+  background: #fdf6f3;
+  border: 1px solid rgba(122,31,51,0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.radius-hint strong { color: #7a1f33; }
+
+.rate-range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rate-input-group { position: relative; flex: 1; }
+
+.rate-prefix {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px; color: #8a7a7e;
+}
+
+.rate-input-group .settings-input {
+  padding-left: 26px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rate-sep { font-size: 13px; color: #8a7a7e; }
+
+/* ===== DARK MODE ===== */
+
+body.dark .profile-bio-text,
+body.dark .verify-label,
+body.dark .about-value,
+body.dark .history-row-info .brand-name,
+body.dark .review-brand,
+body.dark .availability-label {
+  color: #f0e8ea;
+}
+
+body.dark .trust-analysis-sub,
+body.dark .about-label,
+body.dark .review-date,
+body.dark .analytics-lbl {
+  color: #7a6870;
+}
+
+body.dark .verify-list-row { border-bottom-color: rgba(255,255,255,0.06); }
+
+body.dark .about-box,
+body.dark .history-row,
+body.dark .review-card,
+body.dark .analytics-box {
+  background: #1a1014;
+  border-color: rgba(255,255,255,0.08);
+}
+
+body.dark .review-text { color: #b09098; }
+
+body.dark .chip {
+  background: #1e1418;
+  border-color: rgba(255,255,255,0.08);
+  color: #b09098;
+}
+
+body.dark .chip:hover {
+  background: rgba(122,31,51,0.15);
+  border-color: rgba(122,31,51,0.4);
+}
+
+body.dark .chip-active {
+  background: rgba(122,31,51,0.25);
+  border-color: #e8a0b0;
+  color: #e8a0b0;
+}
+
+body.dark .radius-hint {
+  background: #1e1418;
+  border-color: rgba(255,255,255,0.06);
+  color: #7a6870;
+}
+
+body.dark .radius-hint strong { color: #e8a0b0; }
+body.dark .rate-prefix { color: #7a6870; }
+
+body.dark .view-all-btn {
+  color: #e8a0b0;
+  border-color: rgba(122,31,51,0.4);
+}
+
+body.dark .view-all-btn:hover { background: rgba(122,31,51,0.15); }
+
+body.dark .analytics-val { color: #e8a0b0; }
+
+body.dark .edit-topbar-title { color: #f0e8ea; }
+
+.trust-analysis-header .score-ring-svg-wrap {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.trust-analysis-header .score-ring-svg-wrap svg {
+  width: 80px;
+  height: 80px;
+}
+
+.trust-analysis-header {
+  align-items: center;
+}
+.settings-section-body {
+  padding: 16px 20px 18px;
+}
+
+/* Cover — uses a darker gold-to-maroon gradient to visually distinguish Brand from Creator */
+.brand-cover {
+  background: linear-gradient(135deg, #1c0d12 0%, #3d1020 40%, #7a4020 100%) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 40%, rgba(200, 122, 74, 0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Brand avatar — slightly larger, square-ish with rounded corners for a "logo" feel */
+.brand-avatar-wrap {
+  position: relative;
+}
+
+.brand-avatar {
+  border-radius: 18px !important; /* logo feel vs creator's circle */
+  background: linear-gradient(135deg, #1a1a2e, #2a1020);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tagline shown below handle */
+.brand-tagline {
+  font-size: 13px;
+  color: rgba(200, 122, 74, 0.85);
+  font-style: italic;
+  margin-top: 5px;
+  letter-spacing: 0.01em;
+}
+
+/* Active campaign status dot — pulsing for "live" */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(1.3); }
+}
+
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 5px;
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+/* Budget bar label row */
+.budget-bar-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+.budget-bar-bg {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.budget-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c87a4a, #7a1f33);
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
