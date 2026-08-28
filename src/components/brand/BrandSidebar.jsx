@@ -15,7 +15,7 @@ const BRAND_NAV_ITEMS = [
   { icon: Home,          label: "Home",             path: "/brand-dashboard" },
   { icon: Briefcase,     label: "Collaborations",   path: "/brand-dashboard?tab=collaborations" },
   { icon: Compass,       label: "Discover",         path: "/brand-discover" },
-  { icon: ClipboardList, label: "Forms",            path: "/brand-forms" },
+  
   { icon: MessageCircle, label: "Messages",         path: "/messages" },
   { icon: Bell,          label: "Notifications",    path: "/notifications" },
   { icon: BarChart2,     label: "Analytics",        path: "/brand-analytics" },
