@@ -27,6 +27,9 @@ import BrandFormResponses from "./pages/brand/BrandFormResponses";
 import BrandForms from "./pages/brand/BrandForms";
 import { CreatorRoute, BrandRoute, SharedRoute } from "./components/ProtectedRoute";
 import BrandProfile from "./pages/brand/BrandProfile";
+import BrandSettings from "./pages/brand/BrandSettings";
+import BrandDiscover from "./pages/brand/BrandDiscover";
+import BrandAnalytics from "./pages/brand/BrandAnalytics";
 
 // Components
 import NotificationsPanel from "./components/NotificationsPanel";
@@ -141,12 +144,27 @@ function App() {
             <BrandFormResponses />
           </BrandRoute>
         } />
-        <Route path="/brand-discover" element={<ComingSoon title="Find Creators" />} />
-        <Route path="/brand-analytics" element={<ComingSoon title="Brand Analytics" />} />
+        <Route path="/brand-discover" element={
+  <BrandRoute>
+    <BrandDiscover onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
+  </BrandRoute>
+} />
+        <Route path="/brand-analytics" element={
+  <BrandRoute>
+    <BrandAnalytics onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
+  </BrandRoute>
+} />
         <Route path="/messages" element={
   <SharedRoute>
     <Messages onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
   </SharedRoute>
+} />
+
+<Route path="/brand-settings" element={
+  <BrandRoute>
+    <BrandSettings darkMode={darkMode} setDarkMode={setDarkMode}
+      onOpenNotifications={notif.open} notifUnreadCount={notif.unreadCount} />
+  </BrandRoute>
 } />
 
       </Routes>

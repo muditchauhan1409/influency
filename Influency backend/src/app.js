@@ -36,6 +36,7 @@ const postRoutes = require("./routes/posts");  // ← sirf ek baar
 const socialPostRoutes = require("./routes/socialPosts");
 const collabRoutes    = require("./routes/collab"); 
 const notificationRoutes = require("./routes/notifications");
+const analyticsRoutes = require("./routes/analytics");
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/forms", generalLimiter, formRoutes);
@@ -47,6 +48,7 @@ app.use("/api/social-posts", socialPostRoutes);
 app.use("/api/collab",       generalLimiter, collabRoutes);
 app.use("/api/notifications", generalLimiter, notificationRoutes);
 app.use("/api/brand", require("./routes/brand"));
+app.use("/api/analytics", generalLimiter, analyticsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });

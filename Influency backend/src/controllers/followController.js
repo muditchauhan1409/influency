@@ -227,20 +227,46 @@ const setUsername = async (req, res) => {
 const discoverUsers = async (req, res) => {
   try {
     const currentUserId = req.user._id;
+    const { role, niche, q } = req.query;
 
-    // Get current user's following list from User doc (matches your schema)
-    const me = await User.findById(currentUserId).select("followingArr");
-    const followingIds = me.followingArr || [];
+    const me = await User.findById(currentUserId).select("followingArr followersArr");
+    const followingIds = (me.followingArr || []).map(String);
+    const followersIds = (me.followersArr || []).map(String);
 
-    // Exclude self and already-followed users
-    const users = await User.find({
-      _id: { $nin: [...followingIds, currentUserId] }
-    })
-      .select("name username avatar avatarUrl bio role")  // matches your populate fields
-      .limit(20)
+    const filter = {
+      _id: { $nin: [currentUserId] },
+    };
+
+    if (role) filter.role = role;
+    if (niche) filter.niches = niche;
+    if (q && q.trim()) {
+      filter.$or = [
+        { name: { $regex: q.trim(), $options: "i" } },
+        { username: { $regex: q.trim(), $options: "i" } },
+      ];
+    }
+
+    const users = await User.find(filter)
+      .select("name username avatar avatarUrl bio role niches followersArr trustScore followRequests")
+      .limit(30)
       .lean();
 
-    res.status(200).json({ success: true, users });
+    const results = users.map((u) => ({
+      _id: u._id,
+      name: u.name,
+      username: u.username,
+      avatar: u.avatar,
+      avatarUrl: u.avatarUrl,
+      bio: u.bio,
+      role: u.role,
+      niches: u.niches || [],
+      followersCount: u.followersArr?.length || 0,
+      trustScore: u.trustScore || 0,
+      isFollowing: followingIds.includes(u._id.toString()),
+      requestSent: (u.followRequests || []).map(String).includes(currentUserId.toString()),
+    }));
+
+    res.status(200).json({ success: true, users: results });
   } catch (error) {
     console.error("discoverUsers error:", error);
     res.status(500).json({ success: false, message: "Server error" });

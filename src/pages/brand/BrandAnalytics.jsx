@@ -1,6 +1,5 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { Users, Briefcase, Star, Zap } from "lucide-react";
-import { NAV_ITEMS } from "../../scripts/dashboard";
+import { Briefcase, CheckCircle, Users, Star } from "lucide-react";
+import BrandSidebar from "../../components/brand/BrandSidebar";
 import { useAnalytics } from "../../scripts/analytics";
 import "../../styles/dashboard.css";
 import "../../styles/analytics.css";
@@ -10,36 +9,29 @@ function LineChart({ data, color = "#7a1f33" }) {
   const max = Math.max(...values, 1);
   const min = Math.min(...values, 0);
   const range = max - min || 1;
-  const width = 480;
-  const height = 140;
-  const padding = 20;
+  const width = 480, height = 140, padding = 20;
 
   const points = data.map((d, i) => {
     const x = padding + (i / (data.length - 1)) * (width - padding * 2);
     const y = height - padding - ((d.value - min) / range) * (height - padding * 2);
     return { x, y };
   });
-
   const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(" ");
   const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="line-chart-svg">
       <defs>
-        <linearGradient id="lineFill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="lineFillB" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.18" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={areaD} fill="url(#lineFill)" />
+      <path d={areaD} fill="url(#lineFillB)" />
       <path d={pathD} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="4" fill="#fff" stroke={color} strokeWidth="2" />
-      ))}
+      {points.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r="4" fill="#fff" stroke={color} strokeWidth="2" />)}
       {data.map((d, i) => (
-        <text key={d.label} x={points[i].x} y={height - 2} textAnchor="middle" className="chart-axis-label">
-          {d.label}
-        </text>
+        <text key={d.label} x={points[i].x} y={height - 2} textAnchor="middle" className="chart-axis-label">{d.label}</text>
       ))}
     </svg>
   );
@@ -49,7 +41,6 @@ function DonutChart({ data }) {
   const radius = 60;
   const circumference = 2 * Math.PI * radius;
   let offset = 0;
-
   return (
     <div className="donut-wrap">
       <svg width="150" height="150" viewBox="0 0 150 150" style={{ transform: "rotate(-90deg)" }}>
@@ -69,56 +60,24 @@ function DonutChart({ data }) {
   );
 }
 
-export default function Analytics({ onOpenNotifications, notifUnreadCount }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { data, loading, error } = useAnalytics("creator");
+export default function BrandAnalytics({ onOpenNotifications, notifUnreadCount }) {
+  const { data, loading, error } = useAnalytics("brand");
 
   const statCards = data ? [
-    { icon: Users, label: "Total Followers", value: data.stats.followers, positive: true, change: "" },
-    { icon: Briefcase, label: "Campaigns Completed", value: data.stats.campaignsCompleted, positive: true, change: "" },
-    { icon: Star, label: "Trust Score", value: data.stats.trustScore, positive: true, change: "" },
-    { icon: Zap, label: "Active Collabs", value: data.stats.activeCollabs, positive: true, change: "" },
+    { icon: Briefcase, label: "Total Campaigns", value: data.stats.totalCampaigns },
+    { icon: CheckCircle, label: "Campaigns Completed", value: data.stats.campaignsCompleted },
+    { icon: Users, label: "Creators Worked With", value: data.stats.totalCreators },
+    { icon: Star, label: "Trust Score", value: data.stats.trustScore },
   ] : [];
 
   return (
     <div className="inf-wrap discover-wrap">
+      <BrandSidebar onOpenNotifications={onOpenNotifications} notifUnreadCount={notifUnreadCount} />
 
-      {/* LEFT SIDEBAR */}
-      <div className="left-sb">
-        <div className="logo-block">
-          <div className="logo-icon">✦</div>
-          <div className="logo-text">
-            <span className="logo-gold">Influ</span>
-            <span className="logo-white">ency</span>
-          </div>
-        </div>
-
-        {NAV_ITEMS.map((item) => {
-          const isNotif = item.label === "Notifications";
-          const badgeValue = isNotif ? (notifUnreadCount > 0 ? notifUnreadCount : null) : item.badge;
-          return (
-            <div
-              key={item.label}
-              className={`nav-item ${!isNotif && location.pathname === item.path ? "active" : ""}`}
-              onClick={() => isNotif ? onOpenNotifications?.() : item.path && navigate(item.path)}
-            >
-              <span className="nav-icon-wrap">
-                {typeof item.icon === "string" ? item.icon : <item.icon size={18} strokeWidth={1.8} />}
-              </span>
-              <span className="nav-label">{item.label}</span>
-              {badgeValue && <span className="nav-badge">{badgeValue}</span>}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* MAIN CONTENT */}
       <div className="discover-main analytics-main">
-
         <div className="discover-header">
           <div className="discover-title">Analytics</div>
-          <div className="discover-sub">Track your growth, performance, and trust score</div>
+          <div className="discover-sub">Track your campaigns, reach, and creator partnerships</div>
         </div>
 
         {loading && <p style={{ opacity: 0.6 }}>Loading analytics…</p>}
@@ -142,7 +101,7 @@ export default function Analytics({ onOpenNotifications, notifUnreadCount }) {
                 <LineChart data={data.monthlyCampaigns} color="#7a1f33" />
               </div>
               <div className="analytics-chart-card">
-                <p className="analytics-chart-title">Applications Sent / Month</p>
+                <p className="analytics-chart-title">New Collabs / Month</p>
                 <LineChart data={data.monthlyApplications} color="#c87a4a" />
               </div>
             </div>
@@ -167,16 +126,16 @@ export default function Analytics({ onOpenNotifications, notifUnreadCount }) {
               </div>
 
               <div className="analytics-chart-card campaign-perf-card">
-                <p className="analytics-chart-title">Top Completed Campaigns</p>
+                <p className="analytics-chart-title">Top Creators</p>
                 <div className="campaign-perf-list">
-                  {data.topCampaigns.length ? data.topCampaigns.map((c, i) => (
+                  {data.topCreators.length ? data.topCreators.map((c, i) => (
                     <div className="campaign-perf-row" key={i}>
-                      <div className="campaign-perf-brand">{c.brand} — {c.title}</div>
+                      <div className="campaign-perf-brand">{c.name} (@{c.username})</div>
                       <div className="campaign-perf-stats">
-                        <span>{c.budget}</span>
+                        <span>Trust: {c.trustScore}</span>
                       </div>
                     </div>
-                  )) : <p style={{ opacity: 0.5, fontSize: 13 }}>No completed campaigns yet.</p>}
+                  )) : <p style={{ opacity: 0.5, fontSize: 13 }}>No creators yet.</p>}
                 </div>
               </div>
             </div>

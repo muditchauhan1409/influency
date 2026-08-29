@@ -20,7 +20,7 @@ const BRAND_NAV_ITEMS = [
   { icon: Bell,          label: "Notifications",    path: "/notifications" },
   { icon: BarChart2,     label: "Analytics",        path: "/brand-analytics" },
   { icon: User,          label: "Profile",          path: "/brand/profile" },  
-  { icon: Settings,      label: "Settings",         path: "/settings" },
+  { icon: Settings,      label: "Settings",         path: "/brand-settings" },
 ];
 
 export default function BrandSidebar({ onOpenNotifications, notifUnreadCount }) {
