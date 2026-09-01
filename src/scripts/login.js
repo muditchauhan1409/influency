@@ -10,6 +10,7 @@ export function useLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !email.includes("@")) {
@@ -30,7 +31,6 @@ export function useLogin() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -39,20 +39,19 @@ export function useLogin() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
       setLoading(false);
-      if (data.user.role === "brand") {
-  navigate("/brand-dashboard");
-} else {
-  navigate("/dashboard");
-}
-
+      setShowOtpModal(true);
     } catch (err) {
       setError("Cannot connect to server. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleOtpVerified = (data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setShowOtpModal(false);
+    navigate(data.user.role === "brand" ? "/brand-dashboard" : "/dashboard");
   };
 
   return {
@@ -61,5 +60,7 @@ export function useLogin() {
     showPassword, setShowPassword,
     error, loading,
     handleLogin,
+    showOtpModal, setShowOtpModal,
+    handleOtpVerified,
   };
 }

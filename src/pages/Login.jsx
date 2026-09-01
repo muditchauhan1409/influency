@@ -1,7 +1,7 @@
-// PASTE PATH: src/pages/Login.jsx
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useLogin } from "../scripts/login";
+import OtpModal from "../components/OtpModal";
 import "../styles/login.css";
 
 export default function Login() {
@@ -11,6 +11,8 @@ export default function Login() {
     showPassword, setShowPassword,
     error, loading,
     handleLogin,
+    showOtpModal, setShowOtpModal,
+    handleOtpVerified,
   } = useLogin();
 
   return (
@@ -28,8 +30,7 @@ export default function Login() {
           <span className="hero-title-accent">Where You Left</span>
         </h1>
         <p className="hero-sub-dark">
-          Your collaborations, your trust score, your creator journey —
-          all waiting for you.
+          Your collaborations, your trust score, your creator journey — all waiting for you.
         </p>
 
         <div className="login-stat-strip">
@@ -74,9 +75,7 @@ export default function Login() {
 
           <div className="login-password-label-row">
             <label className="field-label">Password</label>
-            <Link to="/forgot-password" className="login-forgot-link">
-              Forgot password?
-            </Link>
+            <Link to="/forgot-password" className="login-forgot-link">Forgot password?</Link>
           </div>
           <div className="login-password-wrap">
             <input
@@ -86,22 +85,14 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button
-              type="button"
-              className="login-eye-btn"
-              onClick={() => setShowPassword((s) => !s)}
-            >
+            <button type="button" className="login-eye-btn" onClick={() => setShowPassword((s) => !s)}>
               {showPassword ? "🙈" : "👁️"}
             </button>
           </div>
 
           {error && <p className="fp-error-text">{error}</p>}
 
-          <button
-            className="btn-primary login-submit"
-            onClick={handleLogin}
-            disabled={loading}
-          >
+          <button className="btn-primary login-submit" onClick={handleLogin} disabled={loading}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
 
@@ -120,6 +111,15 @@ export default function Login() {
           <Link to="/forgot-password" className="onboarding-nav-link">Forgot PW</Link>
         </nav>
       </div>
+
+      {showOtpModal && (
+        <OtpModal
+          email={email}
+          purpose="login"
+          onClose={() => setShowOtpModal(false)}
+          onVerified={handleOtpVerified}
+        />
+      )}
     </div>
   );
 }

@@ -75,6 +75,7 @@ function App() {
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/login" element={<Login />} />
+        
 
         {/* Creator Routes */}
         <Route path="/dashboard" element={

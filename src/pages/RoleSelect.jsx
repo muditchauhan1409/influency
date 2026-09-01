@@ -4,34 +4,33 @@ import { Link } from "react-router-dom";
 import { useRoleSelect } from "../scripts/roleSelect";
 import "../styles/roleSelect.css";
 import "../styles/global.css";
+import {
+  Sparkles,
+  Star,
+  Users,
+  Video,
+  Building2,
+  Briefcase,
+  BarChart3,
+  Search,
+  Megaphone,
+  CheckCircle2,
+  TrendingUp,
+  Handshake,
+} from "lucide-react";
 
 export default function RoleSelect() {
   const { role, setRole, handleContinue } = useRoleSelect();
 
   return (
     <div className="onboarding-page">
-      <div className="onboarding-left">
+        <div className="onboarding-left">
         <div className="brand">
-          <span className="brand-icon">✦</span>
+          <Sparkles size={18} className="brand-icon" />
           <span className="brand-name">Influency</span>
         </div>
 
-        <div className="hero-card">
-          <div className="hero-card-avatar">🧍</div>
-          <div className="hero-card-info">
-            <p className="hero-card-name">Aria Chen</p>
-            <p className="hero-card-handle">@ariastyle</p>
-          </div>
-          <div className="hero-card-stats">
-            <span className="badge-verified">✓ Verified</span>
-            <div className="trust-mini">
-              <span className="trust-label">Trust</span>
-              <span className="trust-value">94</span>
-            </div>
-          </div>
-        </div>
-
-        <p className="eyebrow">— TRUST-BASED CREATOR PLATFORM</p>
+        <p className="eyebrow">TRUST-BASED CREATOR PLATFORM</p>
         <h1 className="hero-title">
           Trust Is The
           <br />
@@ -41,12 +40,20 @@ export default function RoleSelect() {
         <p className="hero-sub-light">Where creators and brands meet with purpose.</p>
 
         <div className="rating-strip">
-          <div className="rating-avatars">🧍🥤🧗🎨🎤</div>
+          <div className="rating-avatars">
+            <Users size={22} />
+          </div>
           <div className="rating-text">
             <p className="rating-title">50K+ Verified Creators</p>
             <p className="rating-sub">98% satisfaction rate</p>
           </div>
-          <div className="rating-stars">★★★★★</div>
+          <div className="rating-stars">
+            <Star size={14} fill="currentColor" />
+            <Star size={14} fill="currentColor" />
+            <Star size={14} fill="currentColor" />
+            <Star size={14} fill="currentColor" />
+            <Star size={14} fill="currentColor" />
+          </div>
         </div>
 
         <div className="stats-row">
@@ -62,20 +69,10 @@ export default function RoleSelect() {
             <p className="stat-value">100K+</p>
             <p className="stat-label">Collabs</p>
           </div>
-        </div>
-
-        <div className="floating-collab">
-          <span className="collab-emoji">🤝</span>
-          <div>
-            <p className="collab-title">New collab!</p>
-            <p className="collab-sub">Nike × @kai.fit</p>
+          <div className="stat stat-match">
+            <p className="stat-label">AI MATCHED</p>
+            <p className="stat-value stat-match-value">96%</p>
           </div>
-          <span className="collab-dot" />
-        </div>
-
-        <div className="floating-match">
-          <p className="match-label">AI MATCHED</p>
-          <p className="match-value">96% Match</p>
         </div>
       </div>
 
@@ -88,7 +85,9 @@ export default function RoleSelect() {
             <span className="progress-step" />
           </div>
 
-          <div className="card-icon">✦</div>
+          <div className="card-icon">
+            <Sparkles size={20} />
+          </div>
           <h2 className="card-title">Who are you?</h2>
           <p className="card-sub">Choose your role to personalize your Influency experience.</p>
 
@@ -97,7 +96,9 @@ export default function RoleSelect() {
             onClick={() => setRole("creator")}
           >
             <div className="role-option-top">
-              <div className="role-icon">🎥</div>
+              <div className="role-icon">
+                <Video size={20} />
+              </div>
               <div className="role-text">
                 <div className="role-heading">
                   <span>I'm a Creator</span>
@@ -110,10 +111,10 @@ export default function RoleSelect() {
               <span className="radio-dot" />
             </div>
             <div className="role-pills">
-              <span className="pill">🎒 Portfolio</span>
-              <span className="pill">⭐ Trust Score</span>
-              <span className="pill">🤝 Collabs</span>
-              <span className="pill">📊 Analytics</span>
+              <span className="pill"><Briefcase size={13} /> Portfolio</span>
+              <span className="pill"><Star size={13} /> Trust Score</span>
+              <span className="pill"><Handshake size={13} /> Collabs</span>
+              <span className="pill"><BarChart3 size={13} /> Analytics</span>
             </div>
           </div>
 
@@ -122,7 +123,9 @@ export default function RoleSelect() {
             onClick={() => setRole("brand")}
           >
             <div className="role-option-top">
-              <div className="role-icon">🏢</div>
+              <div className="role-icon">
+                <Building2 size={20} />
+              </div>
               <div className="role-text">
                 <div className="role-heading">
                   <span>I'm a Brand</span>
@@ -135,10 +138,10 @@ export default function RoleSelect() {
               <span className="radio-dot" />
             </div>
             <div className="role-pills">
-              <span className="pill">🔍 AI Matching</span>
-              <span className="pill">📣 Campaigns</span>
-              <span className="pill">✅ Verified</span>
-              <span className="pill">📈 ROI</span>
+              <span className="pill"><Search size={13} /> AI Matching</span>
+              <span className="pill"><Megaphone size={13} /> Campaigns</span>
+              <span className="pill"><CheckCircle2 size={13} /> Verified</span>
+              <span className="pill"><TrendingUp size={13} /> ROI</span>
             </div>
           </div>
 

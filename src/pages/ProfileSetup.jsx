@@ -2,6 +2,20 @@
 import { Link } from "react-router-dom";
 import { useProfileSetup } from "../scripts/profileSetup";
 import "../styles/profileSetup.css";
+import { Sparkles, Landmark, Check, Shirt, Utensils, Plane, Dumbbell, Sparkle, Laptop, Gamepad2, Palette, Leaf, BookOpen } from "lucide-react";
+
+const NICHE_ICONS = {
+  shirt: Shirt,
+  utensils: Utensils,
+  plane: Plane,
+  dumbbell: Dumbbell,
+  sparkle: Sparkle,
+  laptop: Laptop,
+  gamepad: Gamepad2,
+  palette: Palette,
+  leaf: Leaf,
+  book: BookOpen,
+};
 
 export default function ProfileSetup() {
   const {
@@ -17,7 +31,7 @@ export default function ProfileSetup() {
     <div className="onboarding-page">
       <div className="onboarding-left">
         <div className="brand">
-          <span className="brand-icon">✦</span>
+          <Sparkles size={18} className="brand-icon" />
           <span className="brand-name">Influency</span>
         </div>
 
@@ -89,7 +103,9 @@ export default function ProfileSetup() {
 
               <div className="registered-card">
                 <div className="registered-header">
-                  <div className="registered-icon">🏛</div>
+                  <div className="registered-icon">
+                    <Landmark size={16} />
+                  </div>
                   <div>
                     <p className="registered-name">Registered Brand</p>
                     <p className="registered-email">official@brandname.influency.com</p>
@@ -99,7 +115,9 @@ export default function ProfileSetup() {
                 <div className="registered-list">
                   {registeredBrandPerks.map((perk) => (
                     <div className="registered-item" key={perk}>
-                      <span className="check-icon-circle">✓</span>
+                      <span className="check-icon-circle">
+                        <Check size={10} strokeWidth={3} />
+                      </span>
                       {perk}
                     </div>
                   ))}
@@ -110,17 +128,20 @@ export default function ProfileSetup() {
 
           <label className="field-label">{isBrand ? "Industry" : "Your niche(s)"}</label>
           <div className="niche-grid">
-            {tagOptions.map((tag) => (
-              <span
-                key={tag.label}
-                className={`pill pill-selectable ${
-                  selectedTags.includes(tag.label) ? "pill-selected" : ""
-                }`}
-                onClick={() => toggleTag(tag.label)}
-              >
-                {tag.icon} {tag.label}
-              </span>
-            ))}
+            {tagOptions.map((tag) => {
+              const Icon = NICHE_ICONS[tag.icon];
+              return (
+                <span
+                  key={tag.label}
+                  className={`pill pill-selectable ${
+                    selectedTags.includes(tag.label) ? "pill-selected" : ""
+                  }`}
+                  onClick={() => toggleTag(tag.label)}
+                >
+                  {Icon && <Icon size={13} />} {tag.label}
+                </span>
+              );
+            })}
           </div>
 
           <label className="field-label">

@@ -9,7 +9,7 @@ const protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      message: "Not authorized — no token provided",
+      message: "Not authorized ï¿½ no token provided",
     });
   }
   try {

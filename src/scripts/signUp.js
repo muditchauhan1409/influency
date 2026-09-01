@@ -16,6 +16,7 @@ export function useSignUp() {
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const triggerShake = (msg) => {
     setError(msg);
@@ -41,7 +42,6 @@ export function useSignUp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role, username: username.trim() }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -50,16 +50,19 @@ export function useSignUp() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
       setLoading(false);
-      navigate("/profile-setup", { state: { role } });
-
+      setShowOtpModal(true);
     } catch (err) {
       triggerShake("Cannot connect to server. Please try again.");
       setLoading(false);
     }
+  };
+
+  const handleOtpVerified = (data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setShowOtpModal(false);
+    navigate("/profile-setup", { state: { role: data.user.role || role } });
   };
 
   return {
@@ -71,5 +74,7 @@ export function useSignUp() {
     agreed, setAgreed,
     error, shake, loading,
     handleCreateAccount,
+    showOtpModal, setShowOtpModal,
+    handleOtpVerified,
   };
 }

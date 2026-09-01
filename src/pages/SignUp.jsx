@@ -1,21 +1,25 @@
-// PASTE PATH: src/pages/SignUp.jsx
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useSignUp } from "../scripts/signUp";
+import OtpModal from "../components/OtpModal";
 import "../styles/signUp.css";
+import {
+  Sparkles, Shirt, Utensils, Plane, Dumbbell, Sparkle, Laptop, Gamepad2, Palette, Video, Building2,
+} from "lucide-react";
 
 export default function SignUp() {
   const {
     role, agreed, setAgreed, handleCreateAccount, error, shake,
     name, setName, email, setEmail, password, setPassword, loading,
-    username, setUsername
+    username, setUsername,
+    showOtpModal, setShowOtpModal, handleOtpVerified,
   } = useSignUp();
 
   return (
     <div className="onboarding-page">
       <div className="onboarding-left">
         <div className="brand">
-          <span className="brand-icon">✦</span>
+          <Sparkles size={18} className="brand-icon" />
           <span className="brand-name">Influency</span>
         </div>
 
@@ -26,19 +30,18 @@ export default function SignUp() {
           <span className="hero-title-accent">Account</span>
         </h1>
         <p className="hero-sub-dark">
-          Your journey to verified collaborations starts here. Join 50,000+
-          creators and 10,000+ brands.
+          Your journey to verified collaborations starts here. Join 50,000+ creators and 10,000+ brands.
         </p>
 
         <div className="niche-pills">
-          <span className="pill">👗 Fashion</span>
-          <span className="pill">🍔 Food</span>
-          <span className="pill">🏃 Travel</span>
-          <span className="pill">💪 Fitness</span>
-          <span className="pill">💄 Beauty</span>
-          <span className="pill">💻 Tech</span>
-          <span className="pill">🎮 Gaming</span>
-          <span className="pill">🎨 Art</span>
+          <span className="pill"><Shirt size={13} /> Fashion</span>
+          <span className="pill"><Utensils size={13} /> Food</span>
+          <span className="pill"><Plane size={13} /> Travel</span>
+          <span className="pill"><Dumbbell size={13} /> Fitness</span>
+          <span className="pill"><Sparkle size={13} /> Beauty</span>
+          <span className="pill"><Laptop size={13} /> Tech</span>
+          <span className="pill"><Gamepad2 size={13} /> Gaming</span>
+          <span className="pill"><Palette size={13} /> Art</span>
         </div>
       </div>
 
@@ -54,7 +57,7 @@ export default function SignUp() {
           <div className="top-action">
             <Link to="/role-select" className="back-link">Back</Link>
             <span className="tag tag-role">
-              {role === "brand" ? "🏢 Brand Account" : "🎥 Creator Account"}
+              {role === "brand" ? (<><Building2 size={13} /> Brand Account</>) : (<><Video size={13} /> Creator Account</>)}
             </span>
           </div>
 
@@ -63,61 +66,28 @@ export default function SignUp() {
 
           <div className="oauth-row">
             <button className="oauth-btn" style={{ width: "100%" }}>
-              <FcGoogle size={24} />
+              <FcGoogle size={22} />
               <span>Continue with Google</span>
             </button>
           </div>
 
           <div className="signup-fields">
-            <input
-              className="signup-input"
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              className="signup-input"
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              className="signup-input"
-              type="text"
-              placeholder="Choose a username (optional, e.g. john_doe)"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <input
-              className="signup-input"
-              type="password"
-              placeholder="Password (min 6 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <input className="signup-input" type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} />
+            <input className="signup-input" type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input className="signup-input" type="text" placeholder="Choose a username (optional, e.g. john_doe)" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input className="signup-input" type="password" placeholder="Password (min 6 characters)" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
 
           <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-            />
+            <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
             <span>
-              I agree to Influency's <a href="#">Terms of Service</a> and{" "}
-              <a href="#">Privacy Policy</a>
+              I agree to Influency's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
             </span>
           </label>
 
           {error && <p className="field-error">{error}</p>}
 
-          <button
-            className={`btn-primary ${shake ? "shake" : ""}`}
-            onClick={handleCreateAccount}
-            disabled={loading}
-          >
+          <button className={`btn-primary ${shake ? "shake" : ""}`} onClick={handleCreateAccount} disabled={loading}>
             {loading ? "Creating Account..." : "Create Account"}
           </button>
 
@@ -136,6 +106,15 @@ export default function SignUp() {
           <Link to="/forgot-password" className="onboarding-nav-link">Forgot PW</Link>
         </nav>
       </div>
+
+      {showOtpModal && (
+        <OtpModal
+          email={email}
+          purpose="signup"
+          onClose={() => setShowOtpModal(false)}
+          onVerified={handleOtpVerified}
+        />
+      )}
     </div>
   );
 }

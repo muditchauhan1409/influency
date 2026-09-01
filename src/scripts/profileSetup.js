@@ -3,25 +3,25 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const CREATOR_NICHES = [
-  { label: "Fashion", icon: "👗" },
-  { label: "Food", icon: "🍔" },
-  { label: "Travel", icon: "🏃" },
-  { label: "Fitness", icon: "💪" },
-  { label: "Beauty", icon: "💄" },
-  { label: "Tech", icon: "💻" },
-  { label: "Gaming", icon: "🎮" },
-  { label: "Art", icon: "🎨" },
-  { label: "Lifestyle", icon: "🌿" },
-  { label: "Education", icon: "📚" },
+  { label: "Fashion", icon: "shirt" },
+  { label: "Food", icon: "utensils" },
+  { label: "Travel", icon: "plane" },
+  { label: "Fitness", icon: "dumbbell" },
+  { label: "Beauty", icon: "sparkle" },
+  { label: "Tech", icon: "laptop" },
+  { label: "Gaming", icon: "gamepad" },
+  { label: "Art", icon: "palette" },
+  { label: "Lifestyle", icon: "leaf" },
+  { label: "Education", icon: "book" },
 ];
 
 const BRAND_INDUSTRIES = [
-  { label: "Fashion & Apparel", icon: "👗" },
-  { label: "Beauty & Skincare", icon: "💄" },
-  { label: "Food & Beverage", icon: "🍔" },
-  { label: "Tech & Gadgets", icon: "💻" },
-  { label: "Travel & Hospitality", icon: "✈️" },
-  { label: "Health & Fitness", icon: "💪" },
+  { label: "Fashion & Apparel", icon: "shirt" },
+  { label: "Beauty & Skincare", icon: "sparkle" },
+  { label: "Food & Beverage", icon: "utensils" },
+  { label: "Tech & Gadgets", icon: "laptop" },
+  { label: "Travel & Hospitality", icon: "plane" },
+  { label: "Health & Fitness", icon: "dumbbell" },
 ];
 
 const REGISTERED_BRAND_PERKS = [
