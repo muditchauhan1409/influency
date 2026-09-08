@@ -59,7 +59,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  color: #7a1f33;
+  flex-shrink: 0;
 }
 
 .settings-section-title {
@@ -93,9 +94,12 @@
 }
 
 .settings-row-icon {
-  font-size: 18px;
   width: 24px;
-  text-align: center;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7a1f33;
   flex-shrink: 0;
 }
 
@@ -200,14 +204,11 @@
   border-color: rgba(122, 31, 51, 0.4);
 }
 
-/* Chevron */
-.settings-chevron {
-  color: var(--text-muted);
-  font-size: 16px;
-}
-
 /* Tag pill */
 .settings-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11px;
   font-weight: 500;
   padding: 3px 9px;
@@ -241,6 +242,7 @@
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  color: #fff;
   flex-shrink: 0;
   position: relative;
 }
@@ -253,7 +255,7 @@
   border-radius: 50%;
   border: 2px solid var(--bg-card);
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; color: #fff;
+  color: #fff;
   cursor: pointer;
 }
 
@@ -305,6 +307,20 @@
 
 .settings-danger-btn:hover {
   background: rgba(239, 68, 68, 0.06);
+}
+
+/* Sidebar bits reused from dashboard.css but icon-alignment ensured here too */
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c87a4a;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 /* Dark mode overrides */

@@ -9,12 +9,16 @@ const {
   uploadAvatar,
   getPublicProfile,
   searchUsers,
+  getSettings,
+  updateSettings,
 } = require("../controllers/userController");
 
 router.get("/dashboard", protect, getDashboardData);
 router.put("/profile", protect, updateProfile);
 router.post("/avatar", protect, upload.single("avatar"), uploadAvatar);
 router.get("/search", protect, searchUsers);
+router.get("/settings", protect, getSettings);
+router.put("/settings", protect, updateSettings);
 router.get("/:userId", protect, getPublicProfile);
 
 module.exports = router;

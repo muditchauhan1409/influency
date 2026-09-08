@@ -106,6 +106,12 @@ const acceptFollowRequest = async (req, res) => {
       requester.followersArr.push(me._id);
     }
 
+    // keep the Number count fields in sync with the actual arrays
+    me.followers = me.followersArr.length;
+    me.following = me.followingArr.length;
+    requester.followers = requester.followersArr.length;
+    requester.following = requester.followingArr.length;
+
     await me.save();
     await requester.save();
         pushNotification(requester._id, {
@@ -148,6 +154,10 @@ const unfollowUser = async (req, res) => {
 
     me.followingArr = me.followingArr.filter((id) => id.toString() !== target._id.toString());
     target.followersArr = target.followersArr.filter((id) => id.toString() !== me._id.toString());
+
+    // keep the Number count fields in sync with the actual arrays
+    me.following = me.followingArr.length;
+    target.followers = target.followersArr.length;
 
     await me.save();
     await target.save();

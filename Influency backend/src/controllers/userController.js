@@ -166,10 +166,60 @@ const getPublicProfile = async (req, res) => {
   }
 };
 
+// @route   GET /api/users/settings
+// @desc    Current user ki settings lo (dark mode, language, notifications, privacy)
+// @access  Private
+const getSettings = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "name email username avatar location trustScore darkMode language notifications privacy"
+    );
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error("Get settings error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// @route   PUT /api/users/settings
+// @desc    Settings ka koi bhi subset update karo
+// @access  Private
+const updateSettings = async (req, res) => {
+  try {
+    const allowed = ["darkMode", "language", "notifications", "privacy"];
+    const updateData = {};
+
+    for (const key of allowed) {
+      if (req.body[key] !== undefined) updateData[key] = req.body[key];
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ success: false, message: "No valid fields to update" });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select(
+      "name email username avatar location trustScore darkMode language notifications privacy"
+    );
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error("Update settings error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   getDashboardData,
   updateProfile,
   uploadAvatar,
   getPublicProfile,
   searchUsers,
+  getSettings,
+  updateSettings,
 };

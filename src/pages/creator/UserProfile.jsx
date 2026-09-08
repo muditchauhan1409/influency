@@ -21,6 +21,14 @@ import "../../styles/dashboard.css";
 import "../../styles/settings.css";
 import "../../styles/userProfile.css";
 
+// formats a raw follower/following number the way social apps do: 1200 -> "1.2K"
+function formatCount(n) {
+  const num = Number(n) || 0;
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(num);
+}
+
 export default function UserProfile({ darkMode, setDarkMode , onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,11 +71,14 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
 
   const currentAvailability = AVAILABILITY_OPTIONS.find((a) => a.value === profile.availability);
 
+  const trustScore = profile.trustScore ?? 0;
+
+  // live stats pulled from the profile object (backend), not hardcoded
   const stats = [
-    ["120K", "Followers"],
-    ["4.9★", "Rating"],
-    ["48", "Collabs"],
-    ["92", "Trust"],
+    [formatCount(profile.followers), "Followers"],
+    [profile.rating ? `${Number(profile.rating).toFixed(1)}★` : "0★", "Rating"],
+    [profile.campaignsCompleted ?? 0, "Collabs"],
+    [trustScore, "Trust"],
   ];
 
   return (
@@ -114,7 +125,7 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
             <svg className="ring-svg" width="56" height="56" style={{ transform: "rotate(-90deg)" }}>
               <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(122,31,51,0.12)" strokeWidth="5" />
               <circle cx="28" cy="28" r="22" fill="none" stroke="url(#lg-up)" strokeWidth="5"
-                strokeDasharray="126 141" strokeLinecap="round" />
+                strokeDasharray={`${(trustScore / 100) * 141} 141`} strokeLinecap="round" />
               <defs>
                 <linearGradient id="lg-up" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="#c87a4a" />
@@ -123,7 +134,7 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
               </defs>
             </svg>
             <div className="trust-meta">
-              <div className="trust-score-big">92</div>
+              <div className="trust-score-big">{trustScore}</div>
               <div className="trust-label">Trust Score</div>
             </div>
           </div>
@@ -461,7 +472,7 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
                   <svg width="80" height="80" viewBox="0 0 120 120">
                     <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(122,31,51,0.12)" strokeWidth="10" />
                     <circle cx="60" cy="60" r="50" fill="none" stroke="url(#lg-trust)" strokeWidth="10"
-                      strokeDasharray="314" strokeDashoffset="57"
+                      strokeDasharray="314" strokeDashoffset={314 - (314 * trustScore) / 100}
                       strokeLinecap="round" transform="rotate(-90 60 60)" />
                     <defs>
                       <linearGradient id="lg-trust" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -471,12 +482,12 @@ export default function UserProfile({ darkMode, setDarkMode , onOpenNotification
                     </defs>
                   </svg>
                   <div className="score-overlay">
-                    <div className="score-ring-val" style={{ fontSize: 22 }}>92</div>
+                    <div className="score-ring-val" style={{ fontSize: 22 }}>{trustScore}</div>
                   </div>
                 </div>
                 <div>
                   <div className="trend-section-title" style={{ marginBottom: 4 }}>AI Trust Analysis</div>
-                  <div className="trust-analysis-sub">Score is 92 because of consistent verification &amp; delivery.</div>
+                  <div className="trust-analysis-sub">Score is {trustScore} because of consistent verification &amp; delivery.</div>
                 </div>
               </div>
               <div className="verify-list">

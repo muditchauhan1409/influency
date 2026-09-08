@@ -158,6 +158,32 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+
+    // ==== Settings ====
+    darkMode: {
+      type: Boolean,
+      default: false,
+    },
+    language: {
+      type: String,
+      enum: ["English", "Hindi", "Marathi"],
+      default: "English",
+    },
+    notifications: {
+      campaignMatches: { type: Boolean, default: true },
+      messages: { type: Boolean, default: true },
+      trustScoreUpdates: { type: Boolean, default: true },
+      platformAnnouncements: { type: Boolean, default: false },
+    },
+    privacy: {
+      profileVisibility: {
+        type: String,
+        enum: ["Everyone", "Verified Brands Only", "Private"],
+        default: "Everyone",
+      },
+      analyticsSharing: { type: Boolean, default: true },
+      twoFactorEnabled: { type: Boolean, default: false },
+    },
   },
   {
     timestamps: true,
