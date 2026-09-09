@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "../../styles/dashboard.css";
 import "../../styles/brandDashboard.css";
 import "../../styles/brandFormResponses.css";
-
+import { API_URL } from "../../config/api";
 const BRAND_NAV_ITEMS = [
   { icon: "🏠", label: "Home", path: "/brand-dashboard" },
   { icon: "📋", label: "Forms", path: "/brand-forms" },
@@ -31,7 +31,7 @@ export default function BrandFormResponses() {
       const token = localStorage.getItem("token");
 
       // Submissions fetch karo
-      const subRes = await fetch(`http://localhost:5000/api/forms/${formId}/submissions`, {
+      const subRes = await fetch(`${API_URL}/forms/${formId}/submissions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const subData = await subRes.json();
@@ -43,7 +43,7 @@ export default function BrandFormResponses() {
       setLastRefresh(new Date());
 
       // Form details — my-forms se fetch karo (brand token compatible)
-      const formRes = await fetch(`http://localhost:5000/api/forms/my-forms`, {
+      const formRes = await fetch(`${API_URL}/forms/my-forms`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const formData = await formRes.json();

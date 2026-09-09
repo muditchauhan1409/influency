@@ -1,7 +1,7 @@
 // PASTE PATH: src/scripts/userProfile.js
 import { useState, useEffect } from "react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export const NICHE_OPTIONS = [
   "Lifestyle", "Fashion", "Clothing", "Beauty", "Beauty Products",

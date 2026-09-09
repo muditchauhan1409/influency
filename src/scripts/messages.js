@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useCallback, useRef } from "react";
 
-const API = "http://localhost:5000/api";
+import { API_URL as API } from "../config/api";
 
 function authHeaders() {
   const token = localStorage.getItem("token");

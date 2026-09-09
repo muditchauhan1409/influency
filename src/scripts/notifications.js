@@ -1,7 +1,7 @@
 // PASTE PATH: src/scripts/notifications.js
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const API = "http://localhost:5000/api";
+import { API_URL as API, WS_URL } from "../config/api";
 const WS_URL = "ws://localhost:5000";
 
 function authHeaders() {

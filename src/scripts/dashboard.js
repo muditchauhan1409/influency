@@ -49,7 +49,7 @@ export const SCORE_FACTORS = [
 // ===== REAL API HOOK =====
 import { useState, useEffect } from "react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export function useDashboard() {
   const [user, setUser] = useState(null);

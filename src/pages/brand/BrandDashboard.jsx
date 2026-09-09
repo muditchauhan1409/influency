@@ -9,6 +9,7 @@ import "../../styles/brandDashboard.css";
 import "../../styles/collaborations.css";
 import "../../styles/settings.css";
 import CollabSummaryModal from "../../components/CollabSummaryModal";
+import { API_URL } from "../../config/api";
 
 const TOP_CREATORS = [
   { initials: "AR", name: "Aria Chen", sub: "Fashion · 2.4M · Trust 94", bg: "linear-gradient(135deg,#3d1424,#1a0810)" },
@@ -71,7 +72,7 @@ const { forms, loading, user, handleCreateForm, handleViewForm, fetchForms, camp
     setSendError(""); setSendMsg("");
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/forms/${selectedFormId}/send`, {
+      const res = await fetch(`${API_URL}/forms/${selectedFormId}/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ creatorEmail }),

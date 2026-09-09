@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 const OTP_DURATION = 300; // 5 minutes, matches backend Otp expiry
 
 export function useVerifyOtp() {

@@ -1,7 +1,6 @@
 // scripts/brandProfile.js
 import { useState, useEffect } from "react";
-
-const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { API_URL } from "../config/api";
 
 /* ─── Static Option Lists ─── */
 export const INDUSTRY_OPTIONS = [
@@ -77,7 +76,7 @@ export function useBrandProfile() {
   /* Fetch on mount */
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch(`${API}/api/brand/profile`, {
+    fetch(`${API_URL}/brand/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => {
@@ -108,7 +107,7 @@ export function useBrandProfile() {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`${API}/api/brand/profile`, {
+      const res = await fetch(`${API_URL}/brand/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

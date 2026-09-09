@@ -1,7 +1,7 @@
 // PASTE PATH: src/scripts/feed.js
 import { useState, useEffect } from "react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export const NICHE_OPTIONS = [
   "Fashion", "Beauty", "Lifestyle", "Food", "Travel",

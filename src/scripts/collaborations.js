@@ -1,7 +1,7 @@
 // PASTE PATH: src/scripts/collaborations.js
 import { useState, useMemo, useEffect, useCallback } from "react";
 
-const API_URL = "http://localhost:5000/api";
+import { API_URL } from "../config/api";
 
 export const COLLAB_TABS = ["Active", "Pending", "Completed", "Forms"];
 
