@@ -12,7 +12,16 @@ const app = express();
 const server = http.createServer(app);
 
 // ── Middleware ──
-app.use(cors({ origin: "*" }));
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || origin.endsWith(".vercel.app") || origin.includes("localhost")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // ── Routes ──
