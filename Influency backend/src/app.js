@@ -50,7 +50,8 @@ app.use("/api/collab",       generalLimiter, collabRoutes);
 app.use("/api/notifications", generalLimiter, notificationRoutes);
 app.use("/api/brand", require("./routes/brand"));
 app.use("/api/analytics", generalLimiter, analyticsRoutes);
-
+// app.js mein
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
