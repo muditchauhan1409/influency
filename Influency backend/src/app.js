@@ -9,6 +9,7 @@ const {
   generalLimiter,
 } = require("./middleware/rateLimiter");
 
+// Purana code replace karo:
 app.use(cors({
   origin: function(origin, callback) {
     const allowed = [
@@ -20,7 +21,6 @@ app.use(cors({
       process.env.CLIENT_URL,
     ].filter(Boolean);
     
-    // Vercel ke saare subdomains allow karo
     if (!origin || allowed.includes(origin) || origin.endsWith(".vercel.app")) {
       callback(null, true);
     } else {
@@ -28,6 +28,8 @@ app.use(cors({
     }
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.use(express.json({ limit: "10mb" }));
