@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 import { API_URL as API, WS_URL } from "../config/api";
-const WS_URL = "ws://localhost:5000";
+
 
 function authHeaders() {
   const token = localStorage.getItem("token");
