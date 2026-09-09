@@ -4,8 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/dashboard.css";
 import "../../styles/brandDashboard.css";
 import "../../styles/settings.css";
-import { API_URL } from "../config/api";
-import { API_URL as API, WS_URL } from "../config/api";
+import { API_URL, API_URL as API, WS_URL } from "../../config/api";
 
 const BRAND_NAV_ITEMS = [
   { icon: "🏠", label: "Home", path: "/brand-dashboard" },

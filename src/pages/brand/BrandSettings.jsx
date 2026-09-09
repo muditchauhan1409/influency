@@ -10,7 +10,7 @@ import BrandSidebar from "../../components/brand/BrandSidebar";
 import "../../styles/dashboard.css";
 import "../../styles/settings.css";
 
-import { API_URL as API, WS_URL } from "../config/api";
+import { API_URL as API, WS_URL } from "../../config/api";
 
 export default function BrandSettings({ darkMode, setDarkMode, onOpenNotifications, notifUnreadCount }) {
   const navigate = useNavigate();

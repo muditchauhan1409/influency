@@ -33,7 +33,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-import { API_URL as API, WS_URL } from "../config/api";
+import { API_URL as API, WS_URL } from "../../config/api";
 
 const LINKED_ACCOUNTS = [
   { icon: Camera, name: "Instagram", handle: "@nikitaroy", connected: true },
