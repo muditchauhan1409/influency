@@ -37,7 +37,7 @@ import { useNotificationsPanel } from "./scripts/notifications";
 
 
 
-import { getCurrentUser } from "./scripts/auth";
+import { getCurrentUser } from "./scripts/Auth";
 
 function ComingSoon({ title }) {
   return (
