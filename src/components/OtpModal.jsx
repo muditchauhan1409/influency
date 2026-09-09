@@ -39,7 +39,7 @@ export default function OtpModal({ email, purpose, onClose, onVerified }) {
     setLoading(true);
     try {
       const endpoint = purpose === "login" ? "verify-login-otp" : "verify-signup-otp";
-      const res = await fetch(`${API_URL}/auth/${endpoint}`, {
+      const res = await fetch(`${API}/auth/${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp: otp.trim() }),
@@ -63,7 +63,7 @@ export default function OtpModal({ email, purpose, onClose, onVerified }) {
     setError("");
     setResending(true);
     try {
-      const res = await fetch(`${API_URL}/auth/resend-otp`, {
+      const res = await fetch(`${API}/auth/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, purpose }),
