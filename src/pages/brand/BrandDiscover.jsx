@@ -2,7 +2,7 @@
 import { NICHE_FILTERS, useDiscover } from "../../scripts/discover";
 import BrandSidebar from "../../components/brand/BrandSidebar";
 import "../../styles/dashboard.css";
-import "../../styles/discover.css";
+import "../../styles/Discover.css";
 
 export default function BrandDiscover({ onOpenNotifications, notifUnreadCount }) {
   const {
