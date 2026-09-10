@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/otpModal.css";
 
-import { API_URL as API, WS_URL } from "../config/api";
+import { API_URL } from "../config/api";
 const OTP_DURATION = 300;
 
 export default function OtpModal({ email, purpose, onClose, onVerified }) {
