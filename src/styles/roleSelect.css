@@ -326,3 +326,44 @@
 .brand {
   margin-bottom: 16px;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .onboarding-page {
+    flex-direction: column;
+    height: auto;
+    overflow: auto;
+  }
+
+  .onboarding-left {
+    padding: 32px 24px 24px;
+    gap: 8px;
+  }
+
+  .onboarding-right {
+    padding: 16px 20px 32px;
+  }
+
+  .stats-row {
+    gap: 20px;
+  }
+
+  .card {
+    max-height: none;
+    padding: 20px 20px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .onboarding-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+}
