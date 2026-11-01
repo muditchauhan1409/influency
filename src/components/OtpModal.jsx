@@ -53,7 +53,7 @@ export default function OtpModal({ email, purpose, onClose, onVerified }) {
       setLoading(false);
       onVerified(data);
     } catch (err) {
-      setError("Cannot connect to server. Please try again.");
+      setError("Cannot connect.");
       setLoading(false);
     }
   };
@@ -79,7 +79,7 @@ export default function OtpModal({ email, purpose, onClose, onVerified }) {
       setResendMsg("A new code has been sent to your email.");
       setResending(false);
     } catch (err) {
-      setError("Cannot connect to server. Please try again.");
+      setError("Cannot connect.");
       setResending(false);
     }
   };

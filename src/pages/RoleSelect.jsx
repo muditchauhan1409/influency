@@ -1,5 +1,6 @@
 // PASTE PATH: src/pages/RoleSelect.jsx
-
+import { useIsMobile } from "../hooks/useIsMobile";
+import MobileRoleSelect from "./mobile/MobileRoleSelect";
 import { Link } from "react-router-dom";
 import { useRoleSelect } from "../scripts/roleSelect";
 import "../styles/roleSelect.css";
@@ -20,6 +21,8 @@ import {
 } from "lucide-react";
 
 export default function RoleSelect() {
+   const isMobile = useIsMobile();        // ← line 24 se pehle add karo
+  if (isMobile) return <MobileRoleSelect />;  // ← yeh bhi
   const { role, setRole, handleContinue } = useRoleSelect();
 
   return (

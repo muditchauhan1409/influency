@@ -12,6 +12,14 @@ export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
+  // Saves the session and redirects. Used for normal login and after OTP verify.
+  const handleOtpVerified = (data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setShowOtpModal(false);
+    navigate(data.user.role === "brand" ? "/brand-dashboard" : "/dashboard");
+  };
+
   const handleLogin = async () => {
     if (!email.trim() || !email.includes("@")) {
       setError("Please enter a valid email address.");
@@ -40,18 +48,20 @@ export function useLogin() {
       }
 
       setLoading(false);
-      setShowOtpModal(true);
+
+      if (data.otpRequired) {
+        // Only happens when ENABLE_OTP=true on the backend
+        setShowOtpModal(true);
+      } else if (data.token && data.user) {
+        // Normal email + password login
+        handleOtpVerified(data);
+      } else {
+        setError("Unexpected server response. Please try again.");
+      }
     } catch (err) {
       setError("Cannot connect to server. Please try again.");
       setLoading(false);
     }
-  };
-
-  const handleOtpVerified = (data) => {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    setShowOtpModal(false);
-    navigate(data.user.role === "brand" ? "/brand-dashboard" : "/dashboard");
   };
 
   return {

@@ -5,6 +5,10 @@ const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
 const { sendOtpMail } = require("../utils/mailer");
 
+// OTP is OFF by default. To turn it back on later, set ENABLE_OTP=true in .env
+// (and make sure RESEND_API_KEY is set correctly).
+const isOtpEnabled = () => process.env.ENABLE_OTP === "true";
+
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -38,7 +42,9 @@ const sendTokenResponse = (user, statusCode, res) => {
   });
 };
 
-// ---------------- SIGNUP: STEP 1 - validate + send OTP (no user created yet) ----------------
+// ---------------- SIGNUP ----------------
+// OTP disabled  -> creates the user immediately and returns a token.
+// OTP enabled   -> validates, stores pending data, sends OTP (verify in step 2).
 const signup = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -79,7 +85,21 @@ const signup = async (req, res) => {
     const randomSuffix2 = Math.floor(Math.random() * 999);
     const baseHandle = "@" + name.toLowerCase().replace(/\s+/g, "") + randomSuffix2;
 
-    // hash password ourselves since user isn't created yet (pre-save hook won't run)
+    // ----- OTP DISABLED: normal signup -----
+    if (!isOtpEnabled()) {
+      const user = await User.create({
+        name,
+        email,
+        password, // hashed by the User model's pre-save hook
+        role: role || "creator",
+        handle: baseHandle,
+        username: finalUsername,
+        isEmailVerified: true,
+      });
+      return sendTokenResponse(user, 201, res);
+    }
+
+    // ----- OTP ENABLED -----
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -103,6 +123,7 @@ const signup = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      otpRequired: true,
       message: "OTP sent to your email. Please verify to complete signup.",
       email,
     });
@@ -112,7 +133,7 @@ const signup = async (req, res) => {
   }
 };
 
-// ---------------- SIGNUP: STEP 2 - verify OTP, create user, login ----------------
+// ---------------- SIGNUP: STEP 2 - verify OTP, create user, login (only used when OTP enabled) ----------------
 const verifySignupOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -133,8 +154,7 @@ const verifySignupOtp = async (req, res) => {
       return res.status(409).json({ success: false, message: "Account already exists, please login" });
     }
 
-    // password is already hashed in step 1 (signup) — skip the pre-save re-hash
-    // by overriding isModified('password') to false just for this save
+    // password is already hashed in step 1, skip the pre-save re-hash
     const user = new User({
       name,
       email,
@@ -147,18 +167,20 @@ const verifySignupOtp = async (req, res) => {
     const originalIsModified = user.isModified.bind(user);
     user.isModified = (path) => (path === "password" ? false : originalIsModified(path));
 
-    const created = [await user.save()];
+    const created = await user.save();
 
     await Otp.deleteMany({ email, purpose: "signup" });
 
-    sendTokenResponse(created[0], 201, res);
+    sendTokenResponse(created, 201, res);
   } catch (err) {
     console.error("Verify signup OTP error:", err);
     res.status(500).json({ success: false, message: "Server error, please try again" });
   }
 };
 
-// ---------------- LOGIN: STEP 1 - check credentials, send OTP ----------------
+// ---------------- LOGIN ----------------
+// OTP disabled -> email + password, token returned immediately.
+// OTP enabled  -> credentials checked, OTP emailed (verify in step 2).
 const login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -178,6 +200,12 @@ const login = async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
+    // ----- OTP DISABLED: normal login -----
+    if (!isOtpEnabled()) {
+      return sendTokenResponse(user, 200, res);
+    }
+
+    // ----- OTP ENABLED -----
     const otp = generateOtp();
     await Otp.deleteMany({ email, purpose: "login" });
     await Otp.create({ email, otp, purpose: "login" });
@@ -185,6 +213,7 @@ const login = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      otpRequired: true,
       message: "OTP sent to your email. Please verify to complete login.",
       email,
     });
@@ -194,7 +223,7 @@ const login = async (req, res) => {
   }
 };
 
-// ---------------- LOGIN: STEP 2 - verify OTP, issue token ----------------
+// ---------------- LOGIN: STEP 2 - verify OTP, issue token (only used when OTP enabled) ----------------
 const verifyLoginOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -221,7 +250,7 @@ const verifyLoginOtp = async (req, res) => {
   }
 };
 
-// ---------------- Resend OTP (works for both signup/login) ----------------
+// ---------------- Resend OTP (signup/login, only used when OTP enabled) ----------------
 const resendOtp = async (req, res) => {
   try {
     const { email, purpose } = req.body;
@@ -244,7 +273,7 @@ const resendOtp = async (req, res) => {
     res.status(200).json({ success: true, message: "OTP resent to your email" });
   } catch (err) {
     console.error("Resend OTP error:", err);
-    res.status(500).json({ success: false, message: "Server error, please try again" });
+    res.status(500).json({ success: false, message: "Could not send OTP, please try again" });
   }
 };
 
