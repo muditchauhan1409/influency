@@ -24,6 +24,15 @@ export function useSignUp() {
     setTimeout(() => setShake(false), 400);
   };
 
+  // Saves the session and goes to profile setup.
+  // Used for normal signup and after OTP verification.
+  const handleOtpVerified = (data) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setShowOtpModal(false);
+    navigate("/profile-setup", { state: { role: data.user.role || role } });
+  };
+
   const handleCreateAccount = async () => {
     if (!name.trim()) return triggerShake("Please enter your name.");
     if (!email.trim() || !email.includes("@")) return triggerShake("Please enter a valid email.");
@@ -51,18 +60,20 @@ export function useSignUp() {
       }
 
       setLoading(false);
-      setShowOtpModal(true);
+
+      if (data.otpRequired) {
+        // Only happens when ENABLE_OTP=true on the backend
+        setShowOtpModal(true);
+      } else if (data.token && data.user) {
+        // Normal signup: account created and logged in
+        handleOtpVerified(data);
+      } else {
+        triggerShake("Unexpected server response. Please try again.");
+      }
     } catch (err) {
       triggerShake("Cannot connect to server. Please try again.");
       setLoading(false);
     }
-  };
-
-  const handleOtpVerified = (data) => {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    setShowOtpModal(false);
-    navigate("/profile-setup", { state: { role: data.user.role || role } });
   };
 
   return {
